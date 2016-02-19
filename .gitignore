@@ -1,0 +1,13 @@
+*.apk
+*.class
+.DS_Store
+older_backup
+*.userprefs
+2WebApp_IOS/Components
+2WebApp_IOS/packages
+2WebApp_IOS/2WebApp_IOS/bin
+2WebApp_IOS/2WebApp_IOS/obj 
+2WebApp_IOS/2WebApp_IOS/obj/*
+2WebApp_IOS/2WebApp_IOS/bin/*
+2WebApp_IOS/Tap5050Seller.userprefs
+2WebApp_IOS/2WebApp_IOS/Tap5050Seller.IOS.csproj
