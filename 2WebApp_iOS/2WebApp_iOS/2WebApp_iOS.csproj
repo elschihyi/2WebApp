@@ -99,20 +99,23 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
-    <Reference Include="SQLite">
-      <HintPath>..\Components\sqlite-net-1.0.8.3\lib\ios-unified\SQLite.dll</HintPath>
+    <Reference Include="MonoTouch.Dialog-1" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="FSharp.Core" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SatelliteMenu">
       <HintPath>..\Components\satellite-menu-1.2.1.0\lib\ios-unified\SatelliteMenu.dll</HintPath>
     </Reference>
-    <Reference Include="MonoTouch.Dialog-1" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="FSharp.Core" />
     <Reference Include="SDWebImage">
       <HintPath>..\Components\sdwebimage-3.7.3.1\lib\ios-unified\SDWebImage.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\Xamarin.iOS10\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLite-net">
+      <HintPath>..\packages\sqlite-net-pcl.1.1.1\lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\SQLite-net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -351,8 +354,6 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="Database\DbBusinessObjects.cs" />
-    <Compile Include="Database\DbStorage.cs" />
     <Compile Include="Additions\ExpandableTableSource.cs" />
     <Compile Include="GlobalAPI.cs" />
     <Compile Include="Additions\RssFeedReader.cs" />
@@ -439,8 +440,12 @@
     <Compile Include="Screens\Article Screens\ArticlePage.designer.cs">
       <DependentUpon>ArticlePage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Database\DbBusinessObjects.cs" />
+    <Compile Include="Database\DbStorage.cs" />
   </ItemGroup>
+  <Import Project="..\CoreDataService\CoreDataService.projitems" Label="Shared" Condition="Exists('..\CoreDataService\CoreDataService.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+  <Import Project="..\packages\SQLitePCL.raw.0.8.6\build\Xamarin.iOS10\SQLitePCL.raw.targets" Condition="Exists('..\packages\SQLitePCL.raw.0.8.6\build\Xamarin.iOS10\SQLitePCL.raw.targets')" />
   <ItemGroup>
     <Folder Include="Database\" />
     <Folder Include="Additions\" />
