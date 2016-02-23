@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2WebApp_iOS", "2WebApp_iOS\2WebApp_iOS.csproj", "{CD97CA14-6F81-423A-B49C-D23C16E052EA}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CoreDataService", "CoreDataService\CoreDataService.shproj", "{0D30E8D4-BB52-403B-91BB-DD613F7BC929}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|iPhoneSimulator = Debug|iPhoneSimulator
