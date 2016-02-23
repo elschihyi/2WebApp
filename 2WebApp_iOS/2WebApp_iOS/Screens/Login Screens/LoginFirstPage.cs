@@ -60,7 +60,7 @@ namespace WebApp_iOS
 				textField.ResignFirstResponder();
 				return true;
 			};
-
+			/*
 			btnLogin.TouchUpInside += (object sender, EventArgs e) => {
 				//log in with 2Web
 				try {
@@ -83,7 +83,7 @@ namespace WebApp_iOS
 				Email.Text = ""; 
 				Password.Text = ""; 
 			};
-
+			*/
 
 
 			btnForgotPassword.TouchUpInside += (object sender, EventArgs e) => {
@@ -101,6 +101,7 @@ namespace WebApp_iOS
 
 
 			//if user already authenticated go to welcome page instead of login
+			/*
 			try {
 				if (DbStorage.Manager ().checkAuthenticationToken ()) {
 					if(welcomePage == null)
@@ -110,7 +111,7 @@ namespace WebApp_iOS
 			} catch (Exception ex) {
 				new UIAlertView ("Alert", ex.Message, null, "OK", null).Show (); 
 			}
-
+			*/
 
 
 		}

@@ -21,12 +21,13 @@ namespace WebApp_iOS
 		public override void FinishedLaunching (UIApplication application)
 		{
 			//create tables
+			/*
 			try {
 				DbStorage.Manager ().createTables (); 
 			} catch (Exception e) {
 				//new UIAlertView ("Alert", e.Message, null, "OK", null).Show (); 
 			}
-
+			*/
 
 
 			window = new UIWindow ();

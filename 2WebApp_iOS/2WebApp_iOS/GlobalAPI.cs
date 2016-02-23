@@ -243,7 +243,7 @@ namespace WebApp_iOS
 				return null; 
 			}
 		}
-
+		/*
 		public Boolean loadUserData (string accountID)
 		{
 			try {
@@ -309,7 +309,8 @@ namespace WebApp_iOS
 				return false;
 			}
 		}
-
+		*/
+		/*
 		public Boolean Login (string em, string pwd, bool placeToken)
 		{
 			//load user data
@@ -351,7 +352,8 @@ namespace WebApp_iOS
 			}
 
 		}
-
+		*/
+		/*
 		public Boolean Logout ()
 		{
 			try {
@@ -366,7 +368,7 @@ namespace WebApp_iOS
 
 			return true;
 		}
-
+		*/
 		public Boolean SupportAuthorization (string usr)
 		{
 

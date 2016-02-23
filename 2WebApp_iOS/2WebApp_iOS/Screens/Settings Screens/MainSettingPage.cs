@@ -203,12 +203,13 @@ namespace WebApp_iOS
 
 			this.NavigationItem.RightBarButtonItem = new UIBarButtonItem (new UIImage ("Cut_Images/Log_Out_Icon.png"), UIBarButtonItemStyle.Plain, 
 				(sender, args) => {
-
+					/*
 					if(!GlobalAPI.Manager().Logout())
 						new UIAlertView("Alert","Error unable to logout",null, "Ok", null).Show(); 
 					GlobalAPI.Manager().PushPage(NavigationController, new LoginFirstPage());
 					//NavigationController.PopToRootViewController(true); 
 					//NavigationController.ViewControllers = new UIViewController[]{new LoginFirstPage()}; 
+					*/
 				});
 		}
 
