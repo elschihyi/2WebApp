@@ -22,7 +22,7 @@ namespace WebApp_iOS
 
 		TwoWebDesignMain twoWebDesignMain;
 		TwoWebDesignLibrary twoWebDesignLibrary;
-		TabProjects tabProjects;
+		//TabProjects tabProjects;
 		MainSupport mainSupport;
 
 		ArticlePage articlePage;
@@ -153,7 +153,7 @@ namespace WebApp_iOS
 						//PushPage(page.NavigationController,getTwoWebDesignLibrary());
 						//page.NavigationController.PushViewController (new TwoWebDesignLibrary (), true);
 					} else if (args.MenuItem.Tag == 3) {
-						PushPage (page.NavigationController, new TabProjects ()); 
+						//PushPage (page.NavigationController, new TabProjects ()); 
 						//PushPage(page.NavigationController,getTabProjects());
 						//page.NavigationController.PushViewController (new TabProjects (), true);
 					} else {
@@ -196,7 +196,7 @@ namespace WebApp_iOS
 
 			return twoWebDesignLibrary;
 		}
-
+		/*
 		public TabProjects getTabProjects ()
 		{
 			if (tabProjects == null)
@@ -204,7 +204,7 @@ namespace WebApp_iOS
 
 			return tabProjects;
 		}
-
+		*/
 		public MainSupport getMainSupport ()
 		{
 			if (mainSupport == null)
@@ -520,6 +520,7 @@ namespace WebApp_iOS
 
 
 		//grab project updates depending on project
+		/*
 		public ProjectUpdate[] LoadProjectUpdates (int prjId)
 		{
 			return new ProjectUpdate[] {
@@ -645,7 +646,7 @@ namespace WebApp_iOS
 			return returnProjects; 
 
 		}
-
+		*/
 		public Boolean loadRss ()
 		{
 			try {

@@ -96,7 +96,6 @@ namespace WebApp_iOS
 			//timer.Invoke (AnimationTimeLoop, TimeSpan.FromMilliseconds (100)); 
 
 		}
-			
 	}
 }
 

@@ -43,8 +43,8 @@ namespace WebApp_iOS
 		public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 		{
 			
-			GlobalAPI.Manager().PushPage(parent.NavigationController,GlobalAPI.Manager().getInternetPage(tableEvents[indexPath.Row].EventLink));
-
+			//GlobalAPI.Manager().PushPage(parent.NavigationController,GlobalAPI.Manager().getInternetPage(tableEvents[indexPath.Row].EventLink));
+			GlobalAPI.Manager().PushPage(parent.NavigationController,new WebViewController(tableEvents[indexPath.Row].EventLink,""));
 			tableView.DeselectRow (indexPath, true); // normal iOS behaviour is to remove the blue highlight
 		}
 

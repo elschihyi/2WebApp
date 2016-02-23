@@ -35,13 +35,15 @@ namespace WebApp_iOS
 			//Populate Email Blasts Page 
 			tbvEmailBlast.Source = new EmailBlastTableSource(GlobalAPI.Manager().LoadEmailBlasts(), this); 
 			tbvEmailBlast.BackgroundColor = UIColor.Clear; 
-			tbvEmailBlast.RowHeight = 165; 
+			//tbvEmailBlast.RowHeight = 165;
+			tbvEmailBlast.RowHeight = 145;
 			tbvEmailBlast.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 
 			//Populate Marketing Resources Page
 			tbvMarketResource.Source = new MarketingResourcesTableSource(GlobalAPI.Manager().LoadMarketResources(), this); 
 			tbvMarketResource.BackgroundColor = UIColor.Clear; 
-			tbvMarketResource.RowHeight = 165; 
+			//tbvMarketResource.RowHeight = 165; 
+			tbvMarketResource.RowHeight = 145;
 			tbvMarketResource.SeparatorStyle = UITableViewCellSeparatorStyle.None; 
 
 			//Courasal Pages

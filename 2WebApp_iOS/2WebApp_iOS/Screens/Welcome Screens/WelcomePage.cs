@@ -70,7 +70,7 @@ namespace WebApp_iOS
 				GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getTwoWebDesignLibrary());
 			};
 			square3.TouchUpInside += (object sender, EventArgs e) => {
-				GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getTabProjects());
+				//GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getTabProjects());
 			};
 			square4.TouchUpInside += (object sender, EventArgs e) => {
 				GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getMainSupport());

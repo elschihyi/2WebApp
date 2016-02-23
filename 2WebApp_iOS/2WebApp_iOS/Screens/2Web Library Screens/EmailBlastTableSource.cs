@@ -46,8 +46,8 @@ namespace WebApp_iOS
 			
 			//Go to article detail page 
 			 
-			GlobalAPI.Manager().PushPage(parent.NavigationController,GlobalAPI.Manager().getInternetPage(tableEmailBlasts [indexPath.Row].Link));
-
+			//GlobalAPI.Manager().PushPage(parent.NavigationController,GlobalAPI.Manager().getInternetPage(tableEmailBlasts [indexPath.Row].Link));
+			GlobalAPI.Manager().PushPage(parent.NavigationController,new WebViewController(tableEmailBlasts [indexPath.Row].Link,""));
 			tableView.DeselectRow (indexPath, true); // normal iOS behaviour is to remove the blue highlight
 		}
 

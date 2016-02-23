@@ -128,10 +128,6 @@
     <InterfaceDefinition Include="Screens\Login Screens\LoginFirstPage~iphone.xib" />
     <InterfaceDefinition Include="Screens\Lunch Screens\LunchPage~ipad.xib" />
     <InterfaceDefinition Include="Screens\Lunch Screens\LunchPage~iphone.xib" />
-    <InterfaceDefinition Include="Screens\Project Screens\ProjectDetail3~ipad.xib" />
-    <InterfaceDefinition Include="Screens\Project Screens\ProjectDetail3~iphone.xib" />
-    <InterfaceDefinition Include="Screens\Project Screens\TabProjects_iPad.xib" />
-    <InterfaceDefinition Include="Screens\Project Screens\TabProjects_iPhone.xib" />
     <InterfaceDefinition Include="Screens\Settings Screens\Settings2_iPad.xib" />
     <InterfaceDefinition Include="Screens\Settings Screens\Settings2_iPhone.xib" />
     <InterfaceDefinition Include="Screens\Support Screens\MainSupport~ipad.xib" />
@@ -387,23 +383,6 @@
     <Compile Include="Screens\Lunch Screens\LunchPage.designer.cs">
       <DependentUpon>..\..\Lunch Screens\LunchPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Screens\Project Screens\Project.cs" />
-    <Compile Include="Screens\Project Screens\ProjectCell.cs" />
-    <Compile Include="Screens\Project Screens\ProjectDetail3.cs" />
-    <Compile Include="Screens\Project Screens\ProjectDetail3.designer.cs">
-      <DependentUpon>..\..\Project Screens\ProjectDetail3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Screens\Project Screens\ProjectsTableSource.cs" />
-    <Compile Include="Screens\Project Screens\ProjectStatus.cs" />
-    <Compile Include="Screens\Project Screens\ProjectStatusCell.cs" />
-    <Compile Include="Screens\Project Screens\ProjectStatusTableSource.cs" />
-    <Compile Include="Screens\Project Screens\ProjectUpdate.cs" />
-    <Compile Include="Screens\Project Screens\ProjectUpdateCell.cs" />
-    <Compile Include="Screens\Project Screens\ProjectUpdateTableSource.cs" />
-    <Compile Include="Screens\Project Screens\TabProjects.cs" />
-    <Compile Include="Screens\Project Screens\TabProjects.designer.cs">
-      <DependentUpon>..\..\Project Screens\TabProjects.cs</DependentUpon>
-    </Compile>
     <Compile Include="Screens\Settings Screens\2WebDesignBadgeElement.cs" />
     <Compile Include="Screens\Settings Screens\2WebDesignBooleanElement.cs" />
     <Compile Include="Screens\Settings Screens\2WebDesignButtonElement.cs" />
@@ -439,6 +418,7 @@
     <Compile Include="Screens\Article Screens\ArticlePage.designer.cs">
       <DependentUpon>ArticlePage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Screens\2Web Screens\Contact Screens\ContactView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
@@ -454,13 +434,13 @@
     <Folder Include="Screens\2Web Screens\" />
     <Folder Include="Screens\Login Screens\" />
     <Folder Include="Screens\Lunch Screens\" />
-    <Folder Include="Screens\Project Screens\" />
     <Folder Include="Screens\Settings Screens\" />
     <Folder Include="Screens\Support Screens\" />
     <Folder Include="Screens\WebView\" />
     <Folder Include="Screens\SignUp Screens\" />
     <Folder Include="Screens\Welcome Screens\" />
     <Folder Include="Screens\Article Screens\" />
+    <Folder Include="Screens\2Web Screens\Contact Screens\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\gear.png" />

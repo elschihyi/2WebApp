@@ -63,6 +63,8 @@ namespace WebApp_iOS
 			SDWebImageManager.SharedManager.ImageCache.ClearMemory ();
 			SDWebImageManager.SharedManager.ImageCache.ClearDisk (); 
 		}
+
+
 	}
 }
 

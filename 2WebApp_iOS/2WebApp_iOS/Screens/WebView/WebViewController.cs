@@ -24,8 +24,7 @@ namespace WebApp_iOS
 		{
 			base.ViewDidLoad ();
 			NavigationItem.Title = title;
-			this.NavigationController.NavigationBar.BackgroundColor = UIColor.Black;
-
+			AutomaticallyAdjustsScrollViewInsets = false;
 			initWebView();
 			View.Add (WebView);
 		}
@@ -33,7 +32,9 @@ namespace WebApp_iOS
 		public override void ViewWillAppear (bool animated)
 		{
 			base.ViewWillAppear (animated);
-			WebView.Frame = new RectangleF (0f , 0f , (float)UIScreen.MainScreen.Bounds.Width, (float)UIScreen.MainScreen.Bounds.Height);
+			float statusBarHeight=(float)UIApplication.SharedApplication.StatusBarFrame.Size.Height;
+			float naviBarHeight = (float)NavigationController.NavigationBar.Frame.Size.Height;
+			WebView.Frame = new RectangleF (0f , statusBarHeight+naviBarHeight , (float)UIScreen.MainScreen.Bounds.Width, (float)UIScreen.MainScreen.Bounds.Height-statusBarHeight-naviBarHeight);
 			WebView.Reload ();
 		}
 
@@ -45,7 +46,6 @@ namespace WebApp_iOS
 			WebView.Reload ();
 		}
 
-
 		/********************************************************************************
 		 *customus functions
 		 ********************************************************************************/
@@ -53,6 +53,7 @@ namespace WebApp_iOS
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
+
 		public void initWebView(){
 			WebView = new UIWebView ();
 			WebView.Frame = new RectangleF (0f , 0f , (float)UIScreen.MainScreen.Bounds.Width, (float)UIScreen.MainScreen.Bounds.Height);
@@ -64,7 +65,6 @@ namespace WebApp_iOS
 				WebView.LoadRequest(UrlRequest);
 			}	
 		}
-
 
 	}
 }

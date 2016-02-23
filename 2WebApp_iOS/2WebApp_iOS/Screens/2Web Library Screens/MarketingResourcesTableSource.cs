@@ -47,8 +47,8 @@ namespace WebApp_iOS
 		{
 			//Go to article detail page 
 			 
-			GlobalAPI.Manager().PushPage(parent.NavigationController,GlobalAPI.Manager().getInternetPage(tableMarketResources [indexPath.Row].Url));
-
+			//GlobalAPI.Manager().PushPage(parent.NavigationController,GlobalAPI.Manager().getInternetPage(tableMarketResources [indexPath.Row].Url));
+			GlobalAPI.Manager().PushPage(parent.NavigationController,new WebViewController(tableMarketResources [indexPath.Row].Url,""));
 			tableView.DeselectRow (indexPath, true); // normal iOS behaviour is to remove the blue highlight
 
 		}
