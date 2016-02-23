@@ -13,7 +13,11 @@ namespace WebApp_iOS
 
 		public WebViewController (string url,string Title)
 		{
-			this.url = url;
+			if (!url.ToLower ().Contains ("http://") || !url.ToLower ().Contains ("https://")) {
+				this.url = "https://" + url;
+			} else {
+				this.url = url;
+			}
 			this.title = Title;
 		}
 

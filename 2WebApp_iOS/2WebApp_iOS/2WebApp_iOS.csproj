@@ -420,6 +420,10 @@
       <DependentUpon>ArticlePage.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\2Web Screens\Contact Screens\ContactView.cs" />
+    <Compile Include="Screens\Porjects Screens\Project Main Screens\ProjectMainScreenScource.cs" />
+    <Compile Include="Screens\Porjects Screens\Project Main Screens\ProjectMainScreenController.cs" />
+    <Compile Include="Screens\Porjects Screens\Project Main Screens\ProjectMainScreenCell.cs" />
+    <Compile Include="Screens\LoadingOverLay2.cs" />
   </ItemGroup>
   <Import Project="..\CoreDataService\CoreDataService.projitems" Label="Shared" Condition="Exists('..\CoreDataService\CoreDataService.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
@@ -444,6 +448,12 @@
     <Folder Include="Screens\Welcome Screens\" />
     <Folder Include="Screens\Article Screens\" />
     <Folder Include="Screens\2Web Screens\Contact Screens\" />
+    <Folder Include="Screens\Porjects Screens\" />
+    <Folder Include="Screens\Porjects Screens\Project Main Screens\" />
+    <Folder Include="Screens\Porjects Screens\Porject Overview Screens\" />
+    <Folder Include="Screens\Porjects Screens\Porject Update Screens\" />
+    <Folder Include="Screens\Porjects Screens\Project Status Screens\" />
+    <Folder Include="Screens\Porjects Screens\Project Support Screens\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\gear.png" />

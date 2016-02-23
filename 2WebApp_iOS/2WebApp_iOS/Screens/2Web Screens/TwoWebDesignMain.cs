@@ -139,9 +139,6 @@ namespace WebApp_iOS
 				newContactView.visitLabel.Hidden = false;
 				newContactView.visitLabel.Text = contactInfo.visit;
 				newContactView.visitButton.Hidden = false;
-				if (!contactInfo.visit.ToLower ().Contains ("http://") || !!contactInfo.visit.ToLower ().Contains ("https://")) {
-					contactInfo.visit = "https://" + contactInfo.visit;
-				}	
 				newContactView.visitButton.TouchUpInside += (s, e) => {
 					GlobalAPI.Manager().PushPage(NavigationController,new WebViewController(contactInfo.visit,""));
 				};

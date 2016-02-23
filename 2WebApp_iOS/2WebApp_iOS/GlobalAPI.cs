@@ -12,6 +12,7 @@ using System.Net;
 using System.Collections.Specialized;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using CoreDataService;
 
 namespace WebApp_iOS
 {
@@ -19,18 +20,24 @@ namespace WebApp_iOS
 	{
 		private static GlobalAPI networkAPI;
 		//private HNKCacheFormat format;
-
 		TwoWebDesignMain twoWebDesignMain;
 		TwoWebDesignLibrary twoWebDesignLibrary;
 		//TabProjects tabProjects;
 		MainSupport mainSupport;
-
 		ArticlePage articlePage;
+
+		public static DataService dataService;
 
 		public GlobalAPI ()
 		{
 			
 		}
+
+		public static DataService GetDataService(){
+			if (dataService == null)
+				dataService = new DataService ();
+			return dataService;
+		}	
 
 		public static GlobalAPI Manager ()
 		{

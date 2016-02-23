@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UIKit;
+using System.IO;
 
 
 namespace CoreDataService
@@ -23,7 +24,15 @@ namespace CoreDataService
 		public static Boolean ws_SyncRequest = true;
 
 		// local settings
-		public static string local_dbpath = "2webdesign.sqlite";
+
+		//following code is modify by Terence on Feb/22/2016
+		//public static string local_dbpath = "2webdesign.sqlite";
+		public static string sqliteFilename = "2webdesign.sqlite";
+		public static string documentsPath = Environment.GetFolderPath (Environment.SpecialFolder.Personal); // Documents folder
+		public static string dbPath = Path.Combine(documentsPath, sqliteFilename);
+		public static string local_dbpath = dbPath;
+		//above code is modify by Terence on Feb/22/2016
+
 		public static string local_dbschema = "CoreDataService.";
 		public static string[] local_tables = { "organization","staffaccount","taskupdatetypes","notification_type","notifications",
 			"client_organization_rel","projects","tasks","project_support_rel","clientaccount",

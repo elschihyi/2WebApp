@@ -71,6 +71,7 @@ namespace WebApp_iOS
 			};
 			square3.TouchUpInside += (object sender, EventArgs e) => {
 				//GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getTabProjects());
+				GlobalAPI.Manager().PushPage(NavigationController,new ProjectMainController());
 			};
 			square4.TouchUpInside += (object sender, EventArgs e) => {
 				GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getMainSupport());
