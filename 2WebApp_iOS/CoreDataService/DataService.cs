@@ -11,6 +11,7 @@ using SQLite;
 
 namespace CoreDataService
 {
+
 	public class DataService : Connection
 	{
 
@@ -19,8 +20,10 @@ namespace CoreDataService
 		// Value: true | false		true, to sync
 		public Dictionary<string, Boolean> SyncTable;
 
-		public DataService ()
+		public DataService (string dbpath)
 		{
+			Settings.local_dbpath = dbpath;
+
 			SyncTable = new Dictionary<string, Boolean> ();
 			foreach(var item in Settings.local_tables) {
 				SyncTable.Add (item, true);
@@ -102,13 +105,13 @@ namespace CoreDataService
 		
 		
 		// Do table synchronization
-		public void Sync ()
+		public void Sync (SyncCallback func)
 		{
 			//
 			// WARNING: MAKE SURE SETUP PROPER TABLE'S FLAG BEFORE CALL THIS
 			//
 
-			Thread syncThread = new Thread(SyncThread);
+			Thread syncThread = new Thread(() => SyncThread(func));
 			syncThread.Start();
 		}
 
@@ -121,7 +124,7 @@ namespace CoreDataService
 		#region Internal Functions
 		
 		// Synchronize table data at background
-		private void SyncThread () {
+		private void SyncThread (SyncCallback func) {
 
 			// check out the synctable
 			string tables = "";
@@ -136,7 +139,7 @@ namespace CoreDataService
 			LocalDB.CreateAllTables();
 
 			// download and load the table(s)
-			SyncCallback callback = new SyncCallback(Settings.CallbackBody);
+			SyncCallback callback = new SyncCallback(func);
 			string errmsg;
 			object data;
 			if (!DownloadTable (tables, out data, out errmsg)){
