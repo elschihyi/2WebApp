@@ -2,13 +2,15 @@
 using UIKit;
 using System.Collections.Generic;
 using CoreDataService;
+using System.Drawing;
 
 namespace WebApp_iOS
 {
-	public class ProjectMainController: UITableViewController
+	public class ProjectMainController: UIViewController
 	{
 		//Views
 		LoadingOverlay2 loadingOverlayView;
+		UITableView TableView;
 
 		//objects
 		public List<projectsummary> projectList;
@@ -28,16 +30,16 @@ namespace WebApp_iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-
+			AutomaticallyAdjustsScrollViewInsets = false;
 			//check if loggin screen need to pop or not
 			bool userisloggedin = true;
 			if (userisloggedin) {
 				/*
-				LocalDB.CreateAllTables (); 
+				//LocalDB.CreateAllTables (); 
 				DataService dataService = GlobalAPI.GetDataService();
 				dataService.Sync ();
 
-				DataService dataService = GlobalAPI.GetDataService();
+				//DataService dataService = GlobalAPI.GetDataService();
 				string errmsg;
 				if (!dataService.ProjectInfo (out projectList, out errmsg)) {
 					projectList = new List<projectsummary> ();
@@ -57,6 +59,9 @@ namespace WebApp_iOS
 				//initLoadingScreenView(string Text);
 				initTableView ();
 
+				//put menu and setting
+				GlobalAPI.Manager ().PageDefault (this, "Projects",true, true);
+
 			} else {
 				//insert login page
 			}	
@@ -70,12 +75,16 @@ namespace WebApp_iOS
 		}
 
 		public void initTableView(){
-			
+			TableView = new UITableView ();
+			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
+			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
+			var y = statusbar + navigationbarHeight;
+			TableView.Frame=new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y));
 			TableView.BackgroundColor = UIColor.Black;
 			TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 			TableView.Source = new ProjectMainScreenScource (this);
 			TableView.AllowsSelection = true;
-
+			View.Add (TableView);
 		}
 		//***********************************************************************
 		public List<projectsummary> myProjects(){

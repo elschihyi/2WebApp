@@ -50,6 +50,7 @@ namespace WebApp_iOS
 
 		public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 		{
+			GlobalAPI.Manager().PushPage(ProjectMainController.NavigationController,new ProjectMainController());
 		}
 
 		public override nfloat GetHeightForRow (UITableView tableView, NSIndexPath indexPath)

@@ -20,13 +20,13 @@ namespace WebApp_iOS
 				Font = UIFont.BoldSystemFontOfSize (16f),
 				TextColor = UIColor.White,
 				TextAlignment = UITextAlignment.Left,
-				Frame = new RectangleF (0.1f * (float)Frame.Width, 0, 0.9f * (float)Frame.Width, 0.25f * (float)Frame.Height),
+				Frame = new RectangleF (0.05f * (float)Frame.Width, 0, 0.9f * (float)Frame.Width, 0.25f * (float)Frame.Height),
 			};
 			Add (projectNameLabel);
 
 			projectStatusImageView = new UIImageView () {
 				ContentMode = UIViewContentMode.ScaleAspectFit,
-				Frame = new RectangleF (0.1f * (float)Frame.Width, 0.25f * (float)Frame.Height, 0.8f * (float)Frame.Width, 0.75f *(float)Frame.Height),
+				Frame = new RectangleF (0f * (float)Frame.Width, 0.25f * (float)Frame.Height, 1.0f * (float)Frame.Width, 0.70f *(float)Frame.Height),
 			};	
 			Add (projectStatusImageView);
 
