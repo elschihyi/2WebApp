@@ -31,37 +31,14 @@ namespace WebApp_iOS
 		{
 			base.ViewDidLoad ();
 			AutomaticallyAdjustsScrollViewInsets = false;
+
 			//check if loggin screen need to pop or not
+			initLoadingScreenView ("Loading...");
 			bool userisloggedin = true;
 			if (userisloggedin) {
-				/*
-				//LocalDB.CreateAllTables (); 
-				DataService dataService = GlobalAPI.GetDataService();
-				dataService.Sync ();
-
-				//DataService dataService = GlobalAPI.GetDataService();
-				string errmsg;
-				if (!dataService.ProjectInfo (out projectList, out errmsg)) {
-					projectList = new List<projectsummary> ();
-					//alert
-					UIAlertController Alert = UIAlertController.Create ("Error",
-						errmsg, UIAlertControllerStyle.Alert);
-					Alert.AddAction (UIAlertAction.Create ("OK",
-						UIAlertActionStyle.Cancel,null
-					));
-					PresentViewController (Alert, true, null);
-				}
-				*/
-				projectList = myProjects ();
-				if(projectList==null)
-					projectList = new List<projectsummary> ();
-
-				//initLoadingScreenView(string Text);
-				initTableView ();
-
-				//put menu and setting
-				GlobalAPI.Manager ().PageDefault (this, "Projects",true, true);
-
+				//sync data and get project
+				syncData();
+				//projectList = myProjects ();
 			} else {
 				//insert login page
 			}	
@@ -80,12 +57,75 @@ namespace WebApp_iOS
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
 			var y = statusbar + navigationbarHeight;
 			TableView.Frame=new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y));
-			TableView.BackgroundColor = UIColor.Black;
+			TableView.BackgroundColor = UIColor.Clear;
 			TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 			TableView.Source = new ProjectMainScreenScource (this);
 			TableView.AllowsSelection = true;
 			View.Add (TableView);
 		}
+		/********************************************************************************
+		*Load data from database
+		********************************************************************************/
+		public void syncData(){
+			DataService dataService = GlobalAPI.GetDataService();
+			dataService.Sync (SyncRespond);
+		}	
+
+		public void GetProjectList(){
+			DataService dataService = GlobalAPI.GetDataService();
+			string errmsg;
+			if (!dataService.ProjectInfo (out projectList, out errmsg)) {
+				projectList = new List<projectsummary> ();
+				InvokeOnMainThread (() => {
+					loadingOverlayView.Hide ();
+					initTableView ();
+					//put menu and setting
+					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+					//alert
+					UIAlertController Alert = UIAlertController.Create ("Error",
+						                         errmsg, UIAlertControllerStyle.Alert);
+					Alert.AddAction (UIAlertAction.Create ("OK",
+						UIAlertActionStyle.Cancel, null
+					));
+					PresentViewController (Alert, true, null);
+				});
+			} else {
+				if(projectList==null)
+					projectList = new List<projectsummary> ();
+				InvokeOnMainThread (() => {
+					initTableView ();
+					//put menu and setting
+					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+					loadingOverlayView.Hide ();
+				});
+			}	
+		}	
+
+		/********************************************************************************
+		*Load data responds
+		********************************************************************************/
+		public void SyncRespond(Boolean succeed, string errmsg){
+			if (succeed) {
+				GetProjectList ();
+			} else {
+				projectList = new List<projectsummary> ();
+				InvokeOnMainThread (() => {
+					loadingOverlayView.Hide ();
+					initTableView ();
+					//put menu and setting
+					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+					//alert
+					UIAlertController Alert = UIAlertController.Create ("Error",
+						                         errmsg, UIAlertControllerStyle.Alert);
+					Alert.AddAction (UIAlertAction.Create ("OK",
+						UIAlertActionStyle.Cancel, null
+					));
+					PresentViewController (Alert, true, null);
+				});
+			}	
+		}	
+		
+
 		//***********************************************************************
 		public List<projectsummary> myProjects(){
 			List<projectsummary> projectList = new List<projectsummary>();

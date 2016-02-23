@@ -39,18 +39,39 @@ namespace WebApp_iOS
 				cell = new ProjectMainScreenCell ();
 
 			cell.projectNameLabel.Text = ProjectMainController.projectList [indexPath.Row].name;
-			cell.projectNameLabel.Text += " "+ProjectMainController.projectList [indexPath.Row].status;
+			//cell.projectNameLabel.Text += " "+ProjectMainController.projectList [indexPath.Row].status;
 			switch (ProjectMainController.projectList [indexPath.Row].status) {
-				default:
-					cell.projectStatusImageView.Image = new UIImage ("project_graphics/design.png");
-					break;
+			case "Discovery":
+				cell.projectStatusImageView.Image = new UIImage ("project_graphics/project_discovery.png");
+				break;
+			case "Design":
+				cell.projectStatusImageView.Image = new UIImage ("project_graphics/design.png");
+				break;
+			case "Development":
+				cell.projectStatusImageView.Image = new UIImage ("project_graphics/developement.png");
+				break;
+			case "Testing":
+				cell.projectStatusImageView.Image = new UIImage ("project_graphics/testing.png");
+				break;
+			case "Launch":
+				cell.projectStatusImageView.Image = new UIImage ("project_graphics/launch.png");
+				break;
+			default:
+				cell.projectStatusImageView.Image = new UIImage ();
+				break;
 			}
 			return cell;
 		}
 
 		public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 		{
-			GlobalAPI.Manager().PushPage(ProjectMainController.NavigationController,new ProjectMainController());
+			
+			GlobalAPI.Manager().PushPage(ProjectMainController.NavigationController,
+				new ProjectPageController(ProjectMainController.projectList[indexPath.Row]));
+			/*
+			GlobalAPI.Manager().PushPage(ProjectMainController.NavigationController,
+				new ProjectUpdateScreenController(ProjectMainController.projectList[indexPath.Row]));
+			*/	
 		}
 
 		public override nfloat GetHeightForRow (UITableView tableView, NSIndexPath indexPath)

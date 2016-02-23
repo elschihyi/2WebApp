@@ -13,6 +13,7 @@ using System.Collections.Specialized;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using CoreDataService;
+using System.IO;
 
 namespace WebApp_iOS
 {
@@ -34,8 +35,13 @@ namespace WebApp_iOS
 		}
 
 		public static DataService GetDataService(){
-			if (dataService == null)
-				dataService = new DataService ();
+			if (dataService == null) {
+				//db set up
+				string sqliteFilename = "2Web_DB.db3";
+				string documentsPath = Environment.GetFolderPath (Environment.SpecialFolder.Personal); // Documents folder
+				string dbPath = Path.Combine(documentsPath, sqliteFilename);
+				dataService = new DataService (dbPath);
+			}
 			return dataService;
 		}	
 
@@ -163,8 +169,9 @@ namespace WebApp_iOS
 						//PushPage (page.NavigationController, new TabProjects ()); 
 						//PushPage(page.NavigationController,getTabProjects());
 						//page.NavigationController.PushViewController (new TabProjects (), true);
+						PushPage(page.NavigationController,new ProjectMainController());
 					} else {
-						PushPage (page.NavigationController, new MainSupport ()); 
+						//PushPage (page.NavigationController, new MainSupport ()); 
 						//PushPage(page.NavigationController,getMainSupport());
 						//page.NavigationController.PushViewController (new MainSupport (), true);
 					}

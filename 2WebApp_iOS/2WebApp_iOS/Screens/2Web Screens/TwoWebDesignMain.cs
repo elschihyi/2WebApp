@@ -251,7 +251,7 @@ namespace WebApp_iOS
 			*/	
 
 			//Courasal Pages
-			var pages = new UIView[]{ BlogView, WorkshopsView, newContactView, ContactView}; 
+			var pages = new UIView[]{ BlogView, WorkshopsView, newContactView}; 
 
 			int i;
 

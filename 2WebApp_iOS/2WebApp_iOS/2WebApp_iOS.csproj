@@ -424,7 +424,15 @@
     <Compile Include="Screens\Porjects Screens\Project Main Screens\ProjectMainScreenController.cs" />
     <Compile Include="Screens\Porjects Screens\Project Main Screens\ProjectMainScreenCell.cs" />
     <Compile Include="Screens\LoadingOverLay2.cs" />
-    <Compile Include="Screens\Porjects Screens\ProjectScreenPageController.cs" />
+    <Compile Include="Screens\Porjects Screens\Porject Update Screens\ProjectUpdateScreenController.cs" />
+    <Compile Include="Screens\Porjects Screens\Porject Update Screens\ProjectUpdateScreenView.cs" />
+    <Compile Include="Screens\Porjects Screens\ProjectPageController.cs" />
+    <Compile Include="Screens\Porjects Screens\Project Status Screens\ProjectStatusScreenController.cs" />
+    <Compile Include="Screens\Porjects Screens\Project Status Screens\ProjectStatusScreenView.cs" />
+    <Compile Include="Screens\Porjects Screens\Porject Overview Screens\ProjectOverViewScreenView.cs" />
+    <Compile Include="Screens\Porjects Screens\Porject Overview Screens\PorjectOverviewScreenController.cs" />
+    <Compile Include="Screens\Porjects Screens\Project Support Screens\ProjectSupportScreenView.cs" />
+    <Compile Include="Screens\Porjects Screens\Project Support Screens\ProjectSupportScreenController.cs" />
   </ItemGroup>
   <Import Project="..\CoreDataService\CoreDataService.projitems" Label="Shared" Condition="Exists('..\CoreDataService\CoreDataService.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
