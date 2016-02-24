@@ -92,8 +92,28 @@ namespace CoreDataService
 
 			return true;
 		}
-		
-		
+
+
+
+		public Boolean ContactInfo (out contact info, out string errmsg)
+		{
+			info = null;
+			errmsg = "";
+
+			// obtain contact record
+			object contobj;
+			string sql = "select * from contact";
+			if ( !LocalDB.ExeSQL(sql, "contact", out contobj, out errmsg) ) {
+				info = null;
+				return false;
+			}
+
+			info = (contact)contobj;
+			return true;
+		}
+
+
+
 		// Set all tables to sync
 		public void SetSyncTagForAll (Boolean on)
 		{

@@ -289,6 +289,32 @@ namespace CoreDataService
 	}
 
 
+
+	public class contact
+	{
+		public string address1 { get; set; } = "";
+
+		public string address2 { get; set; } = "";
+
+		public string email { get; set; } = "";
+
+		public string phone { get; set; } = "";
+
+		public string visit { get; set; } = "";
+
+		public string facebook { get; set; } = "";
+
+		public string twitter { get; set; } = "";
+
+		public string google { get; set; } = "";
+
+		public string linkedIn { get; set; } = "";
+
+		public string youtube { get; set; } = "";
+	}
+
+
+
 	////////////////////////////////////////////////////////////////
 	// DATA INTERFACE CLASS
 	////////////////////////////////////////////////////////////////
@@ -296,46 +322,70 @@ namespace CoreDataService
 	public class project
 	{
 		public string id { get; set; } = "";
+
 		public string name { get; set; } = "";
+
 		public string type { get; set; } = "";
+
 		public string status { get; set; } = "";
+
 		public string org_name { get; set; } = "";
+
 		public string client_name { get; set; } = "";
+
 		public string client_email { get; set; } = "";
+
 		public string staff_name { get; set; } = "";
+
 		public string staff_email { get; set; } = "";
 	}
 
-	public class task {
+	public class task
+	{
 		public string name { get; set; } = "";
+
 		public string date { get; set; } = "";
+
 		public string file_url { get; set; } = "";
 	}
 
-	public class support {
+	public class support
+	{
 		public string name { get; set; } = "";
+
 		public string status { get; set; } = "";
+
 		public string hourused { get; set; } = "";
+
 		public string totalhour { get; set; } = "";
+
 		public string lastbackup { get; set; } = "";
+
 		public string lastpost { get; set; } = "";
 	}
 
 	public class projectsummary
 	{
 		public string name { get; set; } = "";
+
 		public string type { get; set; } = "";
+
 		public string status { get; set; } = "";
+
 		public string org_name { get; set; } = "";
+
 		public string client_name { get; set; } = "";
+
 		public string client_email { get; set; } = "";
+
 		public string staff_name { get; set; } = "";
+
 		public string staff_email { get; set; } = "";
 
 		public List<task> update { get; set; } = null;
+
 		public List<support> support_package { get; set; } = null;
 	}
-
 
 
 
@@ -377,7 +427,7 @@ namespace CoreDataService
 							// Create a new table
 							dbconn.CreateTable (System.Type.GetType (LocalDB.WithSchemaName (tablename)));
 							// populate the table
-							dbconn.InsertAll(table as IEnumerable<object>, true);
+							dbconn.InsertAll (table as IEnumerable<object>, true);
 							break;
 						case "UPDATE":
 							dbconn.Update (table);
@@ -414,13 +464,13 @@ namespace CoreDataService
 			try {
 				lock (dbconn) {
 					MethodInfo method = dbconn.GetType ().GetMethod ("Query", new [] { typeof(string), typeof(object[]) });
-					MethodInfo generic = method.MakeGenericMethod (Type.GetType(LocalDB.WithSchemaName(rettable)));
-					object[] args = {};
+					MethodInfo generic = method.MakeGenericMethod (Type.GetType (LocalDB.WithSchemaName (rettable)));
+					object[] args = { };
 					result = generic.Invoke (dbconn, new object[] { sql, args });
 				}
 			} catch (SQLiteException e) {
 				errmsg = e.Source + " -> " + e.Message;
-				errmsg += "\nReturn Type: " + result.GetType().ToString();
+				errmsg += "\nReturn Type: " + result.GetType ().ToString ();
 				errmsg += "\nStatement: " + sql;
 				return false;
 			}
@@ -452,12 +502,13 @@ namespace CoreDataService
 
 
 		// create all the tables
-		public static void CreateAllTables() {
+		public static void CreateAllTables ()
+		{
 
 			if (dbconn == null)
 				return;
 			
-			foreach(var item in Settings.local_tables) {
+			foreach (var item in Settings.local_tables) {
 				dbconn.CreateTable (System.Type.GetType (LocalDB.WithSchemaName (item)));	
 			}
 
