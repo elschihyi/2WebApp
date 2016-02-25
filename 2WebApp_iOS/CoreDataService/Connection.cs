@@ -69,6 +69,7 @@ namespace CoreDataService
 				if (format == "JSON") {
 					req = new RestRequest (request["PATH"], Method.GET);
 					req.AddHeader("Accept", "application/json");
+					req.Timeout = Settings.ws_timeout;
 				}
 				else {
 					// handle other types of the formats
@@ -90,7 +91,7 @@ namespace CoreDataService
 					client.ExecuteAsync(req, resp => {
 						if (resp.ResponseStatus == ResponseStatus.Completed)
 						{
-							File.WriteAllBytes (request["LOCALPATH"], client.DownloadData (req));
+							//File.WriteAllBytes (request["LOCALPATH"], client.DownloadData (req));
 
 						} else if (resp.ErrorException != null)
 						{
@@ -123,7 +124,7 @@ namespace CoreDataService
 
 	public static class Reachability
 	{
-		public static string HostName = "www.google.com";
+		public static string HostName = Settings.ws_address;
 
 		public static bool IsReachableWithoutRequiringConnection (NetworkReachabilityFlags flags)
 		{
