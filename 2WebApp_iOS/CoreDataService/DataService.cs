@@ -38,56 +38,63 @@ namespace CoreDataService
 			errmsg = "";
 			projsum = new List<projectsummary> ();
 
-			// obtain all projects
-			object projdata;
-			string sql = "select project_id as id, project_name as name, b.project_type_name as type, c.proj_status_name as status, d.org_name as org_name," +
-				"e.client_firstname || ' ' || e.client_lastname as client_name, e.client_email as client_email, f.staff_firstname || " +
-				" ' ' || f.staff_lastname as staff_name, f.staff_email as staff_email from projects a, projecttype b, " +
-				"projectstatus c, organization d, clientaccount e, staffaccount f where a.project_type_id = " +
-				"b.project_type_id and a.proj_status_id = c.proj_status_id and a.org_id = d.org_id and a.client_accountid = e.client_accountid " +
-				"and a.staff_id = f.staff_id";
-			if ( !LocalDB.ExeSQL(sql, "project", out projdata, out errmsg) ) {
-				projsum = null;
-				return false;
-			}
+			if (!IsLocalDataValid()) {
+				// return default data
+				projsum.Add(Settings.DemoProject());
 
-			// obtain the related tasks and supportpackages
-			foreach( var item in projdata as IEnumerable<object> ) {
-
-				project proj = (project)item;
-				projectsummary sum = new projectsummary ();
-				sum.name = proj.name;
-				sum.type = proj.type;
-				sum.status = proj.status;
-				sum.org_name = proj.org_name;
-				sum.client_name = proj.client_name;
-				sum.client_email = proj.client_email;
-				sum.staff_name = proj.staff_name;
-				sum.staff_email = proj.staff_email;
-
-				// for tasks
-				object taskdata;
-				sql = "select b.task_update as name, b.row_update_date as date, b.task_fileurl from projects a, tasks b" +
-					" where a.project_id = b.project_id and a.project_id = " + proj.id;
-				if ( !LocalDB.ExeSQL(sql, "task", out taskdata, out errmsg) ) {
+			} else {
+				
+				// obtain all projects
+				object projdata;
+				string sql = "select project_id as id, project_name as name, b.project_type_name as type, c.proj_status_name as status, d.org_name as org_name," +
+				            "e.client_firstname || ' ' || e.client_lastname as client_name, e.client_email as client_email, f.staff_firstname || " +
+				            " ' ' || f.staff_lastname as staff_name, f.staff_email as staff_email from projects a, projecttype b, " +
+				            "projectstatus c, organization d, clientaccount e, staffaccount f where a.project_type_id = " +
+				            "b.project_type_id and a.proj_status_id = c.proj_status_id and a.org_id = d.org_id and a.client_accountid = e.client_accountid " +
+				            "and a.staff_id = f.staff_id";
+				if (!LocalDB.ExeSQL (sql, "project", out projdata, out errmsg)) {
 					projsum = null;
 					return false;
 				}
-				sum.update = (List<task>)taskdata;
 
-				// for support packages
-				object suppkgdata;
-				sql = "select c.sup_package_name as name, c.sup_package_hours as totalhour, b.proj_supp_rel_hours as hourused," +
+				// obtain the related tasks and supportpackages
+				foreach (var item in projdata as IEnumerable<object>) {
+
+					project proj = (project)item;
+					projectsummary sum = new projectsummary ();
+					sum.name = proj.name;
+					sum.type = proj.type;
+					sum.status = proj.status;
+					sum.org_name = proj.org_name;
+					sum.client_name = proj.client_name;
+					sum.client_email = proj.client_email;
+					sum.staff_name = proj.staff_name;
+					sum.staff_email = proj.staff_email;
+
+					// for tasks
+					object taskdata;
+					sql = "select b.task_update as name, b.row_update_date as date, b.task_fileurl from projects a, tasks b" +
+					" where a.project_id = b.project_id and a.project_id = " + proj.id;
+					if (!LocalDB.ExeSQL (sql, "task", out taskdata, out errmsg)) {
+						projsum = null;
+						return false;
+					}
+					sum.update = (List<task>)taskdata;
+
+					// for support packages
+					object suppkgdata;
+					sql = "select c.sup_package_name as name, c.sup_package_hours as totalhour, b.proj_supp_rel_hours as hourused," +
 					" b.proj_supp_rel_status as status, b.proj_supp_rel_backupdate as lastbackup, b.row_update_date as lastpost" +
 					" from projects a, project_support_rel b, supportpackage c where a.project_id = b.project_id" +
 					" and b.sup_package_id = c.sup_package_id and a.project_id = " + proj.id;
-				if ( !LocalDB.ExeSQL(sql, "support", out suppkgdata, out errmsg) ) {
-					projsum = null;
-					return false;
-				}
-				sum.support_package = (List<support>)suppkgdata;
+					if (!LocalDB.ExeSQL (sql, "support", out suppkgdata, out errmsg)) {
+						projsum = null;
+						return false;
+					}
+					sum.support_package = (List<support>)suppkgdata;
 
-				projsum.Add (sum);
+					projsum.Add (sum);
+				}
 			}
 
 			return true;
@@ -170,8 +177,44 @@ namespace CoreDataService
 				callback(false, errmsg);
 				return;
 			}
-			
+
+			Settings.ws_Synced = true;
 			callback(true, errmsg);
+		}
+
+
+
+		// Make decision if or not the default data should be used
+		private Boolean IsLocalDataValid() {
+
+			if (!Settings.ws_Synced) {
+
+				// cases fall in:
+				// - user is NOT logged in AND
+				// - data is NOT synced
+
+				// check if the connection is resumed
+				string errmsg="";
+				if (!CheckConnection(out errmsg)) {
+
+					// still not connected yet
+					return false;
+				} else {
+					
+					// try sync() again
+					SyncThread(null);
+
+					if (!Settings.ws_Synced) {
+						// not lucky again
+						return false;
+
+					} else 
+						return true;
+
+				}
+			}
+
+			return true;
 		}
 		
 		
@@ -196,8 +239,9 @@ namespace CoreDataService
 			}
 
 			// check the connection
-			if (!CheckConnection (out errmsg))
+			if (!CheckConnection (out errmsg)) {
 				return false;
+			}
 			
 			// send the request and obtain the data
 			string json;
