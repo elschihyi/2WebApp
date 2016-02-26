@@ -22,6 +22,7 @@ namespace CoreDataService
 		public static string ws_username = "";
 		public static string ws_password = "";
 		public static Boolean ws_SyncRequest = true;
+		public static Boolean ws_Logined = false;
 		public static Boolean ws_Synced = false;
 		public static int ws_timeout = 15000;
 
@@ -30,7 +31,8 @@ namespace CoreDataService
 		public static string local_dbschema = "CoreDataService.";
 		public static string[] local_tables = { "organization","staffaccount","taskupdatetypes","notification_type","notifications",
 			"client_organization_rel","projects","tasks","project_support_rel","clientaccount",
-			"projectstatus","projecttype","projectphase","supportpackage","contact"};
+			"projectstatus","projecttype","projectphase","supportpackage","contact",
+			"userinfo"};
 
 
 		// Return the demo project
