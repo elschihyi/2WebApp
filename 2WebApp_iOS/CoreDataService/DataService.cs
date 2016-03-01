@@ -156,7 +156,7 @@ namespace CoreDataService
 			// check out the synctable
 			string tables = "";
 			foreach (var item in SyncTable) {
-				if (item.Value) {
+				if (item.Value && item.Key != "userinfo") {
 					tables += item.Key + ",";
 				}
 			}

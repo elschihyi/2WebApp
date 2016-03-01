@@ -37,7 +37,7 @@ namespace WebApp_iOS
 			bool userisloggedin = true;
 			if (userisloggedin) {
 				//sync data and get project
-				syncData();
+				GetProjectList();
 				//projectList = myProjects ();
 			} else {
 				//insert login page
@@ -66,11 +66,6 @@ namespace WebApp_iOS
 		/********************************************************************************
 		*Load data from database
 		********************************************************************************/
-		public void syncData(){
-			DataService dataService = GlobalAPI.GetDataService();
-			dataService.Sync (SyncRespond);
-		}	
-
 		public void GetProjectList(){
 			DataService dataService = GlobalAPI.GetDataService();
 			string errmsg;
@@ -90,8 +85,9 @@ namespace WebApp_iOS
 					PresentViewController (Alert, true, null);
 				});
 			} else {
-				if(projectList==null)
+				if(projectList==null){
 					projectList = new List<projectsummary> ();
+				}
 				InvokeOnMainThread (() => {
 					initTableView ();
 					//put menu and setting
@@ -99,30 +95,7 @@ namespace WebApp_iOS
 					loadingOverlayView.Hide ();
 				});
 			}	
-		}	
-
-		/********************************************************************************
-		*Load data responds
-		********************************************************************************/
-		public void SyncRespond(Boolean succeed, string errmsg){
-			if (succeed) {
-				GetProjectList ();
-			} else {
-				projectList = new List<projectsummary> ();
-				InvokeOnMainThread (() => {
-					loadingOverlayView.Hide ();
-					initTableView ();
-					//put menu and setting
-					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
-					//alert
-					UIAlertController Alert = UIAlertController.Create ("Error",
-						                         errmsg, UIAlertControllerStyle.Alert);
-					Alert.AddAction (UIAlertAction.Create ("OK",
-						UIAlertActionStyle.Cancel, null
-					));
-					PresentViewController (Alert, true, null);
-				});
-			}	
+	
 		}	
 		
 

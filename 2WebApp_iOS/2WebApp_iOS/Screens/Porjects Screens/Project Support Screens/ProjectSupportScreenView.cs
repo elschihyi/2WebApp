@@ -43,7 +43,7 @@ namespace WebApp_iOS
 		{
 			//Frame=new RectangleF (0,0, (float)UIScreen.MainScreen.Bounds.Width, (float)UIScreen.MainScreen.Bounds.Height);
 			//***************************************************************************************************************************************************
-			titleLabel.Frame = new RectangleF (0,8, (float)UIScreen.MainScreen.Bounds.Width, 20.0f);
+			titleLabel.Frame = new RectangleF (0,8, (float)UIScreen.MainScreen.Bounds.Width, 30.0f);
 			titleLabel.Font = UIFont.SystemFontOfSize (18.0f);
 			UnderDevelop.Frame = new RectangleF (0,90, (float)UIScreen.MainScreen.Bounds.Width, 60.0f);
 			UnderDevelop.Font = UIFont.SystemFontOfSize (24.0f);

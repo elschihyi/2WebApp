@@ -5,6 +5,7 @@ using Foundation;
 using UIKit;
 using System.Drawing;
 using System.Threading.Tasks;
+using CoreDataService;
 
 namespace WebApp_iOS
 {
@@ -15,54 +16,85 @@ namespace WebApp_iOS
 		private string num = "";
 		private NSTimer timer;
 
+		private bool SyncFinished=false;
+		private bool SyncSuccess=false;
+		private string SyncErrMsg="";
+
+		UILabel SyncLabel;
+
+
 		public LunchPage () : base ("LunchPage", null)
 		{
- 
-			//scroll not overlap heading, also on projects page. 
-
-			//settings logo position, iphone 4 
-			//"are you sure" 
-
-			//focus on 5, and up. 
 		}
 
 		[Export("AnimationTimeLoop")]
 		public void AnimationTimeLoop() {
+			if (i <= 97) {
+				// Dispose of existing image
+				if (animatedImage.Image != null) {
+					animatedImage.Image.Dispose ();
+					animatedImage.Image = null;
+				}
 
-			// Dispose of existing image
-			if (animatedImage.Image != null) {
-				animatedImage.Image.Dispose();
-				animatedImage.Image = null;
-			}
+				// load the string file prefix
+				if (i < 10)
+					num = "0" + i.ToString ();
+				else
+					num = i.ToString (); 
 
-			// load the string file prefix
-			if (i < 10)
-				num = "0" + i.ToString ();
-			else
-				num = i.ToString (); 
+				//loop next frame of the animation
+				animatedImage.Image = UIImage.FromFile ("launch_images/01-Splash_crane_0" + num + ".jpg");
 
-			//loop next frame of the animation
-			animatedImage.Image = UIImage.FromFile("launch_images/01-Splash_crane_0"+num+".jpg");
+				// Increment
+				i = i + 5;
+			} else if (!SyncFinished) {
+				//do nothing..
+				if (SyncLabel == null) {
+					SyncLabel = new UILabel ();
+					SyncLabel.BackgroundColor = UIColor.Clear;
+					SyncLabel.TextColor = UIColor.White;
+					SyncLabel.Text="Laoding Data..";
+					SyncLabel.Font=UIFont.SystemFontOfSize (16f);
+					SyncLabel.TextAlignment = UITextAlignment.Center;
+					SyncLabel.Frame=new RectangleF(0f*(float)UIScreen.MainScreen.Bounds.Width,
+						0.8f*(float)UIScreen.MainScreen.Bounds.Height,
+						1.0f*(float)UIScreen.MainScreen.Bounds.Width,
+						0.2f*(float)UIScreen.MainScreen.Bounds.Height);
+					View.AddSubview (SyncLabel);
+				}	
 
-			// Increment
-			i=i+5;
+			} else {// Stop if at end
+				if (SyncSuccess) {
+					//preload rss feed
+					GlobalAPI.Manager ().loadRss ();
 
-			// Stop if at end
-			if (i > 97) {
-				//preload rss feed
-				GlobalAPI.Manager().loadRss();
+					//dispose timer
+					timer.Invalidate ();
+					timer.Dispose ();
+					timer = null;
+					animatedImage = null;  
+					GlobalAPI.Manager ().PushPage (NavigationController, new WelcomePage ());  
+				} else {
+					//preload rss feed
+					GlobalAPI.Manager ().loadRss ();
 
-				//dispose timer
-				timer.Invalidate();
-				timer.Dispose();
-				timer = null;
-				animatedImage = null; 
+					//dispose timer
+					timer.Invalidate ();
+					timer.Dispose ();
+					timer = null;
+					animatedImage = null; 
 
-				//GlobalAPI.Manager ().PushPage (NavigationController, new LoginFirstPage ()); 
-				GlobalAPI.Manager ().PushPage (NavigationController, new WelcomePage ()); 
-				//NavigationController.PushViewController (new WelcomePage (), false); 
-
-			}
+					//alert
+					UIAlertController Alert = UIAlertController.Create ("Sync Error",
+						SyncErrMsg, UIAlertControllerStyle.Alert);
+					Alert.AddAction (UIAlertAction.Create ("OK",
+						UIAlertActionStyle.Cancel, action=>{
+							GlobalAPI.Manager ().PushPage (NavigationController, new WelcomePage ()); 
+						}
+					));
+					PresentViewController (Alert, true, null);
+				}
+			}	
 		}
 
 		public override void DidReceiveMemoryWarning ()
@@ -76,25 +108,36 @@ namespace WebApp_iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-			
-			// Perform any additional setup after loading the view, typically from a nib.
-
-			//AnimationScreen ();
-
 
 			//Activate animation timer
 			animatedImage = new UIImageView(); 
 			animatedImage.Frame = new CoreGraphics.CGRect (0,0,View.Frame.Width,View.Frame.Height - 0);
-
-
 			View.AddSubview(animatedImage);
 
 
 			timer = NSTimer.CreateRepeatingScheduledTimer(TimeSpan.FromMilliseconds(100), delegate {
 				AnimationTimeLoop(); 
 			});
-			//timer.Invoke (AnimationTimeLoop, TimeSpan.FromMilliseconds (100)); 
 
+			//sync data while animate
+			syncData();
+		}
+
+		/********************************************************************************
+		*Load data from database
+		********************************************************************************/
+		public void syncData(){
+			DataService dataService = GlobalAPI.GetDataService();
+			dataService.Sync (SyncRespond);
+		}
+
+		/********************************************************************************
+		*Load data responds
+		********************************************************************************/
+		public void SyncRespond(Boolean succeed, string errmsg){
+			SyncSuccess=succeed;
+			SyncErrMsg=errmsg;
+			SyncFinished=true;
 		}
 	}
 }

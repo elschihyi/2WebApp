@@ -6,35 +6,12 @@ using UIKit;
 using CoreGraphics;
 using System.Threading.Tasks;
 using MessageUI;
+using CoreDataService;
 
 namespace WebApp_iOS
 {
 	public partial class TwoWebDesignMain : UIViewController
 	{
-//		//put this as global var. 
-//		protected LoadingOverlay _loadPop = null;
-//
-//		// Determine the correct size to start the overlay (depending on device orientation)
-//		var bounds = UIScreen.MainScreen.Bounds; // portrait bounds
-//		if (UIApplication.SharedApplication.StatusBarOrientation == UIInterfaceOrientation.LandscapeLeft || UIApplication.SharedApplication.StatusBarOrientation == UIInterfaceOrientation.LandscapeRight) {
-//			bounds.Size = new CGSize(bounds.Size.Height, bounds.Size.Width);
-//		}
-//
-//		// show the loading overlay on the UI thread using the correct orientation sizing
-//		this._loadPop = new LoadingOverlay (bounds);
-//		this.View.AddSubview ( this._loadPop );
-//
-//		Task.Factory.StartNew (
-//
-//			tt => {
-//
-//			}, TaskScheduler.FromCurrentSynchronizationContext()
-//		).ContinueWith (
-//			t => {
-//				this._loadPop.Hide ();
-//			}, TaskScheduler.FromCurrentSynchronizationContext()
-//		);
-
 		MFMailComposeViewController mailController; 
 
 
@@ -92,164 +69,130 @@ namespace WebApp_iOS
 			newContactView.ContentSize = ContactVw.Frame.Size;
 			newContactView.position ();
 			newContactView.titleLabel.Text="Contact 2 Web Design Inc.";
-			ContactInfo contactInfo = myHardCodeInfo ();
-			if (!String.IsNullOrEmpty (contactInfo.address1)) {
-				newContactView.address1Label.Hidden = false;
-				newContactView.address1Label.Text = contactInfo.address1;
+			//contact contactInfo;
+			contact contactInfo = myHardCodeInfo ();
+			string errmsg="";
+			//if (GlobalAPI.GetDataService ().ContactInfo (out contactInfo,out errmsg)) {
+			if(true){
+				if (!String.IsNullOrEmpty (contactInfo.address1)) {
+					newContactView.address1Label.Hidden = false;
+					newContactView.address1Label.Text = contactInfo.address1;
+				} else {
+					newContactView.address1Label.Hidden = true;
+				}
+				if (!String.IsNullOrEmpty (contactInfo.address2)) {
+					newContactView.address2Label.Hidden = false;
+					newContactView.address2Label.Text = contactInfo.address2;
+				} else {
+					newContactView.address2Label.Hidden = true;
+				}
+				if (MFMailComposeViewController.CanSendMail && !String.IsNullOrEmpty (contactInfo.email)) {
+					newContactView.emailLabel.Hidden = false;
+					newContactView.emailLabel.Text = contactInfo.email;
+					newContactView.emailButton.Hidden = false;
+					newContactView.emailButton.TouchUpInside += (s, e) => {
+						mailController = new MFMailComposeViewController (); 
+						mailController.SetToRecipients (new string[]{ contactInfo.email }); 
+						mailController.SetSubject (""); 
+						mailController.SetMessageBody ("", false); 
+						mailController.Finished += (object s1, MFComposeResultEventArgs args) => {
+							args.Controller.DismissViewController (true, null);
+						};
+						//PresentViewController (mailController, true, null);
+						UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController (mailController, true, null);
+					};	
+				} else {
+					newContactView.emailLabel.Hidden = true;
+					newContactView.emailButton.Hidden = true;
+				}
+				if (!String.IsNullOrEmpty (contactInfo.phone)) {
+					newContactView.phoneLabel.Hidden = false;
+					newContactView.phoneLabel.Text = contactInfo.phone;
+					newContactView.phoneButton.Hidden = false;
+					newContactView.phoneButton.TouchUpInside += (s, e) => {
+						//make phone call here
+					};
+				} else {
+					newContactView.phoneLabel.Hidden = true;
+					newContactView.phoneButton.Hidden = true;
+				}
+				if (!String.IsNullOrEmpty (contactInfo.visit)) {
+					newContactView.visitLabel.Hidden = false;
+					newContactView.visitLabel.Text = contactInfo.visit;
+					newContactView.visitButton.Hidden = false;
+					newContactView.visitButton.TouchUpInside += (s, e) => {
+						GlobalAPI.Manager ().PushPage (NavigationController, new WebViewController (contactInfo.visit, ""));
+					};
+				} else {
+					newContactView.visitLabel.Hidden = true;
+					newContactView.visitButton.Hidden = true;
+				}
+
+				//***************************************************************************************************************************************************
+				if (!String.IsNullOrEmpty (contactInfo.facebook)) {
+					newContactView.FacebookBtn.Hidden = false;
+					newContactView.FacebookBtn.TouchUpInside += (s, e) => {
+						GlobalAPI.Manager ().PushPage (NavigationController, new WebViewController (contactInfo.facebook, ""));
+					};
+				} else {
+					newContactView.FacebookBtn.Hidden = true;
+				}
+				if (!String.IsNullOrEmpty (contactInfo.twitter)) {
+					newContactView.TwitterBtn.Hidden = false;
+					newContactView.TwitterBtn.TouchUpInside += (s, e) => {
+						GlobalAPI.Manager ().PushPage (NavigationController, new WebViewController (contactInfo.twitter, ""));
+					};
+				} else {
+					newContactView.TwitterBtn.Hidden = true;
+				}
+				if (!String.IsNullOrEmpty (contactInfo.google)) {
+					newContactView.GoogleBtn.Hidden = false;
+					newContactView.GoogleBtn.TouchUpInside += (s, e) => {
+						GlobalAPI.Manager ().PushPage (NavigationController, new WebViewController (contactInfo.google, ""));
+					};
+				} else {
+					newContactView.GoogleBtn.Hidden = true;
+				}
+				if (!String.IsNullOrEmpty (contactInfo.linkedIn)) {
+					newContactView.LinkInBtn.Hidden = false;
+					newContactView.LinkInBtn.TouchUpInside += (s, e) => {
+						GlobalAPI.Manager ().PushPage (NavigationController, new WebViewController (contactInfo.linkedIn, ""));
+					};
+				} else {
+					newContactView.LinkInBtn.Hidden = true;
+				}
+
+				if (!String.IsNullOrEmpty (contactInfo.youtube)) {
+					newContactView.PinterestBtn.Hidden = false;
+					newContactView.PinterestBtn.TouchUpInside += (s, e) => {
+						GlobalAPI.Manager ().PushPage (NavigationController, new WebViewController (contactInfo.youtube, ""));
+					};
+				} else {
+					newContactView.PinterestBtn.Hidden = true;
+				}
 			} else {
 				newContactView.address1Label.Hidden = true;
-			}
-			if (!String.IsNullOrEmpty (contactInfo.address2)) {
-				newContactView.address2Label.Hidden = false;
-				newContactView.address2Label.Text = contactInfo.address2;
-			} else {
 				newContactView.address2Label.Hidden = true;
-			}
-			if (MFMailComposeViewController.CanSendMail&&!String.IsNullOrEmpty (contactInfo.email)) {
-				newContactView.emailLabel.Hidden = false;
-				newContactView.emailLabel.Text = contactInfo.email;
-				newContactView.emailButton.Hidden = false;
-				newContactView.emailButton.TouchUpInside += (s, e) => {
-					mailController = new MFMailComposeViewController (); 
-					mailController.SetToRecipients (new string[]{contactInfo.email}); 
-					mailController.SetSubject (""); 
-					mailController.SetMessageBody ("", false); 
-					mailController.Finished += (object s1, MFComposeResultEventArgs args) => {
-						args.Controller.DismissViewController (true, null);
-					};
-					//PresentViewController (mailController, true, null);
-					UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(mailController, true, null);
-				};	
-			} else {
 				newContactView.emailLabel.Hidden = true;
 				newContactView.emailButton.Hidden = true;
-			}
-			if (!String.IsNullOrEmpty (contactInfo.phone)) {
-				newContactView.phoneLabel.Hidden = false;
-				newContactView.phoneLabel.Text = contactInfo.phone;
-				newContactView.phoneButton.Hidden = false;
-				newContactView.phoneButton.TouchUpInside += (s, e) => {
-					//make phone call here
-				};
-			} else {
 				newContactView.phoneLabel.Hidden = true;
 				newContactView.phoneButton.Hidden = true;
-			}
-			if (!String.IsNullOrEmpty (contactInfo.visit)) {
-				newContactView.visitLabel.Hidden = false;
-				newContactView.visitLabel.Text = contactInfo.visit;
-				newContactView.visitButton.Hidden = false;
-				newContactView.visitButton.TouchUpInside += (s, e) => {
-					GlobalAPI.Manager().PushPage(NavigationController,new WebViewController(contactInfo.visit,""));
-				};
-			} else {
 				newContactView.visitLabel.Hidden = true;
 				newContactView.visitButton.Hidden = true;
-			}
-
-			//***************************************************************************************************************************************************
-			if (!String.IsNullOrEmpty (contactInfo.Facebook)) {
-				newContactView.FacebookBtn.Hidden = false;
-				newContactView.FacebookBtn.TouchUpInside += (s, e) => {
-					GlobalAPI.Manager().PushPage(NavigationController,new WebViewController(contactInfo.Facebook,""));
-				};
-			} else {
 				newContactView.FacebookBtn.Hidden = true;
-			}
-			if (!String.IsNullOrEmpty (contactInfo.Twitter)) {
-				newContactView.TwitterBtn.Hidden = false;
-				newContactView.TwitterBtn.TouchUpInside += (s, e) => {
-					GlobalAPI.Manager().PushPage(NavigationController,new WebViewController(contactInfo.Twitter,""));
-				};
-			} else {
 				newContactView.TwitterBtn.Hidden = true;
-			}
-			if (!String.IsNullOrEmpty (contactInfo.Google)) {
-				newContactView.GoogleBtn.Hidden = false;
-				newContactView.GoogleBtn.TouchUpInside += (s, e) => {
-					GlobalAPI.Manager().PushPage(NavigationController,new WebViewController(contactInfo.Google,""));
-				};
-			} else {
 				newContactView.GoogleBtn.Hidden = true;
-			}
-			if (!String.IsNullOrEmpty (contactInfo.LinkIn)) {
-				newContactView.LinkInBtn.Hidden = false;
-				newContactView.LinkInBtn.TouchUpInside += (s, e) => {
-					GlobalAPI.Manager().PushPage(NavigationController,new WebViewController(contactInfo.LinkIn,""));
-				};
-			} else {
 				newContactView.LinkInBtn.Hidden = true;
-			}
-
-			if (!String.IsNullOrEmpty (contactInfo.YouTube)) {
-				newContactView.PinterestBtn.Hidden = false;
-				newContactView.PinterestBtn.TouchUpInside += (s, e) => {
-					GlobalAPI.Manager().PushPage(NavigationController,new WebViewController(contactInfo.YouTube,""));
-				};
-			} else {
 				newContactView.PinterestBtn.Hidden = true;
-			}
-
-			//load the contact page social buttons
-			/*
-			btnGo.TouchUpInside += (object sender, EventArgs e) => {
-				//GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getInternetPage("https://plus.google.com/u/0/+2webdesign/posts")); 
-				GlobalAPI.Manager().PushPage(NavigationController,new WebViewController("https://plus.google.com/u/0/+2webdesign/posts",""));
-			};
-
-			btnTw.TouchUpInside += (object sender, EventArgs e) => {
-				//GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getInternetPage("https://twitter.com/2webdesign")); 
-				GlobalAPI.Manager().PushPage(NavigationController,new WebViewController("https://twitter.com/2webdesign",""));
-			};
-
-			btnFb.TouchUpInside += (object sender, EventArgs e) => {
-				//GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getInternetPage("https://www.facebook.com/2webdesign")); 
-				GlobalAPI.Manager().PushPage(NavigationController,new WebViewController("https://www.facebook.com/2webdesign",""));
-			};
-
-			btnLi.TouchUpInside += (object sender, EventArgs e) => {
-				//GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getInternetPage("http://www.linkedin.com/company/2webdesign-com")); 
-				GlobalAPI.Manager().PushPage(NavigationController,new WebViewController("https://www.linkedin.com/company/2webdesign-com",""));
-			};
-
-			btnPin.TouchUpInside += (object sender, EventArgs e) => {
-				//GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getInternetPage("https://www.pinterest.com/2webdesign")); 
-				GlobalAPI.Manager().PushPage(NavigationController,new WebViewController("https://www.pinterest.com/2webdesign",""));
-			};
+				//alert
+				UIAlertController Alert = UIAlertController.Create ("Error",
+					errmsg, UIAlertControllerStyle.Alert);
+				Alert.AddAction (UIAlertAction.Create ("OK",
+					UIAlertActionStyle.Cancel, null
+				));
+				PresentViewController (Alert, true, null);
 				
-			if (MFMailComposeViewController.CanSendMail) {
-				btnEmail.TouchUpInside += (object sender, EventArgs e) => {
-					mailController = new MFMailComposeViewController (); 
-
-					mailController.SetToRecipients (new string[]{ "info@webdesign.com" }); 
-					mailController.SetSubject (""); 
-					mailController.SetMessageBody ("", false); 
-
-					mailController.Finished += (object s, MFComposeResultEventArgs args) => {
-						args.Controller.DismissViewController (true, null);
-					};
-					//PresentViewController (mailController, true, null);
-					UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(mailController, true, null);
-				};
-			} else {
-				//device can't make emails
-				btnEmail.Hidden = true;
-			}
-
-			if (GlobalAPI.Manager ().phoneAvailability ()) {
-				btnCallUs.TouchUpInside += (object sender, EventArgs e) => {
-					UIApplication.SharedApplication.OpenUrl(new NSUrl("tel:3066642932"));
-				};
-			} else {
-				//device can't make calls
-				btnCallUs.Hidden = true; 
-			}
-
-			btnVisitUs.TouchUpInside += (object sender, EventArgs e) => {
-				GlobalAPI.Manager().PushPage(NavigationController, new ArticlePage("http://www.2webdesign.com")); 
-			};
-			*/	
-
+			}		
 			//Courasal Pages
 			var pages = new UIView[]{ BlogView, WorkshopsView, newContactView}; 
 
@@ -267,7 +210,7 @@ namespace WebApp_iOS
 
 				frame.Height = this.ScrollView.Frame.Height;
 				frame.Width = this.ScrollView.Frame.Width; 
-				https://twitter.com/2webdesign
+				//https://twitter.com/2webdesign
 				pages [i].Frame = frame;
 				this.ScrollView.AddSubview (pages [i]);
 			}
@@ -293,34 +236,22 @@ namespace WebApp_iOS
 		}
 
 
-		//
-		public ContactInfo myHardCodeInfo(){
-			ContactInfo hardcodeInfo = new ContactInfo ();
+
+		public contact myHardCodeInfo(){
+			contact hardcodeInfo = new contact();
 			hardcodeInfo.address1="116-116 Research Drive, Saskatoon,";
 			hardcodeInfo.address2="SK S7N3R3";
 			hardcodeInfo.email="info@2webdesign";
 			hardcodeInfo.phone="306.664.2932";
 			hardcodeInfo.visit="www.2webdesign.com";
-			hardcodeInfo.Facebook="https://www.facebook.com/2webdesign";
-			hardcodeInfo.Twitter="https://twitter.com/2webdesign";
-			hardcodeInfo.Google="https://plus.google.com/u/0/+2webdesign/posts";
-			hardcodeInfo.LinkIn="https://www.linkedin.com/company/2webdesign-com";
-			hardcodeInfo.YouTube="https://www.pinterest.com/2webdesign";
+			hardcodeInfo.facebook="https://www.facebook.com/2webdesign";
+			hardcodeInfo.twitter="https://twitter.com/2webdesign";
+			hardcodeInfo.google="https://plus.google.com/u/0/+2webdesign/posts";
+			hardcodeInfo.linkedIn="https://www.linkedin.com/company/2webdesign-com";
+			hardcodeInfo.youtube="https://www.pinterest.com/2webdesign";
 			return hardcodeInfo;
-		}	
-	}
+		}
 
-	public class ContactInfo{
-		public string address1="";
-		public string address2="";
-		public string email="";
-		public string phone="";
-		public string visit="";
-		public string Facebook="";
-		public string Twitter="";
-		public string Google="";
-		public string LinkIn="";
-		public string YouTube="";
-	}	
+	}
 }
 
