@@ -107,15 +107,23 @@ namespace CoreDataService
 			info = null;
 			errmsg = "";
 
+			info = Settings.DefaultContact ();
+			return true;
+
 			// obtain contact record
 			object contobj;
-			string sql = "select * from contact";
+			string sql = "select * from contact limit 1";
 			if ( !LocalDB.ExeSQL(sql, "contact", out contobj, out errmsg) ) {
 				info = null;
 				return false;
 			}
 
-			info = (contact)contobj;
+			if (((List<contact>)contobj).Count != 1) {
+				errmsg = "Record number in Contact is wrong";
+				return false;
+			}
+			
+			info = ((List<contact>)contobj)[0];
 			return true;
 		}
 
@@ -156,7 +164,7 @@ namespace CoreDataService
 			// check out the synctable
 			string tables = "";
 			foreach (var item in SyncTable) {
-				if (item.Value && item.Key != "userinfo") {
+				if (item.Value) {
 					tables += item.Key + ",";
 				}
 			}

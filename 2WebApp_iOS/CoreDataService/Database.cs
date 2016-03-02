@@ -523,7 +523,10 @@ namespace CoreDataService
 			foreach (var item in Settings.local_tables) {
 				dbconn.CreateTable (System.Type.GetType (LocalDB.WithSchemaName (item)));	
 			}
-
+			
+			foreach (var item in Settings.local_privatetables) {
+				dbconn.CreateTable (System.Type.GetType (LocalDB.WithSchemaName (item)));	
+			}
 		}
 
 	}

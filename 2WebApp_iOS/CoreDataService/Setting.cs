@@ -31,8 +31,8 @@ namespace CoreDataService
 		public static string local_dbschema = "CoreDataService.";
 		public static string[] local_tables = { "organization","staffaccount","taskupdatetypes","notification_type","notifications",
 			"client_organization_rel","projects","tasks","project_support_rel","clientaccount",
-			"projectstatus","projecttype","projectphase","supportpackage","contact",
-			"userinfo"};
+			"projectstatus","projecttype","projectphase","supportpackage","contact"};
+		public static string[] local_privatetables = {"userinfo"};
 
 
 		// Return default contact
