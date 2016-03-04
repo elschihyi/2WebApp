@@ -31,13 +31,21 @@ namespace CoreDataService
 
 
 		// build and return request block
-		protected Dictionary<string, string> BuildRequest ( string svcstring )
+		// Parameters
+		//		username	for backend login
+		//		papssword	for backend login
+		//		option		AUTH | SYNC
+		// Return
+		//		true	sucessful
+		//		false	returned with error in errmsg
+		protected Dictionary<string, string> BuildRequest ( string username, string password, RequestOption option )
 		{
+			
 			Dictionary<string, string> request = new Dictionary<string, string> ();
 			request.Add ("ADDRESS", Settings.ws_address);
-			request.Add ("PATH", Settings.ws_basepath + svcstring);
-			request.Add ("TYPE", "table");
+			request.Add ("PATH", Settings.ws_basepath + Settings.ws_svcname);
 			request.Add ("FORMAT", "json");
+			request.Add ("BODY",string.Format("{{\"username\":\"{0}\",\"password\":\"{1}\",\"option\":\"{2}\"}}", username, password, option));
 			return request;
 		}
 
@@ -49,8 +57,8 @@ namespace CoreDataService
 		//		request:
 		//				address		host address
 		//				path		svc path on the host
-		//				type		table | ...
 		//				format		json
+		//				body		request body in json format
 		//		data (out)			data obtained or error msg
 		// Return
 		//		true	sucessful
@@ -67,7 +75,18 @@ namespace CoreDataService
 				// build request
 				RestRequest req = null;
 				if (format == "JSON") {
-					req = new RestRequest (request["PATH"], Method.GET);
+					if ( Settings.ws_reqtype == RequestType.GET )
+						req = new RestRequest (request["PATH"], Method.GET);
+					else if (Settings.ws_reqtype == RequestType.POST ) {
+						req = new RestRequest (request["PATH"], Method.POST);
+						req.AddParameter("application/json; charset=utf-8", request["BODY"], ParameterType.RequestBody);
+						req.RequestFormat = DataFormat.Json;
+					}
+					else {
+						data = "The given request type is not supported";
+						return false;
+					}
+					
 					req.AddHeader("Accept", "application/json");
 					req.Timeout = Settings.ws_timeout;
 				}
@@ -75,30 +94,14 @@ namespace CoreDataService
 					// handle other types of the formats
 				}
 
-				// send the request and receive its result
-				if ( Settings.ws_SyncRequest ) {
-					// sync transfer
-					var response = client.Execute(req);
-					if (response.ErrorException != null)
-					{
-						throw new Exception(response.ErrorMessage);
-					}
-
-					data = response.Content;
-
-				} else {
-					// async transfer
-					client.ExecuteAsync(req, resp => {
-						if (resp.ResponseStatus == ResponseStatus.Completed)
-						{
-							//File.WriteAllBytes (request["LOCALPATH"], client.DownloadData (req));
-
-						} else if (resp.ErrorException != null)
-						{
-							throw new Exception(resp.ErrorMessage);
-						}
-					});
+				// send the request and receive its result by a synchronous call
+				var response = client.Execute(req);
+				if (response.ErrorException != null)
+				{
+					throw new Exception(response.ErrorMessage);
 				}
+
+				data = response.Content;
 
 			}
 			catch (Exception e)

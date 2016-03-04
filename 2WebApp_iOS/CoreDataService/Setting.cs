@@ -13,26 +13,41 @@ namespace CoreDataService
 	// errmsg		error message
 	public delegate void SyncCallback (Boolean succeed, string errmsg);
 
+	public enum RequestType { GET, POST };
+	public enum RequestOption { Auth, Sync };		// should be conform with the backend system
+	public enum DatabaseType { Sqlite, Json };
+
+
 
 	public static class Settings
 	{
 		// remote settings
 		public static string ws_address = "http://www.2web.cc.php53-4.ord1-1.websitetestlink.com";
 		public static string ws_basepath = "/webservice/common/";
-		public static string ws_username = "";
-		public static string ws_password = "";
-		public static Boolean ws_SyncRequest = true;
-		public static Boolean ws_Logined = false;
-		public static Boolean ws_Synced = false;
+		public static string ws_svcname = "Service";
+		public static RequestType ws_reqtype = RequestType.POST;
 		public static int ws_timeout = 15000;
 
-		// local settings
+		// for test purpose
+		public static string test_username = "test@test.com";
+		public static string test_password = "098f6bcd4621d373cade4e832627b4f6";
+
+		// local status
+		public static Boolean local_isuservalid = false;
+		public static Boolean local_isbadcache = true;
+		public static Boolean local_isdatasynced = false;
+
+		// local database settings
 		public static string local_dbpath = "";
+		public static DatabaseType local_dbtype = DatabaseType.Json;
+		// for json version
+		// for sqlite version
 		public static string local_dbschema = "CoreDataService.";
 		public static string[] local_tables = { "organization","staffaccount","taskupdatetypes","notification_type","notifications",
 			"client_organization_rel","projects","tasks","project_support_rel","clientaccount",
 			"projectstatus","projecttype","projectphase","supportpackage","contact"};
 		public static string[] local_privatetables = {"userinfo"};
+
 
 
 		// Return default contact

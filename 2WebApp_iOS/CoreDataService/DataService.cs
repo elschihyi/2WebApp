@@ -20,6 +20,11 @@ namespace CoreDataService
 		// Value: true | false		true, to sync
 		public Dictionary<string, Boolean> SyncTable;
 
+		// data cache
+		private List<projectsummary> projects = null;
+		private contact continfo = null;
+
+
 		public DataService (string dbpath)
 		{
 			Settings.local_dbpath = dbpath;
@@ -28,6 +33,8 @@ namespace CoreDataService
 			foreach(var item in Settings.local_tables) {
 				SyncTable.Add (item, true);
 			}
+
+			projects = new List<projectsummary> ();
 		}
 
 		#region Public Functions
@@ -37,6 +44,12 @@ namespace CoreDataService
 			projsum = null;
 			errmsg = "";
 			projsum = new List<projectsummary> ();
+
+			// check the cache first
+			if ( !Settings.local_isbadcache && continfo != null ) {
+				projsum = projects;
+				return true;	
+			}
 
 			if (!IsLocalDataValid()) {
 				// return default data
@@ -52,7 +65,10 @@ namespace CoreDataService
 				            "projectstatus c, organization d, clientaccount e, staffaccount f where a.project_type_id = " +
 				            "b.project_type_id and a.proj_status_id = c.proj_status_id and a.org_id = d.org_id and a.client_accountid = e.client_accountid " +
 				            "and a.staff_id = f.staff_id";
-				if (!LocalDB.ExeSQL (sql, "project", out projdata, out errmsg)) {
+				DBRequest req = new DBRequest ();
+				req.sql = sql;
+				req.tablename = "project";
+				if (!LocalDB.ReadData (req, out projdata, out errmsg)) {
 					projsum = null;
 					return false;
 				}
@@ -75,7 +91,9 @@ namespace CoreDataService
 					object taskdata;
 					sql = "select b.task_update as name, b.row_update_date as date, b.task_fileurl from projects a, tasks b" +
 					" where a.project_id = b.project_id and a.project_id = " + proj.id;
-					if (!LocalDB.ExeSQL (sql, "task", out taskdata, out errmsg)) {
+					req.sql = sql;
+					req.tablename = "task";
+					if (!LocalDB.ReadData (req, out taskdata, out errmsg)) {
 						projsum = null;
 						return false;
 					}
@@ -87,7 +105,9 @@ namespace CoreDataService
 					" b.proj_supp_rel_status as status, b.proj_supp_rel_backupdate as lastbackup, b.row_update_date as lastpost" +
 					" from projects a, project_support_rel b, supportpackage c where a.project_id = b.project_id" +
 					" and b.sup_package_id = c.sup_package_id and a.project_id = " + proj.id;
-					if (!LocalDB.ExeSQL (sql, "support", out suppkgdata, out errmsg)) {
+					req.sql = sql;
+					req.tablename = "support";
+					if (!LocalDB.ReadData (req, out suppkgdata, out errmsg)) {
 						projsum = null;
 						return false;
 					}
@@ -107,13 +127,21 @@ namespace CoreDataService
 			info = null;
 			errmsg = "";
 
+			// check the cache first
+			if ( !Settings.local_isbadcache && continfo != null ) {
+				info = continfo;
+				return true;	
+			}
+
 			info = Settings.DefaultContact ();
-			return true;
 
 			// obtain contact record
 			object contobj;
 			string sql = "select * from contact limit 1";
-			if ( !LocalDB.ExeSQL(sql, "contact", out contobj, out errmsg) ) {
+			DBRequest req = new DBRequest ();
+			req.sql = sql;
+			req.tablename = "contact";
+			if ( !LocalDB.ReadData(req, out contobj, out errmsg) ) {
 				info = null;
 				return false;
 			}
@@ -161,32 +189,59 @@ namespace CoreDataService
 		// Synchronize table data at background
 		private void SyncThread (SyncCallback func) {
 
-			// check out the synctable
-			string tables = "";
-			foreach (var item in SyncTable) {
-				if (item.Value) {
-					tables += item.Key + ",";
-				}
-			}
-			tables = tables.TrimEnd (',');
-			
-			// create all tables
-			LocalDB.CreateAllTables();
+//			// check out the synctable
+//			string tables = "";
+//			foreach (var item in SyncTable) {
+//				if (item.Value) {
+//					tables += item.Key + ",";
+//				}
+//			}
+//			tables = tables.TrimEnd (',');
 
 			// download and load the table(s)
 			SyncCallback callback = new SyncCallback(func);
 			string errmsg;
 			object data;
-			if (!DownloadTable (tables, out data, out errmsg)){
-				callback(false, errmsg);
-				return;
-			}
-			if (!LocalDB.ExeSQL ("INSERT", data, out errmsg)) {
+			if (!DownloadData (Settings.test_username, Settings.test_password, RequestOption.Sync, out data, out errmsg)){
 				callback(false, errmsg);
 				return;
 			}
 
-			Settings.ws_Synced = true;
+			// update cache
+			if ( !LoadData(data, out projects, out continfo, out errmsg) ) {
+				callback (false, errmsg);
+				return;
+			}
+
+			Settings.local_isbadcache = false;
+
+			if (Settings.local_dbtype == DatabaseType.Sqlite) {
+
+				DBRequest req = new DBRequest ();
+				req.dataset = data;
+				if (!LocalDB.SaveData (req, out errmsg)) {
+					callback (false, errmsg);
+					return;
+				}
+
+			} else if (Settings.local_dbtype == DatabaseType.Json) {
+
+				// save the data to local
+				DBRequest req = new DBRequest ();
+				req.dataset = data;
+				if (!LocalDB.SaveData (req, out errmsg)) {
+					callback (false, errmsg);
+					return;
+				}
+
+			} else {
+				errmsg = string.Format("The database type {0} is not supported", Settings.local_dbtype);
+				callback(false,errmsg);
+				return;
+			}
+
+			// synchronization is successful only if data are both loaded into cache and written to disk
+			Settings.local_isdatasynced = true;
 			callback(true, errmsg);
 		}
 
@@ -195,7 +250,7 @@ namespace CoreDataService
 		// Make decision if or not the default data should be used
 		private Boolean IsLocalDataValid() {
 
-			if (!Settings.ws_Synced) {
+			if (!Settings.local_isdatasynced) {
 
 				// cases fall in:
 				// - user is NOT logged in AND
@@ -212,7 +267,7 @@ namespace CoreDataService
 					// try sync() again
 					SyncThread(null);
 
-					if (!Settings.ws_Synced) {
+					if (!Settings.local_isdatasynced) {
 						// not lucky again
 						return false;
 
@@ -253,13 +308,45 @@ namespace CoreDataService
 			
 			// send the request and obtain the data
 			string json;
-			Dictionary<string, string> request = BuildRequest ("TableData?table_id=" + tables);
+			Dictionary<string, string> request = BuildRequest (Settings.test_username, Settings.test_password, RequestOption.Sync);
 			if (!MakeRequest (request, out json)) {
 				return false;
 			}
 
 			// build a data object based on the downloaded JSON
 			if (!JSONtoObject (json, out datasets, out errmsg))
+				return false;
+
+			return true;
+		}
+
+
+
+		// DownloadData Function
+		// Obtain data for a specified table from remote
+		// Parameters:
+		//		username	for backend login
+		//		password	for backend login
+		//		type		type of service request Auth | Sync
+		//		dataset		returned data set
+		//		errmsg		error message
+		// Return:
+		//		true successful
+		//		false return with error as result
+		private Boolean DownloadData (string username, string password, RequestOption type, out object dataset, out string errmsg)
+		{
+			errmsg = "";
+			dataset = null;
+
+			// send the request and obtain the data
+			string json;
+			Dictionary<string, string> request = BuildRequest (username, password, type);
+			if (!MakeRequest (request, out json)) {
+				return false;
+			}
+
+			// build a data object based on the downloaded JSON
+			if (!JSONtoObject (json, out dataset, out errmsg))
 				return false;
 
 			return true;
@@ -282,7 +369,7 @@ namespace CoreDataService
 				object[] tableobj = new object[tables.Count];
 				foreach (var item in tables) {
 					var list = typeof(List<>);
-					var listOfType = list.MakeGenericType (System.Type.GetType (LocalDB.WithSchemaName (item.Key)));
+					var listOfType = list.MakeGenericType (System.Type.GetType (Settings.local_dbschema+item.Key));
 					tableobj [x] = JsonConvert.DeserializeObject (item.Value.ToString (), listOfType);
 					x++;
 				}
@@ -296,6 +383,33 @@ namespace CoreDataService
 			}
 		}
 
+
+
+		public Boolean LoadData ( object data, out List<projectsummary> projsum, out contact continfo, out string errmsg ) {
+
+			projsum = new List<projectsummary>();
+			continfo = null;
+			errmsg = "";
+
+			try {
+				
+				foreach ( var item in data as IEnumerable<object> ) {
+					foreach (var subitem in item as IEnumerable<object>) {
+						if (subitem.GetType () == Type.GetType (Settings.local_dbschema+"contact") )
+							continfo = (contact)subitem;
+						else if (subitem.GetType () == Type.GetType (Settings.local_dbschema+"projectsummary") )
+							projects.Add ((projectsummary)subitem);
+					}
+				}
+
+			} catch ( Exception e) {
+
+				errmsg = e.Message;
+				return false;
+			}
+
+			return true;
+		}
 
 
 		#endregion

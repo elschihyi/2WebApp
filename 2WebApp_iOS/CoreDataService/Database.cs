@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Reflection;
 using SQLite;
 
@@ -10,6 +12,7 @@ namespace CoreDataService
 	// TABLE DEFINITIONS
 	////////////////////////////////////////////////////////////////
 
+	[Serializable]
 	public class organization
 	{
 		public string org_id { get; set; } = "";
@@ -27,6 +30,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class staffaccount
 	{
 		public string staff_id { get; set; } = "";
@@ -50,6 +54,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class taskupdatetypes
 	{
 		public string task_updatetype_id { get; set; } = "";
@@ -65,6 +70,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class notification_type
 	{
 		public string notification_type_id { get; set; } = "";
@@ -80,6 +86,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class notifications
 	{
 		public string notification_id { get; set; } = "";
@@ -101,6 +108,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class client_organization_rel
 	{
 		public string client_accountid { get; set; } = "";
@@ -118,6 +126,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class projects
 	{
 		public string project_id { get; set; } = "";
@@ -145,6 +154,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class tasks
 	{
 		public string task_id { get; set; } = "";
@@ -172,6 +182,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class project_support_rel
 	{
 		public string proj_supp_rel_id { get; set; } = "";
@@ -199,6 +210,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class clientaccount
 	{
 		public string client_accountid { get; set; } = "";
@@ -222,6 +234,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class projectstatus
 	{
 		public string proj_status_id { get; set; } = "";
@@ -237,6 +250,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class projecttype
 	{
 		public string project_type_id { get; set; } = "";
@@ -252,6 +266,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class projectphase
 	{
 		public string proj_phase_id { get; set; } = "";
@@ -267,6 +282,7 @@ namespace CoreDataService
 		public string row_udpate_by { get; set; } = "";
 	}
 
+	[Serializable]
 	public class supportpackage
 	{
 		public string sup_package_id { get; set; } = "";
@@ -289,7 +305,7 @@ namespace CoreDataService
 	}
 
 
-
+	[Serializable]
 	public class contact
 	{
 		public string address1 { get; set; } = "";
@@ -314,10 +330,12 @@ namespace CoreDataService
 	}
 
 
+
 	////////////////////////////////////////////////////////////////
-	// LOCAL TABLE CLASS
+	// LOCAL PRIVATE TABLE CLASS
 	////////////////////////////////////////////////////////////////
 
+	[Serializable]
 	public class userinfo
 	{
 		public string user { get; set; } = "";
@@ -331,6 +349,7 @@ namespace CoreDataService
 	// DATA INTERFACE CLASS
 	////////////////////////////////////////////////////////////////
 
+	[Serializable]
 	public class project
 	{
 		public string id { get; set; } = "";
@@ -352,6 +371,7 @@ namespace CoreDataService
 		public string staff_email { get; set; } = "";
 	}
 
+	[Serializable]
 	public class task
 	{
 		public string name { get; set; } = "";
@@ -361,6 +381,7 @@ namespace CoreDataService
 		public string file_url { get; set; } = "";
 	}
 
+	[Serializable]
 	public class support
 	{
 		public string name { get; set; } = "";
@@ -376,6 +397,7 @@ namespace CoreDataService
 		public string lastpost { get; set; } = "";
 	}
 
+	[Serializable]
 	public class projectsummary
 	{
 		public string name { get; set; } = "";
@@ -404,11 +426,129 @@ namespace CoreDataService
 	////////////////////////////////////////////////////////////////
 	// DATABASE OPERATIONS
 	////////////////////////////////////////////////////////////////
-	
+
+	public class DBRequest {
+
+		public string sql;
+		public string tablename;
+		public object dataset;
+	}
+
+
+
 	public static class LocalDB
 	{
+		private static LocalDB_JSON dbjson = null;
+		private static LocalDB_Sqlite dbsqlite = null;
 
-		private static SQLiteConnection dbconn = new SQLiteConnection (Settings.local_dbpath);
+		private static Boolean Init( out string  errmsg ) {
+
+			errmsg = "";
+
+			try {
+
+				if ( Settings.local_dbtype == DatabaseType.Sqlite ) {
+
+					dbsqlite = new LocalDB_Sqlite();
+
+					dbsqlite.CreateAllTables();
+
+				} else if ( Settings.local_dbtype == DatabaseType.Json ) {
+
+					dbjson = new LocalDB_JSON();
+				}
+
+			} catch (Exception e) {
+				errmsg = e.Message;
+				return false;
+			}
+
+			return true;
+		}
+
+
+
+		public static Boolean SaveData (DBRequest request, out string errmsg) {
+
+			errmsg = "";
+
+			if ( Settings.local_dbtype == DatabaseType.Sqlite ) {
+
+				if (dbsqlite == null) {
+					if ( !Init (out errmsg) )
+						return false;
+				}
+
+				return dbsqlite.ExeSQL("INSERT", request.dataset, out errmsg);
+
+			} else if ( Settings.local_dbtype == DatabaseType.Json ) {
+
+				if (dbjson == null) {
+					if ( !Init (out errmsg) )
+						return false;
+				}
+
+				return dbjson.SaveJSON (request.dataset, out errmsg);
+
+			} else {
+
+				errmsg = "Database type specified is not support";
+				return false;
+			}
+
+		}
+
+
+
+		public static Boolean ReadData (DBRequest request, out object data, out string errmsg) {
+
+			data = null;
+			errmsg = "";
+
+			if ( Settings.local_dbtype == DatabaseType.Sqlite ) {
+
+				if (dbsqlite == null) {
+					if ( !Init (out errmsg) )
+						return false;
+				}
+
+				return dbsqlite.ExeSQL(request.sql, request.tablename, out data, out errmsg);
+
+			} else if ( Settings.local_dbtype == DatabaseType.Json ) {
+
+				if (dbjson == null) {
+					if ( !Init (out errmsg) )
+						return false;
+				}
+
+				return dbjson.ReadJSON (out data, out errmsg);
+
+			} else {
+				
+				errmsg = "Database type specified is not support";
+				return false;
+			}
+
+		}
+
+	}
+
+
+
+	public class LocalDB_Sqlite
+	{
+
+		private SQLiteConnection dbconn = null;
+
+
+		public LocalDB_Sqlite ()
+		{
+			try {
+				dbconn = new SQLiteConnection (Settings.local_dbpath);
+			} catch ( Exception e ) {
+				
+			}
+		}
 
 
 		// Execute SQL with exception handler
@@ -419,7 +559,7 @@ namespace CoreDataService
 		//		errmsg			error message
 		// return:
 		//		IsSucceed		true | false
-		public static Boolean ExeSQL (string mode, object rows, out string errmsg)
+		public Boolean ExeSQL (string mode, object rows, out string errmsg)
 		{
 			errmsg = "";
 			try {
@@ -435,9 +575,9 @@ namespace CoreDataService
 						switch (mode.ToUpper ()) {
 						case "INSERT":
 							// Drop existing table
-							dbconn.Execute ("DROP TABLE IF EXISTS \"" + LocalDB.TableShortName (tablename) + "\"");
+							dbconn.Execute ("DROP TABLE IF EXISTS \"" + TableShortName (tablename) + "\"");
 							// Create a new table
-							dbconn.CreateTable (System.Type.GetType (LocalDB.WithSchemaName (tablename)));
+							dbconn.CreateTable (System.Type.GetType (WithSchemaName (tablename)));
 							// populate the table
 							dbconn.InsertAll (table as IEnumerable<object>, true);
 							break;
@@ -460,7 +600,7 @@ namespace CoreDataService
 		}
 
 
-		
+
 		// Execute a customized query with given return class
 		// input:
 		//		sql				a customized SQL statement
@@ -469,14 +609,14 @@ namespace CoreDataService
 		//		errmsg			error message
 		// return:
 		//		IsSucceed		true | false
-		public static Boolean ExeSQL (string sql, string rettable, out object result, out string errmsg)
+		public Boolean ExeSQL (string sql, string rettable, out object result, out string errmsg)
 		{
 			errmsg = "";
 			result = null;
 			try {
 				lock (dbconn) {
 					MethodInfo method = dbconn.GetType ().GetMethod ("Query", new [] { typeof(string), typeof(object[]) });
-					MethodInfo generic = method.MakeGenericMethod (Type.GetType (LocalDB.WithSchemaName (rettable)));
+					MethodInfo generic = method.MakeGenericMethod (Type.GetType (WithSchemaName (rettable)));
 					object[] args = { };
 					result = generic.Invoke (dbconn, new object[] { sql, args });
 				}
@@ -491,9 +631,9 @@ namespace CoreDataService
 		}
 
 
-		
+
 		// return table name with schema
-		public static string WithSchemaName (string tablename)
+		private string WithSchemaName (string tablename)
 		{
 			tablename = tablename.Replace ("[]", "");
 			if (tablename.IndexOf (Settings.local_dbschema) == -1)
@@ -505,7 +645,7 @@ namespace CoreDataService
 
 
 		// remove schema from table name
-		public static string TableShortName (string tablename)
+		private string TableShortName (string tablename)
 		{
 			tablename = tablename.Replace ("[]", "");
 			return tablename.Replace (Settings.local_dbschema, "");
@@ -514,21 +654,74 @@ namespace CoreDataService
 
 
 		// create all the tables
-		public static void CreateAllTables ()
+		public void CreateAllTables ()
 		{
 
 			if (dbconn == null)
 				return;
-			
+
 			foreach (var item in Settings.local_tables) {
-				dbconn.CreateTable (System.Type.GetType (LocalDB.WithSchemaName (item)));	
+				dbconn.CreateTable (System.Type.GetType (WithSchemaName (item)));	
 			}
-			
+
 			foreach (var item in Settings.local_privatetables) {
-				dbconn.CreateTable (System.Type.GetType (LocalDB.WithSchemaName (item)));	
+				dbconn.CreateTable (System.Type.GetType (WithSchemaName (item)));	
 			}
 		}
 
+	}
+
+
+
+
+
+	public class LocalDB_JSON
+	{
+		
+		// save JSON string to the local database file
+		public Boolean SaveJSON (object data, out string errmsg)
+		{
+
+			errmsg = "";
+
+			try {
+
+				FileStream fs = new FileStream (Settings.local_dbpath, FileMode.Create);
+				BinaryFormatter formatter = new BinaryFormatter ();
+				formatter.Serialize (fs, data);
+				fs.Close ();
+
+			} catch (Exception e) {
+				errmsg = e.Message;
+				return false;
+			}
+
+			return true;
+		}
+
+
+
+		// read JSON string from the local database file
+		public Boolean ReadJSON (out object data, out string errmsg)
+		{
+
+			data = null;
+			errmsg = "";
+
+			try {
+
+				FileStream fs = new FileStream (Settings.local_dbpath, FileMode.Open);
+				BinaryFormatter formatter = new BinaryFormatter ();
+				data = formatter.Deserialize (fs);
+				fs.Close ();
+
+			} catch (Exception e) {
+				errmsg = e.Message;
+				return false;
+			}
+
+			return true;
+		}
 	}
 
 }

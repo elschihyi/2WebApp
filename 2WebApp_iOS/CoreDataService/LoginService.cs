@@ -49,7 +49,7 @@ namespace CoreDataService
 			if (!SaveLocalUserInfo (username, password, out errmsg))
 				return false;		
 
-			Settings.ws_Logined = true;
+			Settings.local_isdatasynced = true;
 
 			return true;
 		}
@@ -65,7 +65,7 @@ namespace CoreDataService
 
 		public static Boolean IsLogined ()
 		{
-			return Settings.ws_Logined;
+			return Settings.local_isdatasynced;
 		}
 
 
@@ -82,7 +82,10 @@ namespace CoreDataService
 			// obtain user record
 			object userobj;
 			string sql = "select * from userinfo";
-			if (!LocalDB.ExeSQL (sql, "userinfo", out userobj, out errmsg)) {
+			DBRequest req = new DBRequest ();
+			req.sql = sql;
+			req.tablename = "userinfo";
+			if (!LocalDB.ReadData (req, out userobj, out errmsg)) {
 				return null;
 			}
 
@@ -93,9 +96,11 @@ namespace CoreDataService
 		{
 			// insert encrypted user record
 			userinfo data = new userinfo ();
-			data.user = username.GetHashCode ().ToString ();
+			data.user = username;
 			data.cred = password.GetHashCode ().ToString ();
-			if (!LocalDB.ExeSQL ("INSERT", data, out errmsg)) {
+			DBRequest req = new DBRequest ();
+			req.dataset = data;
+			if (!LocalDB.SaveData (req, out errmsg)) {
 				return false;
 			}
 
