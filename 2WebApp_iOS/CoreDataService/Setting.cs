@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UIKit;
+using System.Drawing;
 using System.IO;
 
 
@@ -144,5 +145,90 @@ namespace CoreDataService
 
 
 	}
+
+
+
+	// Customized Test UI for CoreDataService
+	public partial class CoreDataServiceTestUI : UIViewController
+	{
+		// private member
+		private static DataService ds = null;
+		private UITextView testView = null;
+
+
+		public CoreDataServiceTestUI (IntPtr handle) : base (handle)
+		{
+		}
+
+		public override void ViewDidLoad ()
+		{
+			base.ViewDidLoad ();
+
+
+			// initialize DataService
+			string sqliteFilename = "CoreDataServiceTest.db";
+			string documentsPath = Environment.GetFolderPath (Environment.SpecialFolder.Personal); // Documents folder
+			string dbPath = Path.Combine(documentsPath, sqliteFilename);
+			ds = new DataService(dbPath);
+
+			// metric calculation
+			RectangleF screensize = (RectangleF)UIScreen.MainScreen.Bounds;
+			float width = screensize.Width;
+			float height = 100;
+			float statusbarheight = (float)UIApplication.SharedApplication.StatusBarFrame.Height;
+			float navbarheight = (float)this.NavigationController.NavigationBar.Bounds.Height;
+			float logicTop = statusbarheight + navbarheight;
+
+			// UIButton
+			var testBtn = UIButton.FromType(UIButtonType.RoundedRect);
+			testBtn.SetTitle ("Test", UIControlState.Normal);
+			testBtn.Frame = new RectangleF(0, logicTop, width, height);
+			testBtn.BackgroundColor = UIColor.Orange;
+			testBtn.SetTitleColor (UIColor.White, UIControlState.Normal);
+			Add (testBtn);
+
+			// UITextView
+			testView = new UITextView (new RectangleF (0, logicTop+height+10, width, height+100));
+			testView.Text = "Output Area";
+			testView.Editable = false;
+			testView.BackgroundColor = UIColor.Gray;
+			testView.TextAlignment = UITextAlignment.Center;
+			Add (testView);
+
+
+			// Button click event
+			testBtn.TouchUpInside += (s, e) =>  {
+
+				List<projectsummary> projs;
+				string errmsg;
+				if ( !ds.ProjectInfo(out projs, out errmsg) ) {
+					testView.Text = "Error: \n" + errmsg;	
+				} else {
+					testView.Text = "Project Information:\n";
+					foreach(var item in projs) {
+						testView.Text += String.Format("Name: {0}\nType: {1}\nStatus: {2}\n",item.name,item.type,item.status);
+					}
+				}
+
+			};
+
+
+			// Start synchronization
+			SyncCallback x = new SyncCallback(callBack);
+			user info = new user ();
+			info.username = "test@test.com";
+			info.password = "test";
+			ds.Sync(info, true, x);
+
+		}
+
+
+		void callBack (Boolean succeed, string errmsg)
+		{
+			testView.Text += "\nBackground synchronization is done\n\n";
+		}
+
+	}
+
 }
 
