@@ -30,12 +30,11 @@ namespace CoreDataService
 
 		// for test purpose
 		public static string test_username = "test@test.com";
-		public static string test_password = "098f6bcd4621d373cade4e832627b4f6";
+		public static string test_password = "test";
 
 		// local status
-		public static Boolean local_isuservalid = false;
-		public static Boolean local_isbadcache = true;
-		public static Boolean local_isdatasynced = false;
+		public static Boolean local_ismemsynced = false;
+		public static Boolean local_isdisksynced = false;
 
 		// local database settings
 		public static string local_dbpath = "";

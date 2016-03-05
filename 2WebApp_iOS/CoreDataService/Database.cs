@@ -8,6 +8,8 @@ using SQLite;
 
 namespace CoreDataService
 {
+	#region Table Definition
+
 	////////////////////////////////////////////////////////////////
 	// TABLE DEFINITIONS
 	////////////////////////////////////////////////////////////////
@@ -329,6 +331,8 @@ namespace CoreDataService
 		public string youtube { get; set; } = "";
 	}
 
+	#endregion
+
 
 
 	////////////////////////////////////////////////////////////////
@@ -336,15 +340,17 @@ namespace CoreDataService
 	////////////////////////////////////////////////////////////////
 
 	[Serializable]
-	public class userinfo
+	public class user
 	{
-		public string user { get; set; } = "";
+		public string username { get; set; } = "";
 
-		public string cred { get; set; } = "";
+		public string password { get; set; } = "";
+		
+		public string status { get; set; } = "";
 	}
+	
 
-
-
+	
 	////////////////////////////////////////////////////////////////
 	// DATA INTERFACE CLASS
 	////////////////////////////////////////////////////////////////
@@ -429,9 +435,18 @@ namespace CoreDataService
 
 	public class DBRequest {
 
-		public string sql;
-		public string tablename;
-		public object dataset;
+		public string sql = "";
+		public string tablename = "";
+		public object dataset = null;
+	}
+
+
+
+	public class DBCache {
+		
+		public user userinfo = null;
+		public contact continfo = null;
+		public List<projectsummary> projects = null;
 	}
 
 
@@ -441,6 +456,8 @@ namespace CoreDataService
 		private static LocalDB_JSON dbjson = null;
 		private static LocalDB_Sqlite dbsqlite = null;
 
+
+		// initialize database connection
 		private static Boolean Init( out string  errmsg ) {
 
 			errmsg = "";
@@ -467,7 +484,7 @@ namespace CoreDataService
 		}
 
 
-
+		// common interface for saving data to the database
 		public static Boolean SaveData (DBRequest request, out string errmsg) {
 
 			errmsg = "";
@@ -499,7 +516,7 @@ namespace CoreDataService
 		}
 
 
-
+		// common interface for reading data from the database
 		public static Boolean ReadData (DBRequest request, out object data, out string errmsg) {
 
 			data = null;
@@ -546,7 +563,7 @@ namespace CoreDataService
 			try {
 				dbconn = new SQLiteConnection (Settings.local_dbpath);
 			} catch ( Exception e ) {
-				
+				return;
 			}
 		}
 

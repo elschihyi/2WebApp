@@ -13,6 +13,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Setting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Connection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LoginService.cs" />
   </ItemGroup>
 </Project>
