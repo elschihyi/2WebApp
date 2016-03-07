@@ -54,6 +54,7 @@
     <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <IpaPackageName>
     </IpaPackageName>
+    <CodesignProvision>714fab09-8158-4a6d-8343-8e9e6013b036</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>full</DebugType>
@@ -433,6 +434,10 @@
     <Compile Include="Screens\Porjects Screens\Porject Overview Screens\PorjectOverviewScreenController.cs" />
     <Compile Include="Screens\Porjects Screens\Project Support Screens\ProjectSupportScreenView.cs" />
     <Compile Include="Screens\Porjects Screens\Project Support Screens\ProjectSupportScreenController.cs" />
+    <Compile Include="Screens\Porjects Screens\Porject Update Screens\ProjectUpdateScreenSource.cs" />
+    <Compile Include="Screens\Porjects Screens\Porject Update Screens\ProjectUpdateScreenCell.cs" />
+    <Compile Include="Screens\Porjects Screens\Porject Overview Screens\ProjectOverviewScreenSource.cs" />
+    <Compile Include="Screens\Porjects Screens\Porject Overview Screens\ProjectOverviewScreenCell.cs" />
   </ItemGroup>
   <Import Project="..\CoreDataService\CoreDataService.projitems" Label="Shared" Condition="Exists('..\CoreDataService\CoreDataService.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

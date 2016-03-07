@@ -115,7 +115,7 @@ namespace CoreDataService
 				return false;
 			}
 
-			info = (contact)contobj;
+			info = ((List<contact>)contobj)[0];
 			return true;
 		}
 

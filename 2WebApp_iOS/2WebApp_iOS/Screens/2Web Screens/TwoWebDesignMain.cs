@@ -69,11 +69,11 @@ namespace WebApp_iOS
 			newContactView.ContentSize = ContactVw.Frame.Size;
 			newContactView.position ();
 			newContactView.titleLabel.Text="Contact 2 Web Design Inc.";
-			//contact contactInfo;
-			contact contactInfo = myHardCodeInfo ();
+			contact contactInfo;
+			//contact contactInfo = myHardCodeInfo ();
 			string errmsg="";
-			//if (GlobalAPI.GetDataService ().ContactInfo (out contactInfo,out errmsg)) {
-			if(true){
+			if (GlobalAPI.GetDataService ().ContactInfo (out contactInfo,out errmsg)) {
+			//if(true){
 				if (!String.IsNullOrEmpty (contactInfo.address1)) {
 					newContactView.address1Label.Hidden = false;
 					newContactView.address1Label.Text = contactInfo.address1;

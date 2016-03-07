@@ -8,7 +8,7 @@ namespace WebApp_iOS
 	{
 		public UILabel titleLabel { get; set; }
 		public UITableView UpdatesTableView{ get; set; }
-		public UILabel UnderDevelop{ get; set; }
+		public UILabel NoUpdate{ get; set; }
 
 		public ProjectUpdateScreenView ()
 		{
@@ -20,14 +20,21 @@ namespace WebApp_iOS
 			};
 			Add(titleLabel);
 
-			UnderDevelop= new UILabel () 
+			UpdatesTableView= new UITableView () 
+			{
+				BackgroundColor=UIColor.Clear,
+			};
+			Add (UpdatesTableView);
+
+
+			NoUpdate= new UILabel () 
 			{
 				BackgroundColor=UIColor.Clear,
 				TextColor = UIColor.White,
 				TextAlignment=UITextAlignment.Center,
+				Text="No Update",
 			};
-			Add(UnderDevelop);
-
+			Add(NoUpdate);
 			position ();
 		}
 
@@ -46,8 +53,9 @@ namespace WebApp_iOS
 			//***************************************************************************************************************************************************
 			titleLabel.Frame = new RectangleF (0,8, (float)UIScreen.MainScreen.Bounds.Width, 30.0f);
 			titleLabel.Font = UIFont.SystemFontOfSize (18.0f);
-			UnderDevelop.Frame = new RectangleF (0,90, (float)UIScreen.MainScreen.Bounds.Width, 60.0f);
-			UnderDevelop.Font = UIFont.SystemFontOfSize (24.0f);
+			UpdatesTableView.Frame = new RectangleF (0,38f, (float)UIScreen.MainScreen.Bounds.Width, (float)UIScreen.MainScreen.Bounds.Height-38f);
+			NoUpdate.Frame = new RectangleF (0,90, (float)UIScreen.MainScreen.Bounds.Width, 60.0f);
+			NoUpdate.Font = UIFont.SystemFontOfSize (24.0f);
 		}
 	}
 }

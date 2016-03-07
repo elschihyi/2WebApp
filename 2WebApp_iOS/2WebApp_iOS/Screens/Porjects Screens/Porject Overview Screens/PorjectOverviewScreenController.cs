@@ -10,7 +10,7 @@ namespace WebApp_iOS
 		ProjectOverviewScreenView projectOverviewScreenView;
 
 		//object
-		projectsummary theProject;
+		public projectsummary theProject;
 
 		public PorjectOverviewScreenController (projectsummary theProject)
 		{
@@ -43,8 +43,19 @@ namespace WebApp_iOS
 			var y = statusbar + navigationbarHeight;
 			projectOverviewScreenView.Frame = new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y));
 			projectOverviewScreenView.titleLabel.Text="Project Overview";
-			projectOverviewScreenView.UnderDevelop.Text="Under Development";
+			projectOverviewScreenView.OverViewTableView.Source = new ProjectOverviewScreenSource (this);
+			projectOverviewScreenView.ScheduleMeetingBtn.TouchUpInside += (s, e) => {
+				ScheduleMeetingClick();
+			};
+			//projectOverviewScreenView.UnderDevelop.Text="Under Development";
 			View.Add (projectOverviewScreenView);
+		}
+
+		/********************************************************************************
+		*Btn clicks
+		********************************************************************************/
+		public void ScheduleMeetingClick()
+		{
 		}
 	}
 }

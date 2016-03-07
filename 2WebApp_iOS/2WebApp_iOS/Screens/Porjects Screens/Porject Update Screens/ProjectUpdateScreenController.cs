@@ -10,7 +10,7 @@ namespace WebApp_iOS
 		ProjectUpdateScreenView projectUpdateScreenView;
 
 		//object
-		projectsummary theProject;
+		public projectsummary theProject;
 
 		public ProjectUpdateScreenController (projectsummary theProject)
 		{
@@ -35,7 +35,7 @@ namespace WebApp_iOS
 
 		/********************************************************************************
 		*Views initializations
-		********************************************************************************/
+//		********************************************************************************/
 		public void initTableView(){
 			projectUpdateScreenView = new ProjectUpdateScreenView ();
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
@@ -43,8 +43,24 @@ namespace WebApp_iOS
 			var y = statusbar + navigationbarHeight;
 			projectUpdateScreenView.Frame = new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y));
 			projectUpdateScreenView.titleLabel.Text="Recent Update";
-			projectUpdateScreenView.UnderDevelop.Text="Under Development";
+			if (theProject.update != null && theProject.update.Count != 0) {
+				projectUpdateScreenView.NoUpdate.Hidden = true;
+				projectUpdateScreenView.UpdatesTableView.Hidden = false;
+				projectUpdateScreenView.UpdatesTableView.Source = new ProjectUpdateScreenSource (this);
+			} else {
+				projectUpdateScreenView.NoUpdate.Hidden = false;
+				projectUpdateScreenView.UpdatesTableView.Hidden = true;
+			}	
 			View.Add (projectUpdateScreenView);
+		}
+
+		/********************************************************************************
+		*Btn clicks
+		********************************************************************************/
+		public void CellViewClick(int Row)
+		{
+			GlobalAPI.Manager().PushPage(NavigationController,
+				new WebViewController(theProject.update[Row].file_url,theProject.update[Row].name));
 		}
 	}
 }
