@@ -28,20 +28,21 @@ namespace WebApp_iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-			//AutomaticallyAdjustsScrollViewInsets = true;
+			//AutomaticallyAdjustsScrollViewInsets = false;
 			initTableView ();
-			GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+			//GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
 		}
 
 		/********************************************************************************
 		*Views initializations
-//		********************************************************************************/
+		********************************************************************************/
 		public void initTableView(){
-			projectUpdateScreenView = new ProjectUpdateScreenView ();
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
 			var y = statusbar + navigationbarHeight;
-			projectUpdateScreenView.Frame = new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y));
+
+			projectUpdateScreenView = new ProjectUpdateScreenView (
+				new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y-66.0f)));
 			projectUpdateScreenView.titleLabel.Text="Recent Update";
 			if (theProject.update != null && theProject.update.Count != 0) {
 				projectUpdateScreenView.NoUpdate.Hidden = true;

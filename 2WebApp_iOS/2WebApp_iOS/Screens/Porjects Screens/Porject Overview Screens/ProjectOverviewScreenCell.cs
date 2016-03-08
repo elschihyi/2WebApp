@@ -16,11 +16,12 @@ namespace WebApp_iOS
 		public ProjectOverviewScreenCell ()
 		{
 			BackgroundColor = UIColor.Clear;
-			this.Frame = new RectangleF (0, 0, 1.0f*(float)UIScreen.MainScreen.Bounds.Width, (1.0f*(float)UIScreen.MainScreen.Bounds.Height-38f)/5.0f); 
+			SelectionStyle = UITableViewCellSelectionStyle.None;
+			this.Frame = new RectangleF (0, 0, 1.0f*(float)UIScreen.MainScreen.Bounds.Width, 88f); 
 
 			TitleLabel = new UILabel () {
 				Font = UIFont.BoldSystemFontOfSize ( 16f),
-				TextColor = UIColor.FromRGB(75,200,215),
+				TextColor = UIColor.FromRGB(0,172,237),
 				TextAlignment = UITextAlignment.Center,
 				Text = "",
 				Frame = new RectangleF (0f * (float)Frame.Width, 0, 1.0f * (float)Frame.Width, 0.5f * (float)Frame.Height),
@@ -28,8 +29,8 @@ namespace WebApp_iOS
 			Add (TitleLabel);
 
 			SeperateView = new UIView () {
-				BackgroundColor = UIColor.FromRGB (75, 200, 215),
-				Frame = new RectangleF (0f * (float)Frame.Width, 0.48f * (float)Frame.Height, 1.0f * (float)Frame.Width, 0.04f * (float)Frame.Height),
+				BackgroundColor = UIColor.FromRGB (0,172,237),
+				Frame = new RectangleF (0f * (float)Frame.Width, 0.49f * (float)Frame.Height, 1.0f * (float)Frame.Width, 0.02f * (float)Frame.Height),
 			};
 			Add (SeperateView);
 

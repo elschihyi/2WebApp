@@ -11,11 +11,12 @@ namespace WebApp_iOS
 		public UIButton ScheduleMeetingBtn{get;set;}
 
 		//public UILabel UnderDevelop{ get; set; }
-		public ProjectOverviewScreenView ()
+		public ProjectOverviewScreenView (RectangleF Frame)
 		{
+			this.Frame = Frame;
 			titleLabel= new UILabel () 
 			{
-				BackgroundColor=UIColor.FromRGB(100,200,255),
+				BackgroundColor=UIColor.FromRGB(0,172,237),
 				TextColor = UIColor.White,
 				TextAlignment=UITextAlignment.Center,
 			};
@@ -24,12 +25,14 @@ namespace WebApp_iOS
 			OverViewTableView= new UITableView () 
 			{
 				BackgroundColor=UIColor.Clear,
+				ScrollEnabled=false,
 			};
 			Add (OverViewTableView);
 
 
 			ScheduleMeetingBtn = UIButton.FromType (UIButtonType.RoundedRect);
-			ScheduleMeetingBtn.BackgroundColor = UIColor.FromRGB(100,200,255);
+			ScheduleMeetingBtn.BackgroundColor = UIColor.FromRGB(0,172,237);
+			ScheduleMeetingBtn.SetTitleColor (UIColor.White,UIControlState.Normal);
 			ScheduleMeetingBtn.SetTitle ("Schedule a Meeting",UIControlState.Normal);
 			Add (ScheduleMeetingBtn);
 
@@ -58,13 +61,10 @@ namespace WebApp_iOS
 		{
 			//Frame=new RectangleF (0,0, (float)UIScreen.MainScreen.Bounds.Width, (float)UIScreen.MainScreen.Bounds.Height);
 			//***************************************************************************************************************************************************
-			titleLabel.Frame = new RectangleF (0,8, (float)UIScreen.MainScreen.Bounds.Width, 30.0f);
+			titleLabel.Frame = new RectangleF (5f,8, (float)UIScreen.MainScreen.Bounds.Width-10f, 30.0f);
 			titleLabel.Font = UIFont.SystemFontOfSize (18.0f);
-			OverViewTableView.Frame = new RectangleF (0,38f, (float)UIScreen.MainScreen.Bounds.Width, 4f*((float)UIScreen.MainScreen.Bounds.Height-38f)/5f);
-			ScheduleMeetingBtn.Frame = new RectangleF (0.2f * (float)Frame.Width, (float)UIScreen.MainScreen.Bounds.Height-(1.0f*(float)UIScreen.MainScreen.Bounds.Height-38f)/5.0f, 
-				0.6f * (float)Frame.Width,  (1.0f*(float)UIScreen.MainScreen.Bounds.Height-38f)/5.0f);
-			//UnderDevelop.Frame = new RectangleF (0,90, (float)UIScreen.MainScreen.Bounds.Width, 60.0f);
-			//UnderDevelop.Font = UIFont.SystemFontOfSize (24.0f);
+			OverViewTableView.Frame = new RectangleF (0f,38f, (float)UIScreen.MainScreen.Bounds.Width, 352f);
+			ScheduleMeetingBtn.Frame = new RectangleF (0.2f * (float)Frame.Width, 410f, 0.6f * (float)Frame.Width,  44f);
 		}
 	}
 }

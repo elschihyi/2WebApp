@@ -2,6 +2,7 @@
 using UIKit;
 using CoreDataService;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace WebApp_iOS
 {
@@ -24,8 +25,8 @@ namespace WebApp_iOS
 		{
 			base.ViewWillAppear (animated);
 			AutomaticallyAdjustsScrollViewInsets = true;
-			NavigationItem.Title=theProject.name;
-			View.Frame = View.Bounds;
+			View.Frame =View.Bounds;
+
 			List<UIViewController> pages = new List<UIViewController> ();
 
 			ProjectUpdateScreenController projectUpdateController = new ProjectUpdateScreenController (theProject);
@@ -42,6 +43,8 @@ namespace WebApp_iOS
 
 			DataSource = new CustomScreenPageDataSource<UIViewController> (pages);
 			SetViewControllers (new UIViewController[] { pages [0] }, UIPageViewControllerNavigationDirection.Forward, false, null);
+			GlobalAPI.Manager ().PageDefault (this, theProject.name, true, true);
+			//UIPageControl.Appearance.PageIndicatorTintColor = UIColor.White;
 		}
 	}
 

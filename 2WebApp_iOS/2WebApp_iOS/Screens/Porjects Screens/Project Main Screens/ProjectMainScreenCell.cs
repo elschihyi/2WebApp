@@ -11,16 +11,19 @@ namespace WebApp_iOS
 
 		public UILabel projectNameLabel{ get; set;}
 		public UIImageView projectStatusImageView{ get; set;}
+		public UIImageView arrowImageView{get;set;}
+
 		public ProjectMainScreenCell ()
 		{
 			Frame = new RectangleF (0, 0, (float)UIScreen.MainScreen.Bounds.Width, 80.0f);
 			BackgroundColor = UIColor.Clear;
+			SelectionStyle = UITableViewCellSelectionStyle.None;
 
 			projectNameLabel = new UILabel () {
 				Font = UIFont.BoldSystemFontOfSize (16f),
 				TextColor = UIColor.White,
 				TextAlignment = UITextAlignment.Left,
-				Frame = new RectangleF (0.05f * (float)Frame.Width, 0, 0.9f * (float)Frame.Width, 0.25f * (float)Frame.Height),
+				Frame = new RectangleF (0.05f * (float)Frame.Width, 0, 0.8f * (float)Frame.Width, 0.25f * (float)Frame.Height),
 			};
 			Add (projectNameLabel);
 
@@ -30,6 +33,12 @@ namespace WebApp_iOS
 			};	
 			Add (projectStatusImageView);
 
+			arrowImageView = new UIImageView () {
+				ContentMode = UIViewContentMode.ScaleAspectFit,
+				Image=new UIImage ("Cut_Images/Arrow_Icon_Blue.png"),
+				Frame = new RectangleF (0.85f * (float)Frame.Width, 0, 0.15f * (float)Frame.Width,  0.25f * (float)Frame.Height),
+			};	
+			Add (arrowImageView);
 
 		}
 	}

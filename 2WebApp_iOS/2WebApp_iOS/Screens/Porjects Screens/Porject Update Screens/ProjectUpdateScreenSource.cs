@@ -43,12 +43,25 @@ namespace WebApp_iOS
 		public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
 		{
 			var cell = tableView.DequeueReusableCell (ProjectUpdateScreenCell.Key) as ProjectUpdateScreenCell;
-			if (cell == null)
-				cell = new ProjectUpdateScreenCell (ProjectUpdateScreenController.CellViewClick);
+			if (cell == null) {
+				cell = new ProjectUpdateScreenCell ();
+				cell.viewBtn.TouchUpInside += (s, e) => {
+					ProjectUpdateScreenController.CellViewClick(indexPath.Row);
+				};
+			}
 			cell.nameLabel.Text = theProject.update [indexPath.Row].name;
-			cell.dateLabel.Text = theProject.update [indexPath.Row].date;
+			if (String.IsNullOrEmpty (theProject.update [indexPath.Row].date)) {
+				cell.dateLabel.Text = DateTime.Now.ToString ("MMMM dd,yyyy")+"(fake)";
+			} else {	
+				cell.dateLabel.Text = theProject.update [indexPath.Row].date;
+			}
 			cell.Row = indexPath.Row;
 			return cell;
+		}
+
+		public override nfloat GetHeightForRow (UITableView tableView, NSIndexPath indexPath)
+		{
+			return 88.0f;
 		}
 	}
 }

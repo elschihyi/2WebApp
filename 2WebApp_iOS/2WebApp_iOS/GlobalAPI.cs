@@ -455,9 +455,27 @@ namespace WebApp_iOS
 
 		}
 
+
 		public MarketResource[] LoadMarketResources ()
 		{
+			//grab markets
+			var markets = new List<MarketResource> (); 
 
+			try {
+				var posts = RssFeedReader.Manager ().ReadMarketResources (); 
+				foreach (var post in posts) {
+					markets.Add (new MarketResource {
+						MarketResourceTitle = post.Title,
+						ImageUrl = post.thumbnailUrl,
+						Url = post.Link
+					}); 
+				}
+			} catch (Exception e) {
+
+			}
+
+			return markets.ToArray (); 
+			/*
 			return new MarketResource[] { 
 				new MarketResource { MarketResourceTitle = "First Market Resource",
 					ImageUrl = "http://www.2webdesign.com/blog/wp-content/uploads/2015/05/attract4web.jpg",
@@ -472,6 +490,7 @@ namespace WebApp_iOS
 					Url = "http://www.2webdesign.com/blog/6569/limited-seats-remaining-in-develop-a-social-media-strategy-workshop/"
 				}
 			}; 
+			*/
 		}
 
 		public NewsLetter[] LoadNewsletters ()

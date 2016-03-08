@@ -30,20 +30,20 @@ namespace WebApp_iOS
 			base.ViewDidLoad ();
 			//AutomaticallyAdjustsScrollViewInsets = true;
 			initTableView ();
-			GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+			//GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
 		}
 
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
 		public void initTableView(){
-			projectStatusScreenView = new ProjectStatusScreenView ();
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
 			var y = statusbar + navigationbarHeight;
-			projectStatusScreenView.Frame = new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y));
+
+			projectStatusScreenView = new ProjectStatusScreenView (new RectangleF(0f,(float)y,
+				(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y-66.0f)),theProject.status,"completed");		
 			projectStatusScreenView.titleLabel.Text="Project Status";
-			projectStatusScreenView.UnderDevelop.Text="Under Development";
 			View.Add (projectStatusScreenView);
 		}
 	}

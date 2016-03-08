@@ -28,22 +28,18 @@ namespace WebApp_iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-			//AutomaticallyAdjustsScrollViewInsets = true;
-			initTableView ();
-			GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+			initView ();
 		}
 
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
-		public void initTableView(){
-			projectSupportScreenView = new ProjectSupportScreenView ();
+		public void initView(){
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
 			var y = statusbar + navigationbarHeight;
-			projectSupportScreenView.Frame = new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y));
+			projectSupportScreenView = new ProjectSupportScreenView (theProject,new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y)));
 			projectSupportScreenView.titleLabel.Text="Project Support";
-			projectSupportScreenView.UnderDevelop.Text="Under Development";
 			View.Add (projectSupportScreenView);
 		}
 	}

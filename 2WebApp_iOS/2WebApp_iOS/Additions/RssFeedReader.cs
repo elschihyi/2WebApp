@@ -40,7 +40,7 @@ namespace WebApp_iOS
 
 			rssBlogs = XDocument.Load ("http://www.2webdesign.com/blog/feed/");
 			rssEmailBlasts = XDocument.Load ("http://www.2webdesign.com/blog/category/email-blasts/feed/"); 
-			//rssMarketFeeds = XDocument.Load (""); 
+			rssMarketFeeds = XDocument.Load ("https://www.2webdesign.com/blog/category/marketing-resources/feed/"); 
 			rssEvents = XDocument.Load ("http://www.2webdesign.com/blog/category/event/feed/"); 
 
 		}

@@ -28,26 +28,23 @@ namespace WebApp_iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-			//AutomaticallyAdjustsScrollViewInsets = true;
 			initTableView ();
-			GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
 		}
 
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
 		public void initTableView(){
-			projectOverviewScreenView = new ProjectOverviewScreenView ();
+			
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
 			var y = statusbar + navigationbarHeight;
-			projectOverviewScreenView.Frame = new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y));
+			projectOverviewScreenView = new ProjectOverviewScreenView (new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y)));
 			projectOverviewScreenView.titleLabel.Text="Project Overview";
 			projectOverviewScreenView.OverViewTableView.Source = new ProjectOverviewScreenSource (this);
 			projectOverviewScreenView.ScheduleMeetingBtn.TouchUpInside += (s, e) => {
 				ScheduleMeetingClick();
 			};
-			//projectOverviewScreenView.UnderDevelop.Text="Under Development";
 			View.Add (projectOverviewScreenView);
 		}
 

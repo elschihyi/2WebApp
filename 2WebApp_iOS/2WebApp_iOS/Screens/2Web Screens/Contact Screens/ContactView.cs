@@ -31,7 +31,7 @@ namespace WebApp_iOS
 
 			titleLabel= new UILabel () 
 			{
-				BackgroundColor=UIColor.FromRGB(100,200,255),
+				BackgroundColor=UIColor.FromRGB(0,172,237),
 				TextColor = UIColor.White,
 				TextAlignment=UITextAlignment.Center,
 			};

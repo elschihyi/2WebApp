@@ -342,6 +342,16 @@
     <BundleResource Include="Resources\launch_images\01-Splash_crane_095.jpg" />
     <BundleResource Include="Resources\launch_images\01-Splash_crane_096.jpg" />
     <BundleResource Include="Resources\launch_images\01-Splash_crane_097.jpg" />
+    <BundleResource Include="Resources\Cut_Images\phase1_blue.png" />
+    <BundleResource Include="Resources\Cut_Images\phase1_grey.png" />
+    <BundleResource Include="Resources\Cut_Images\phase2_blue.png" />
+    <BundleResource Include="Resources\Cut_Images\phase2_grey.png" />
+    <BundleResource Include="Resources\Cut_Images\phase3_blue.png" />
+    <BundleResource Include="Resources\Cut_Images\phase3_grey.png" />
+    <BundleResource Include="Resources\Cut_Images\phase4_blue.png" />
+    <BundleResource Include="Resources\Cut_Images\phase4_grey.png" />
+    <BundleResource Include="Resources\Cut_Images\phase5_blue.png" />
+    <BundleResource Include="Resources\Cut_Images\phase5_grey.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

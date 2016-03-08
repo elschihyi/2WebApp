@@ -74,7 +74,7 @@ namespace WebApp_iOS
 
 		public override nfloat GetHeightForRow (UITableView tableView, NSIndexPath indexPath)
 		{
-			return (1.0f * (float)UIScreen.MainScreen.Bounds.Height - 38f) / 5.0f;
+			return 88f;
 		}
 	}
 }
