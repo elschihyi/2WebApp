@@ -237,7 +237,7 @@ namespace CoreDataService
 						projectsummary sum = new projectsummary ();
 						sum.name = proj.name;
 						sum.type = proj.type;
-						sum.status = proj.status;
+						sum.phase = proj.phase;
 						sum.org_name = proj.org_name;
 						sum.client_name = proj.client_name;
 						sum.client_email = proj.client_email;
@@ -255,7 +255,7 @@ namespace CoreDataService
 							callback (false, errmsg);
 							return;
 						}
-						sum.update = (List<task>)taskdata;
+						sum.tasks = (List<task>)taskdata;
 
 						// for support packages
 						object suppkgdata;

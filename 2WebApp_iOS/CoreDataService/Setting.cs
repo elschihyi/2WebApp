@@ -75,53 +75,92 @@ namespace CoreDataService
 			projectsummary demo = new projectsummary();
 			demo.name = "2 Web Demo Project";
 			demo.type = "DEMO";
-			demo.status = "In Process";
+			demo.phase = "Discovery";
 			demo.org_name = "2 Web Design Demo";
 			demo.client_name = "0";
 			demo.client_email = "test@test.com";
 			demo.staff_name = "0";
 			demo.staff_email = "hardik@2webdesign.com";
 
-			demo.update =new List<task> ();
+			demo.tasks =new List<task> ();
 			task newtask = new task ();
 			newtask.name = "Project Proposal delivered to client";
-			demo.update.Add (newtask);
+			newtask.display = "1";
+			newtask.status = "Planning";
+			newtask.date = "2015-04-01 00:00:00";
+			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Client Agreement Signed";
-			demo.update.Add (newtask);
+			newtask.display = "1";
+			newtask.status = "Planning";
+			newtask.date = "2015-04-17 00:00:00";
+			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Project Charter delivered";
-			demo.update.Add (newtask);
+			newtask.display = "0";
+			newtask.status = "Planning";
+			newtask.date = "2015-04-24 00:00:00";
+			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Project Charter Signed";
-			demo.update.Add (newtask);
+			newtask.display = "1";
+			newtask.status = "Planning";
+			newtask.date = "2015-04-30 00:00:00";
+			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Homepage Designs started";
-			demo.update.Add (newtask);
+			newtask.display = "0";
+			newtask.status = "Design Update";
+			newtask.date = "2015-05-04 00:00:00";
+			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Internal Page designs started";
-			demo.update.Add (newtask);
+			newtask.display = "0";
+			newtask.status = "Design Update";
+			newtask.date = "2015-05-15 00:00:00";
+			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Designs sent to client for feedback";
-			demo.update.Add (newtask);
-			newtask = new task ();
-			newtask.name = "Design Review Meeting";
-			demo.update.Add (newtask);
+			newtask.display = "0";
+			newtask.status = "Design Update";
+			newtask.date = "2015-05-20 00:00:00";
+			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Design Approval Signed";
-			demo.update.Add (newtask);
-			newtask = new task ();
-			newtask.name = "Database setup complete";
-			demo.update.Add (newtask);
-			newtask = new task ();
-			newtask.name = "Navigation Design Change Requested";
-			demo.update.Add (newtask);
+			newtask.display = "1";
+			newtask.status = "Design Update";
+			newtask.date = "2015-05-29 00:00:00";
+			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Slice Updated for Navigation Change";
-			demo.update.Add (newtask);
+			newtask.display = "0";
+			newtask.status = "Design Update";
+			newtask.date = "2015-06-11 00:00:00";
+			demo.tasks.Add (newtask);
+			newtask = new task ();
+			newtask.name = "Database setup complete";
+			newtask.display = "0";
+			newtask.status = "Development Update";
+			newtask.date = "2015-06-03 00:00:00";
+			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "New Slice for Navigation change applied";
-			demo.update.Add (newtask);
+			newtask.display = "0";
+			newtask.status = "Development Update";
+			newtask.date = "2015-06-16 00:00:00";
+			demo.tasks.Add (newtask);
+			newtask = new task ();
+			newtask.name = "Design Review Meeting";
+			newtask.display = "0";
+			newtask.status = "Discussion / Meeting";
+			newtask.date = "2015-05-22 00:00:00";
+			demo.tasks.Add (newtask);
+			newtask = new task ();
+			newtask.name = "Navigation Design Change Requested";
+			newtask.display = "0";
+			newtask.status = "Feature Change Item";
+			newtask.date = "2015-06-04 00:00:00";
+			demo.tasks.Add (newtask);
 			
 			demo.support_package = new List<support> ();
 			support newsupp = new support ();
@@ -155,8 +194,6 @@ namespace CoreDataService
 		private static DataService ds = null;
 		private UITextView testView = null;
 
-
-		//public CoreDataServiceTestUI (IntPtr handle) : base (handle)
 		public CoreDataServiceTestUI () 
 		{
 		}
@@ -207,7 +244,7 @@ namespace CoreDataService
 				} else {
 					testView.Text = "Project Information:\n";
 					foreach(var item in projs) {
-						testView.Text += String.Format("Name: {0}\nType: {1}\nStatus: {2}\n",item.name,item.type,item.status);
+						testView.Text += String.Format("Name: {0}\nType: {1}\nStatus: {2}\n",item.name,item.type,item.phase);
 					}
 				}
 

@@ -364,7 +364,7 @@ namespace CoreDataService
 
 		public string type { get; set; } = "";
 
-		public string status { get; set; } = "";
+		public string phase { get; set; } = "";
 
 		public string org_name { get; set; } = "";
 
@@ -381,6 +381,10 @@ namespace CoreDataService
 	public class task
 	{
 		public string name { get; set; } = "";
+		
+		public string display { get; set; } = "";
+		
+		public string status { get; set; } = "";
 
 		public string date { get; set; } = "";
 
@@ -410,7 +414,7 @@ namespace CoreDataService
 
 		public string type { get; set; } = "";
 
-		public string status { get; set; } = "";
+		public string phase { get; set; } = "";
 
 		public string org_name { get; set; } = "";
 
@@ -422,7 +426,7 @@ namespace CoreDataService
 
 		public string staff_email { get; set; } = "";
 
-		public List<task> update { get; set; } = null;
+		public List<task> tasks { get; set; } = null;
 
 		public List<support> support_package { get; set; } = null;
 	}
