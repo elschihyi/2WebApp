@@ -1,6 +1,4 @@
-﻿
-using System;
-
+﻿using System;
 using Foundation;
 using UIKit;
 using System.Drawing;
@@ -54,7 +52,7 @@ namespace WebApp_iOS
 					SyncLabel.BackgroundColor = UIColor.Clear;
 					SyncLabel.TextColor = UIColor.White;
 					SyncLabel.Text="Laoding Data..";
-					SyncLabel.Font=UIFont.SystemFontOfSize (16f);
+					SyncLabel.Font=UIFont.SystemFontOfSize (20f);
 					SyncLabel.TextAlignment = UITextAlignment.Center;
 					SyncLabel.Frame=new RectangleF(0f*(float)UIScreen.MainScreen.Bounds.Width,
 						0.8f*(float)UIScreen.MainScreen.Bounds.Height,
@@ -64,26 +62,16 @@ namespace WebApp_iOS
 				}	
 
 			} else {// Stop if at end
-				if (SyncSuccess) {
-					//preload rss feed
-					GlobalAPI.Manager ().loadRss ();
+				//preload rss feed
+				GlobalAPI.Manager ().loadRss ();
 
-					//dispose timer
-					timer.Invalidate ();
-					timer.Dispose ();
-					timer = null;
-					animatedImage = null;  
-					GlobalAPI.Manager ().PushPage (NavigationController, new WelcomePage ());  
-				} else {
-					//preload rss feed
-					GlobalAPI.Manager ().loadRss ();
+				//dispose timer
+				timer.Invalidate ();
+				timer.Dispose ();
+				timer = null;
+				animatedImage = null;
 
-					//dispose timer
-					timer.Invalidate ();
-					timer.Dispose ();
-					timer = null;
-					animatedImage = null; 
-
+				if (!SyncSuccess) {
 					//alert
 					UIAlertController Alert = UIAlertController.Create ("Sync Error",
 						SyncErrMsg, UIAlertControllerStyle.Alert);
@@ -92,8 +80,9 @@ namespace WebApp_iOS
 							GlobalAPI.Manager ().PushPage (NavigationController, new WelcomePage ()); 
 						}
 					));
-					PresentViewController (Alert, true, null);
-				}
+					PresentViewController (Alert, true, null);  
+				} 
+				GlobalAPI.Manager ().PushPage (NavigationController, new WelcomePage ());
 			}	
 		}
 
@@ -128,7 +117,10 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void syncData(){
 			DataService dataService = GlobalAPI.GetDataService();
-			dataService.Sync (SyncRespond);
+			user testUser = new user ();
+			testUser.username = CoreDataService.Settings.test_username;
+			testUser.password = CoreDataService.Settings.test_password;
+			dataService.Sync (testUser,false,SyncRespond);
 		}
 
 		/********************************************************************************

@@ -72,10 +72,10 @@ namespace WebApp_iOS
 			if (!dataService.ProjectInfo (out projectList, out errmsg)) {
 				projectList = new List<projectsummary> ();
 				InvokeOnMainThread (() => {
-					loadingOverlayView.Hide ();
 					initTableView ();
 					//put menu and setting
 					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+					loadingOverlayView.Hide ();
 					//alert
 					UIAlertController Alert = UIAlertController.Create ("Error",
 						                         errmsg, UIAlertControllerStyle.Alert);

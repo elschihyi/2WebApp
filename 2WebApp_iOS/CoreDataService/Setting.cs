@@ -156,7 +156,8 @@ namespace CoreDataService
 		private UITextView testView = null;
 
 
-		public CoreDataServiceTestUI (IntPtr handle) : base (handle)
+		//public CoreDataServiceTestUI (IntPtr handle) : base (handle)
+		public CoreDataServiceTestUI () 
 		{
 		}
 
@@ -225,7 +226,9 @@ namespace CoreDataService
 
 		void callBack (Boolean succeed, string errmsg)
 		{
-			testView.Text += "\nBackground synchronization is done\n\n";
+			InvokeOnMainThread(()=>{
+				testView.Text += "\nBackground synchronization is done\n\n";
+			});
 		}
 
 	}

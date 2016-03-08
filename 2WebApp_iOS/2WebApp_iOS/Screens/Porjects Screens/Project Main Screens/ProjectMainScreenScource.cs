@@ -47,7 +47,7 @@ namespace WebApp_iOS
 			case "Design":
 				cell.projectStatusImageView.Image = new UIImage ("project_graphics/design.png");
 				break;
-			case "Development":
+			case "Developement":
 				cell.projectStatusImageView.Image = new UIImage ("project_graphics/developement.png");
 				break;
 			case "Testing":

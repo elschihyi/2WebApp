@@ -5,14 +5,14 @@ using Foundation;
 using UIKit;
 using SatelliteMenu;
 using CoreGraphics;
+using System.Drawing;
+using CoreDataService;
 
 namespace WebApp_iOS
 {
 	public partial class WelcomePage : UIViewController
 	{
-
-
-
+		
 
 		public WelcomePage () : base ("WelcomePage", null)
 		{
@@ -77,7 +77,20 @@ namespace WebApp_iOS
 				//GlobalAPI.Manager().PushPage(NavigationController,GlobalAPI.Manager().getMainSupport());
 			};
 
-		
+		    //for Hidden screen
+			int hiddenBtnClick=0;
+			UIButton hiddenBtn=UIButton.FromType(UIButtonType.RoundedRect);
+			hiddenBtn.BackgroundColor = UIColor.Clear;
+			hiddenBtn.Frame = new RectangleF (0f, (float)UIScreen.MainScreen.Bounds.Width/2-15.0f, 30.0f, 30.0f);
+			hiddenBtn.TouchUpInside += (s, e) => {
+				if(hiddenBtnClick<3){
+					hiddenBtnClick++;
+				}else{
+					hiddenBtnClick=0;
+					GlobalAPI.Manager().PushPage(NavigationController,new CoreDataServiceTestUI ());
+				}		
+			};
+			View.Add (hiddenBtn);
 		}
 	}
 }
