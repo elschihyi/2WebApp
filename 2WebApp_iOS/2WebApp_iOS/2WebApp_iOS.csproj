@@ -134,10 +134,6 @@
     <InterfaceDefinition Include="Screens\Lunch Screens\LunchPage~iphone.xib" />
     <InterfaceDefinition Include="Screens\Settings Screens\Settings2_iPad.xib" />
     <InterfaceDefinition Include="Screens\Settings Screens\Settings2_iPhone.xib" />
-    <InterfaceDefinition Include="Screens\Support Screens\MainSupport~ipad.xib" />
-    <InterfaceDefinition Include="Screens\Support Screens\MainSupport~iphone.xib" />
-    <InterfaceDefinition Include="Screens\Support Screens\SupportDetail~ipad.xib" />
-    <InterfaceDefinition Include="Screens\Support Screens\SupportDetail~iphone.xib" />
     <InterfaceDefinition Include="Screens\SignUp Screens\SignUpUser~ipad.xib" />
     <InterfaceDefinition Include="Screens\SignUp Screens\SignUpUser~iphone.xib" />
     <InterfaceDefinition Include="Screens\Welcome Screens\WelcomePage~ipad.xib" />
@@ -406,17 +402,6 @@
       <DependentUpon>..\..\Settings Screens\Settings_1.cs</DependentUpon>
     </Compile>
     <Compile Include="Screens\Settings Screens\Settings_1.cs" />
-    <Compile Include="Screens\Support Screens\MainSupport.cs" />
-    <Compile Include="Screens\Support Screens\MainSupport.designer.cs">
-      <DependentUpon>..\..\Support Screens\MainSupport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Screens\Support Screens\Support.cs" />
-    <Compile Include="Screens\Support Screens\SupportCell.cs" />
-    <Compile Include="Screens\Support Screens\SupportDetail.cs" />
-    <Compile Include="Screens\Support Screens\SupportDetail.designer.cs">
-      <DependentUpon>..\..\Support Screens\SupportDetail.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Screens\Support Screens\SupportTableSource.cs" />
     <Compile Include="Screens\WebView\WebViewController.cs" />
     <Compile Include="Screens\SignUp Screens\SignUpUser.cs" />
     <Compile Include="Screens\SignUp Screens\SignUpUser.designer.cs">
@@ -448,6 +433,9 @@
     <Compile Include="Screens\Porjects Screens\Porject Update Screens\ProjectUpdateScreenCell.cs" />
     <Compile Include="Screens\Porjects Screens\Porject Overview Screens\ProjectOverviewScreenSource.cs" />
     <Compile Include="Screens\Porjects Screens\Porject Overview Screens\ProjectOverviewScreenCell.cs" />
+    <Compile Include="Screens\Support Screens\Support Main Screens\SupportMainScreenController.cs" />
+    <Compile Include="Screens\Support Screens\Support Main Screens\SupportMainScreenSource.cs" />
+    <Compile Include="Screens\Support Screens\Support Main Screens\SupoortMainScreenCell.cs" />
   </ItemGroup>
   <Import Project="..\CoreDataService\CoreDataService.projitems" Label="Shared" Condition="Exists('..\CoreDataService\CoreDataService.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
@@ -466,7 +454,6 @@
     <Folder Include="Screens\Login Screens\" />
     <Folder Include="Screens\Lunch Screens\" />
     <Folder Include="Screens\Settings Screens\" />
-    <Folder Include="Screens\Support Screens\" />
     <Folder Include="Screens\WebView\" />
     <Folder Include="Screens\SignUp Screens\" />
     <Folder Include="Screens\Welcome Screens\" />
@@ -478,6 +465,8 @@
     <Folder Include="Screens\Porjects Screens\Porject Update Screens\" />
     <Folder Include="Screens\Porjects Screens\Project Status Screens\" />
     <Folder Include="Screens\Porjects Screens\Project Support Screens\" />
+    <Folder Include="Screens\Support Screens\" />
+    <Folder Include="Screens\Support Screens\Support Main Screens\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\gear.png" />

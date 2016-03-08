@@ -23,8 +23,8 @@ namespace WebApp_iOS
 
 		public override nint RowsInSection (UITableView tableview, nint section)
 		{
-			if (theProject.update != null) {
-				return theProject.update.Count;
+			if (theProject.tasks != null) {
+				return theProject.tasks.Count;
 			} else {
 				return 0;
 			}	
@@ -49,11 +49,13 @@ namespace WebApp_iOS
 					ProjectUpdateScreenController.CellViewClick(indexPath.Row);
 				};
 			}
-			cell.nameLabel.Text = theProject.update [indexPath.Row].name;
-			if (String.IsNullOrEmpty (theProject.update [indexPath.Row].date)) {
-				cell.dateLabel.Text = DateTime.Now.ToString ("MMMM dd,yyyy")+"(fake)";
-			} else {	
-				cell.dateLabel.Text = theProject.update [indexPath.Row].date;
+			cell.nameLabel.Text = theProject.tasks [indexPath.Row].name;
+			if (String.IsNullOrEmpty (theProject.tasks [indexPath.Row].date)) {
+				cell.dateLabel.Text = "";
+				//cell.dateLabel.Text = DateTime.Now.ToString ("MMMM dd,yyyy")+"(fake)";
+			} else {
+				DateTime theDate = DateTime.ParseExact (theProject.tasks [indexPath.Row].date, "yyyy-MM-dd HH:mm:ss", null);	
+				cell.dateLabel.Text = theDate.ToString("MMMM dd, yyyy");
 			}
 			cell.Row = indexPath.Row;
 			return cell;

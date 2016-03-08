@@ -149,6 +149,7 @@ namespace WebApp_iOS
 			ResultLabelView= new UILabel () {
 				BackgroundColor =UIColor.Black,
 				TextColor=UIColor.White,
+				TextAlignment=UITextAlignment.Center,
 			};
 			Add (ResultLabelView);
 
@@ -233,8 +234,8 @@ namespace WebApp_iOS
 			PhaseNameStatusLabel.Font=UIFont.SystemFontOfSize (8.0f);
 			CheckImageView.Frame=new RectangleF((float)PhaseNameStatusLabel.Frame.X+(float)PhaseNameStatusLabel.Frame.Width,0.575f*(float)Frame.Height,
 				0.10f*(float)Frame.Height,0.10f*(float)Frame.Height);
-			ResultLabelView.Frame=new RectangleF(0.5f*(float)Frame.Width-(float)ResultLabelView.IntrinsicContentSize.Width/2.0f,0.75f*(float)Frame.Height,
-				(float)ResultLabelView.IntrinsicContentSize.Width,0.25f*(float)Frame.Height);
+			ResultLabelView.Frame=new RectangleF(0.5f*(float)Frame.Width-(float)ResultLabelView.IntrinsicContentSize.Width/2.0f-5f,0.75f*(float)Frame.Height,
+				(float)ResultLabelView.IntrinsicContentSize.Width+10f,0.25f*(float)Frame.Height);
 			ResultLabelView.Font=UIFont.SystemFontOfSize (12.0f);
 			ResultBorderView.Frame=new RectangleF((float)ResultLabelView.Frame.X-1f,(float)ResultLabelView.Frame.Y-1f,
 				(float)ResultLabelView.Frame.Width+2f,(float)ResultLabelView.Frame.Height+2f);

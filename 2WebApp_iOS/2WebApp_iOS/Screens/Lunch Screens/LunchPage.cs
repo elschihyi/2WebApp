@@ -51,7 +51,7 @@ namespace WebApp_iOS
 					SyncLabel = new UILabel ();
 					SyncLabel.BackgroundColor = UIColor.Clear;
 					SyncLabel.TextColor = UIColor.White;
-					SyncLabel.Text="Laoding Data..";
+					SyncLabel.Text="Loading Data..";
 					SyncLabel.Font=UIFont.SystemFontOfSize (20f);
 					SyncLabel.TextAlignment = UITextAlignment.Center;
 					SyncLabel.Frame=new RectangleF(0f*(float)UIScreen.MainScreen.Bounds.Width,

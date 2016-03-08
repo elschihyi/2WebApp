@@ -5,16 +5,20 @@ using System.Drawing;
 
 namespace WebApp_iOS
 {
+	//public enum FromScreenToSupport{Project,Support};
+
 	public class ProjectSupportScreenController: UIViewController
 	{
 		ProjectSupportScreenView projectSupportScreenView;
 
+		//FromScreenToSupport fromScreen;
 		//object
 		projectsummary theProject;
 
 		public ProjectSupportScreenController (projectsummary theProject)
 		{
 			this.theProject = theProject;
+			//this.fromScreen = fromScreen;
 		}
 
 		public override void DidReceiveMemoryWarning ()
@@ -38,7 +42,9 @@ namespace WebApp_iOS
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
 			var y = statusbar + navigationbarHeight;
-			projectSupportScreenView = new ProjectSupportScreenView (theProject,new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y)));
+			projectSupportScreenView = 
+				new ProjectSupportScreenView (theProject, new RectangleF (0f, (float)y,
+					(float)UIScreen.MainScreen.Bounds.Width, (float)(UIScreen.MainScreen.Bounds.Height - y)));	
 			projectSupportScreenView.titleLabel.Text="Project Support";
 			View.Add (projectSupportScreenView);
 		}

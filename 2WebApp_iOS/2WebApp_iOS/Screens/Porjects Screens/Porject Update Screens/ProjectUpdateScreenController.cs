@@ -33,6 +33,12 @@ namespace WebApp_iOS
 			//GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
 		}
 
+		public override void ViewDidAppear (bool animated)
+		{
+			base.ViewDidAppear (animated);
+			AutomaticallyAdjustsScrollViewInsets = false;
+		}
+
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
@@ -44,7 +50,7 @@ namespace WebApp_iOS
 			projectUpdateScreenView = new ProjectUpdateScreenView (
 				new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y-66.0f)));
 			projectUpdateScreenView.titleLabel.Text="Recent Update";
-			if (theProject.update != null && theProject.update.Count != 0) {
+			if (theProject.tasks != null && theProject.tasks.Count != 0) {
 				projectUpdateScreenView.NoUpdate.Hidden = true;
 				projectUpdateScreenView.UpdatesTableView.Hidden = false;
 				projectUpdateScreenView.UpdatesTableView.Source = new ProjectUpdateScreenSource (this);
@@ -61,7 +67,7 @@ namespace WebApp_iOS
 		public void CellViewClick(int Row)
 		{
 			GlobalAPI.Manager().PushPage(NavigationController,
-				new WebViewController(theProject.update[Row].file_url,theProject.update[Row].name));
+				new WebViewController(theProject.tasks[Row].file_url,theProject.tasks[Row].name));
 		}
 	}
 }

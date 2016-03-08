@@ -7,6 +7,7 @@ namespace WebApp_iOS
 	public class ProjectMainScreenScource: UITableViewSource
 	{
 		ProjectMainController ProjectMainController;
+
 		public ProjectMainScreenScource (ProjectMainController ProjectMainController)
 		{
 			this.ProjectMainController=ProjectMainController;
@@ -40,7 +41,7 @@ namespace WebApp_iOS
 
 			cell.projectNameLabel.Text = ProjectMainController.projectList [indexPath.Row].name;
 			//cell.projectNameLabel.Text += " "+ProjectMainController.projectList [indexPath.Row].status;
-			switch (ProjectMainController.projectList [indexPath.Row].status) {
+			switch (ProjectMainController.projectList [indexPath.Row].phase) {
 			case "Discovery":
 				cell.projectStatusImageView.Image = new UIImage ("project_graphics/project_discovery.png");
 				break;

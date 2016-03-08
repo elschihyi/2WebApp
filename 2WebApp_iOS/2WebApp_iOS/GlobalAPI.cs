@@ -24,7 +24,7 @@ namespace WebApp_iOS
 		TwoWebDesignMain twoWebDesignMain;
 		TwoWebDesignLibrary twoWebDesignLibrary;
 		//TabProjects tabProjects;
-		MainSupport mainSupport;
+		//MainSupport mainSupport;
 		ArticlePage articlePage;
 
 		public static DataService dataService;
@@ -219,6 +219,7 @@ namespace WebApp_iOS
 			return tabProjects;
 		}
 		*/
+		/*
 		public MainSupport getMainSupport ()
 		{
 			if (mainSupport == null)
@@ -226,7 +227,7 @@ namespace WebApp_iOS
 
 			return mainSupport; 
 		}
-
+		*/
 		//		public HNKCacheFormat getHNKFormat(){
 		//			//HNKCacheFormat format = (HNKCacheFormat)HNKCache.SharedCache().Formats["thumbnail"];
 		//
@@ -537,7 +538,7 @@ namespace WebApp_iOS
 				 
 			return events.ToArray (); 
 		}
-
+		/*
 		public Support[] LoadSupport ()
 		{
 			return new Support[] {
@@ -552,7 +553,7 @@ namespace WebApp_iOS
 				}
 			}; 
 		}
-
+		*/
 
 		//grab project updates depending on project
 		/*
