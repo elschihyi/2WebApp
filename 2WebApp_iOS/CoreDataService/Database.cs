@@ -316,6 +316,8 @@ namespace CoreDataService
 
 		public string email { get; set; } = "";
 
+		public string support_email { get; set; } = "";
+
 		public string phone { get; set; } = "";
 
 		public string visit { get; set; } = "";
