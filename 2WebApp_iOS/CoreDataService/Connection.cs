@@ -25,7 +25,8 @@ namespace CoreDataService
 			
 			string data;
 			if ( !MakeRequest( request, out data) || data == null || data != magicToken ) {
-				errmsg = "Connection is not available";
+				
+				errmsg = ErrorMessage.Connection;
 				return false;
 			}
 			
@@ -86,7 +87,16 @@ namespace CoreDataService
 						req.AddParameter("application/json; charset=utf-8", request["BODY"], ParameterType.RequestBody);
 					}
 					else {
-						data = "The given request type is not supported";
+
+						if ( Settings.runmode == RunMode.Normal ) {
+
+							data = ErrorMessage.Connection;
+
+						} else if ( Settings.runmode == RunMode.Debug ) {
+
+							data = ErrorMessage.DataAccess_RequestType;
+						}
+
 						return false;
 					}
 
@@ -110,7 +120,15 @@ namespace CoreDataService
 			}
 			catch (Exception e)
 			{
-				data = e.Source + " -> " + e.Message;
+				if ( Settings.runmode == RunMode.Normal ) {
+					
+					data = ErrorMessage.Connection;
+
+				} else if ( Settings.runmode == RunMode.Debug ) {
+					
+					data = e.Source + " -> " + e.Message;
+				}
+
 				return false;
 			}
 

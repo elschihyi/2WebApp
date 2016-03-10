@@ -57,7 +57,7 @@ namespace CoreDataService
 			} else {
 				// return default data
 				projsum = new List<projectsummary> ();
-				projsum.Add (Settings.DemoProject ());
+				projsum.Add (DefaultDataSet.Project ());
 			}
 
 			return true;
@@ -79,7 +79,7 @@ namespace CoreDataService
 
 			} else {
 				// return default data
-				info = Settings.DefaultContact();
+				info = DefaultDataSet.Contact();
 			}
 			return true;
 		}
@@ -137,7 +137,16 @@ namespace CoreDataService
 			} else if ( userinfo.username == "" ) {
 				// no saved and try to login
 				cache.projects = null;
-				callback(false, "Username is reqired");
+
+				if ( Settings.runmode == RunMode.Normal ) {
+
+					callback(false, ErrorMessage.Login);
+
+				} else if ( Settings.runmode == RunMode.Debug ) {
+
+					callback(false, ErrorMessage.Login_Missing);
+				}
+								
 				return;
 				
 			} else {
@@ -193,7 +202,16 @@ namespace CoreDataService
 
 				if ( tmpcache.userinfo.status.ToUpper() != "VALID" ) {
 					cache.projects = null;
-					callback (false, "The login is failed");
+
+					if ( Settings.runmode == RunMode.Normal ) {
+
+						callback(false, ErrorMessage.Login);
+
+					} else if ( Settings.runmode == RunMode.Debug ) {
+
+						callback(false, ErrorMessage.Login_Failed);
+					}
+
 					return;
 				}
 
@@ -288,8 +306,16 @@ namespace CoreDataService
 					}
 
 					if (((List<contact>)contobj).Count != 1) {
-						errmsg = "Record number in Contact is wrong";
-						callback (false, errmsg);
+
+						if ( Settings.runmode == RunMode.Normal ) {
+
+							callback(false, ErrorMessage.DataAccess);
+
+						} else if ( Settings.runmode == RunMode.Debug ) {
+
+							callback(false, ErrorMessage.DataAccess_WrongNumRecord);
+						}
+
 						return;
 					}
 
@@ -306,10 +332,16 @@ namespace CoreDataService
 
 					} else if ( cache.projects != null )  {
 
-						// new user login
+						// new user login at offline
 						cache.projects = null;
-						// login new user
-						callback(false, "Offline login doesn't support");
+						if ( Settings.runmode == RunMode.Normal ) {
+
+							callback(false, ErrorMessage.Connection);
+
+						} else if ( Settings.runmode == RunMode.Debug ) {
+
+							callback(false, ErrorMessage.Login_Offline);
+						}
 						return;
 
 					}
@@ -517,7 +549,14 @@ namespace CoreDataService
 			datasets = null;
 
 			if (tables == "") {
-				errmsg = "Not given table name to synchronize";
+				if ( Settings.runmode == RunMode.Normal ) {
+
+					errmsg = ErrorMessage.DataAccess;
+
+				} else if ( Settings.runmode == RunMode.Debug ) {
+
+					errmsg = ErrorMessage.DataAccess_NoTableName;
+				}
 				return false;
 			}
 

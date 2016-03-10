@@ -514,8 +514,15 @@ namespace CoreDataService
 				return dbjson.SaveJSON (request.dataset, out errmsg);
 
 			} else {
+				
+				if ( Settings.runmode == RunMode.Normal ) {
 
-				errmsg = "Database type specified is not support";
+					errmsg = ErrorMessage.DataAccess;
+
+				} else if ( Settings.runmode == RunMode.Debug ) {
+
+					errmsg = ErrorMessage.DataAccess_WrongDBType;
+				}
 				return false;
 			}
 
@@ -548,7 +555,14 @@ namespace CoreDataService
 
 			} else {
 				
-				errmsg = "Database type specified is not support";
+				if ( Settings.runmode == RunMode.Normal ) {
+
+					errmsg = ErrorMessage.DataAccess;
+
+				} else if ( Settings.runmode == RunMode.Debug ) {
+
+					errmsg = ErrorMessage.DataAccess_WrongDBType;
+				}
 				return false;
 			}
 
@@ -614,8 +628,15 @@ namespace CoreDataService
 					}
 				}
 			} catch (SQLiteException e) {
-				errmsg = e.Source + " -> " + e.Message;
-				errmsg += "\nObject Type is " + rows.GetType ().ToString ();
+				if ( Settings.runmode == RunMode.Normal ) {
+
+					errmsg = ErrorMessage.DataAccess;
+
+				} else if ( Settings.runmode == RunMode.Debug ) {
+
+					errmsg = e.Source + " -> " + e.Message;
+					errmsg += "\nObject Type is " + rows.GetType ().ToString ();
+				}
 				return false;
 			}
 
@@ -644,9 +665,16 @@ namespace CoreDataService
 					result = generic.Invoke (dbconn, new object[] { sql, args });
 				}
 			} catch (SQLiteException e) {
-				errmsg = e.Source + " -> " + e.Message;
-				errmsg += "\nReturn Type: " + result.GetType ().ToString ();
-				errmsg += "\nStatement: " + sql;
+				if ( Settings.runmode == RunMode.Normal ) {
+
+					errmsg = ErrorMessage.DataAccess;
+
+				} else if ( Settings.runmode == RunMode.Debug ) {
+
+					errmsg = e.Source + " -> " + e.Message;
+					errmsg += "\nReturn Type: " + result.GetType ().ToString ();
+					errmsg += "\nStatement: " + sql;
+				}
 				return false;
 			}
 

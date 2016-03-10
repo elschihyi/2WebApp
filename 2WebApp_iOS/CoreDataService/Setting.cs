@@ -14,14 +14,19 @@ namespace CoreDataService
 	// errmsg		error message
 	public delegate void SyncCallback (Boolean succeed, string errmsg);
 
+
+	// cutomized data type
 	public enum RequestType { GET, POST };
 	public enum RequestOption { Auth, Sync };		// should be conform with the backend system
 	public enum DatabaseType { Sqlite, Json };
-
+	public enum RunMode { Normal, Debug };
 
 
 	public static class Settings
 	{
+		// runtime control
+		public static RunMode runmode = RunMode.Normal;
+
 		// remote settings
 		public static string ws_address = "http://www.2web.cc.php53-4.ord1-1.websitetestlink.com";
 		public static string ws_basepath = "/webservice/common/";
@@ -30,6 +35,7 @@ namespace CoreDataService
 		public static int ws_timeout = 15000;
 
 		// for test purpose
+		// will be removed eventually
 		public static string test_username = "test@test.com";
 		public static string test_password = "test";
 
@@ -48,10 +54,36 @@ namespace CoreDataService
 			"projectstatus","projecttype","projectphase","supportpackage","contact"};
 		public static string[] local_privatetables = {"userinfo"};
 
+	}
 
+
+
+	// error message table
+	public static class ErrorMessage {
+
+		// user-friendly messages
+		public static string Login = "Username and Password Provided do not match. Please check your entries and try again.";
+		public static string Connection = "No data or wifi connection available. Please check your connection to login. App will continue to operate in offline mode.";
+		public static string DataAccess = "The app has encountered a sync error. Please try again later or contact support@2webdesign.com if the issue continues.";
+
+		// messages with technical details
+		public static string DataAccess_RequestType = "The given request type is not supported";
+		public static string DataAccess_WrongNumRecord = "Record number in Contact is wrong";
+		public static string DataAccess_NoTableName = "Not given table name to synchronize";
+		public static string DataAccess_WrongDBType = "Database type specified is not support";
+		public static string Login_Missing = "Username is reqired";
+		public static string Login_Failed = "User login is failed";
+		public static string Login_Offline = "Offline login doesn't support";
+
+	}
+
+
+
+	// default data set
+	public static class DefaultDataSet {
 
 		// Return default contact
-		public static contact DefaultContact() {
+		public static contact Contact() {
 
 			contact info = new contact();
 			info.address1 = "116-116 Research Drive, Saskatoon,";
@@ -67,101 +99,100 @@ namespace CoreDataService
 
 			return info;
 		}
-		
-		
+
 		// Return the demo project
-		public static projectsummary DemoProject() {
+		public static projectsummary Project() {
 
 			projectsummary demo = new projectsummary();
 			demo.name = "2 Web Demo Project";
 			demo.type = "DEMO";
 			demo.phase = "Discovery";
 			demo.org_name = "2 Web Design Demo";
-			demo.client_name = "0";
+			demo.client_name = "John Smith";
 			demo.client_email = "test@test.com";
-			demo.staff_name = "0";
+			demo.staff_name = "Hardik Patel";
 			demo.staff_email = "hardik@2webdesign.com";
 
 			demo.tasks =new List<task> ();
 			task newtask = new task ();
 			newtask.name = "Project Proposal delivered to client";
 			newtask.display = "1";
-			newtask.status = "Planning";
+			newtask.status = "1";
 			newtask.date = "2015-04-01 00:00:00";
 			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Client Agreement Signed";
 			newtask.display = "1";
-			newtask.status = "Planning";
+			newtask.status = "1";
 			newtask.date = "2015-04-17 00:00:00";
 			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Project Charter delivered";
 			newtask.display = "0";
-			newtask.status = "Planning";
+			newtask.status = "1";
 			newtask.date = "2015-04-24 00:00:00";
 			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Project Charter Signed";
 			newtask.display = "1";
-			newtask.status = "Planning";
+			newtask.status = "1";
 			newtask.date = "2015-04-30 00:00:00";
 			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Homepage Designs started";
 			newtask.display = "0";
-			newtask.status = "Design Update";
+			newtask.status = "2";
 			newtask.date = "2015-05-04 00:00:00";
 			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Internal Page designs started";
 			newtask.display = "0";
-			newtask.status = "Design Update";
+			newtask.status = "2";
 			newtask.date = "2015-05-15 00:00:00";
 			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Designs sent to client for feedback";
 			newtask.display = "0";
-			newtask.status = "Design Update";
+			newtask.status = "2";
 			newtask.date = "2015-05-20 00:00:00";
-			demo.tasks.Add (newtask);
-			newtask = new task ();
-			newtask.name = "Design Approval Signed";
-			newtask.display = "1";
-			newtask.status = "Design Update";
-			newtask.date = "2015-05-29 00:00:00";
-			demo.tasks.Add (newtask);
-			newtask = new task ();
-			newtask.name = "Slice Updated for Navigation Change";
-			newtask.display = "0";
-			newtask.status = "Design Update";
-			newtask.date = "2015-06-11 00:00:00";
-			demo.tasks.Add (newtask);
-			newtask = new task ();
-			newtask.name = "Database setup complete";
-			newtask.display = "0";
-			newtask.status = "Development Update";
-			newtask.date = "2015-06-03 00:00:00";
-			demo.tasks.Add (newtask);
-			newtask = new task ();
-			newtask.name = "New Slice for Navigation change applied";
-			newtask.display = "0";
-			newtask.status = "Development Update";
-			newtask.date = "2015-06-16 00:00:00";
 			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Design Review Meeting";
 			newtask.display = "0";
-			newtask.status = "Discussion / Meeting";
+			newtask.status = "2";
 			newtask.date = "2015-05-22 00:00:00";
+			demo.tasks.Add (newtask);
+			newtask = new task ();
+			newtask.name = "Design Approval Signed";
+			newtask.display = "1";
+			newtask.status = "2";
+			newtask.date = "2015-05-29 00:00:00";
+			demo.tasks.Add (newtask);
+			newtask = new task ();
+			newtask.name = "Database setup complete";
+			newtask.display = "0";
+			newtask.status = "3";
+			newtask.date = "2015-06-03 00:00:00";
 			demo.tasks.Add (newtask);
 			newtask = new task ();
 			newtask.name = "Navigation Design Change Requested";
 			newtask.display = "0";
-			newtask.status = "Feature Change Item";
+			newtask.status = "2";
 			newtask.date = "2015-06-04 00:00:00";
 			demo.tasks.Add (newtask);
-			
+			newtask = new task ();
+			newtask.name = "Slice Updated for Navigation Change";
+			newtask.display = "0";
+			newtask.status = "2";
+			newtask.date = "2015-06-11 00:00:00";
+			demo.tasks.Add (newtask);
+			newtask = new task ();
+			newtask.name = "New Slice for Navigation change applied";
+			newtask.display = "0";
+			newtask.status = "3";
+			newtask.date = "2015-06-16 00:00:00";
+			demo.tasks.Add (newtask);
+
 			demo.support_package = new List<support> ();
 			support newsupp = new support ();
 			newsupp.name = "360 Website Success Plan A";
@@ -175,19 +206,12 @@ namespace CoreDataService
 			return demo;
 		}
 
-		
-		// global functions
-		public static void ShowMsg(string msg) {
-			UIAlertView msgview = new UIAlertView ("Notification", msg, null, "Ok", null);
-			msgview.Show ();
-		}
-
-
 	}
 
 
 
 	// Customized Test UI for CoreDataService
+	// will be removed eventually
 	public partial class CoreDataServiceTestUI : UIViewController
 	{
 		// private member
@@ -202,7 +226,6 @@ namespace CoreDataService
 		{
 			base.ViewDidLoad ();
 
-
 			// initialize DataService
 			string sqliteFilename = "CoreDataServiceTest.db";
 			string documentsPath = Environment.GetFolderPath (Environment.SpecialFolder.Personal); // Documents folder
@@ -212,21 +235,54 @@ namespace CoreDataService
 			// metric calculation
 			RectangleF screensize = (RectangleF)UIScreen.MainScreen.Bounds;
 			float width = screensize.Width;
-			float height = 100;
+			float height = 50;
 			float statusbarheight = (float)UIApplication.SharedApplication.StatusBarFrame.Height;
 			float navbarheight = (float)this.NavigationController.NavigationBar.Bounds.Height;
 			float logicTop = statusbarheight + navbarheight;
+			float currentTop = 0;
+
+			// UITextField
+			var frame = new RectangleF(0, logicTop, width, height);
+			var testField1 = new UITextField(frame);
+			testField1.AutoresizingMask = UIViewAutoresizing.FlexibleMargins;
+			testField1.Placeholder = "username";
+			testField1.BackgroundColor = UIColor.White;
+			testField1.KeyboardType = UIKeyboardType.EmailAddress;
+			testField1.MinimumFontSize = 17f;
+			testField1.AdjustsFontSizeToFitWidth = true;
+			Add (testField1);
+
+			// UITextField
+			currentTop = logicTop + height + 10;
+			frame = new RectangleF(0, currentTop, width, height);
+			var testField2 = new UITextField(frame);
+			testField2.AutoresizingMask = UIViewAutoresizing.FlexibleTopMargin;
+			testField2.Placeholder = "password";
+			testField2.BackgroundColor = UIColor.White;
+			testField2.KeyboardType = UIKeyboardType.ASCIICapable;
+			testField2.MinimumFontSize = 17f;
+			testField2.AdjustsFontSizeToFitWidth = true;
+			Add (testField2);
+
+			// UISwitch
+			currentTop += height + 10;
+			frame = new RectangleF(width - 100, currentTop, width, height);
+			var testSwitch = new UISwitch(frame);
+			Add (testSwitch);
 
 			// UIButton
+			currentTop += height + 10;
 			var testBtn = UIButton.FromType(UIButtonType.RoundedRect);
 			testBtn.SetTitle ("Test", UIControlState.Normal);
-			testBtn.Frame = new RectangleF(0, logicTop, width, height);
+			testBtn.Frame = new RectangleF(0, currentTop, width, height);
+			testBtn.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 			testBtn.BackgroundColor = UIColor.Orange;
 			testBtn.SetTitleColor (UIColor.White, UIControlState.Normal);
 			Add (testBtn);
 
 			// UITextView
-			testView = new UITextView (new RectangleF (0, logicTop+height+10, width, height+100));
+			currentTop += height+10;
+			testView = new UITextView (new RectangleF (0, currentTop, width, screensize.Height-currentTop));
 			testView.Text = "Output Area";
 			testView.Editable = false;
 			testView.BackgroundColor = UIColor.Gray;
@@ -236,6 +292,10 @@ namespace CoreDataService
 
 			// Button click event
 			testBtn.TouchUpInside += (s, e) =>  {
+
+				string text1 = testField1.Text;
+				string text2 = testField2.Text;
+				Boolean switchbox = testSwitch.On;
 
 				List<projectsummary> projs;
 				string errmsg;
@@ -252,11 +312,11 @@ namespace CoreDataService
 
 
 			// Start synchronization
-			SyncCallback x = new SyncCallback(callBack);
-			user info = new user ();
-			info.username = "test@test.com";
-			info.password = "test";
-			ds.Sync(info, true, x);
+//			SyncCallback x = new SyncCallback(callBack);
+//			user info = new user ();
+//			info.username = "test@test.com";
+//			info.password = "test";
+//			ds.Sync(info, true, x);
 
 		}
 
