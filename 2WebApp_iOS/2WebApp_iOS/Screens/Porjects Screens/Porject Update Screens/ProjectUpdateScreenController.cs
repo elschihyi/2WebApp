@@ -36,7 +36,7 @@ namespace WebApp_iOS
 		public override void ViewDidAppear (bool animated)
 		{
 			base.ViewDidAppear (animated);
-			AutomaticallyAdjustsScrollViewInsets = false;
+			//AutomaticallyAdjustsScrollViewInsets = false;
 		}
 
 		/********************************************************************************

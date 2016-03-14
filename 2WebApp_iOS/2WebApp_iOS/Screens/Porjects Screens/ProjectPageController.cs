@@ -24,7 +24,7 @@ namespace WebApp_iOS
 		public override void ViewWillAppear (bool animated)
 		{
 			base.ViewWillAppear (animated);
-			AutomaticallyAdjustsScrollViewInsets = true;
+			//AutomaticallyAdjustsScrollViewInsets = true;
 			View.Frame =View.Bounds;
 
 			List<UIViewController> pages = new List<UIViewController> ();
@@ -77,6 +77,15 @@ namespace WebApp_iOS
 			} else {
 				return null;
 			}
+		}
+
+		public override nint GetPresentationCount (UIPageViewController pageViewController)
+		{
+			return pages.Count;
+		}
+		public override nint GetPresentationIndex (UIPageViewController pageViewController)
+		{
+			return 0;
 		}
 	}
 }

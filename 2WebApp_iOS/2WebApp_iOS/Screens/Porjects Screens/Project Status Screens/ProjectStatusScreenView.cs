@@ -155,7 +155,7 @@ namespace WebApp_iOS
 
 			if (phase == "Discovery") {
 				if (status == "Completed") {
-					PhaseImageView.Image = new UIImage ("Cut_Images/phase1_blue.png");
+					PhaseImageView.Image = new UIImage ("Cut_Images/project_check.png");
 					PhaseNameStatusLabel.Text=phase+"."+status;
 					CheckImageView.Hidden = false;
 					ResultLabelView.Text = "Project Scope";

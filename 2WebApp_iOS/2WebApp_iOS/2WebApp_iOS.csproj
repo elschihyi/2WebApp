@@ -348,6 +348,7 @@
     <BundleResource Include="Resources\Cut_Images\phase4_grey.png" />
     <BundleResource Include="Resources\Cut_Images\phase5_blue.png" />
     <BundleResource Include="Resources\Cut_Images\phase5_grey.png" />
+    <BundleResource Include="Resources\Cut_Images\project_check.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
