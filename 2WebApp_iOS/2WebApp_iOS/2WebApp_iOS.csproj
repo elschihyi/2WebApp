@@ -349,6 +349,8 @@
     <BundleResource Include="Resources\Cut_Images\phase5_blue.png" />
     <BundleResource Include="Resources\Cut_Images\phase5_grey.png" />
     <BundleResource Include="Resources\Cut_Images\project_check.png" />
+    <BundleResource Include="Resources\Cut_Images\Separator_Dot.png" />
+    <BundleResource Include="Resources\Cut_Images\Youtube_Icon.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

@@ -19,12 +19,6 @@ namespace WebApp_iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-		}
-
-		public override void ViewWillAppear (bool animated)
-		{
-			base.ViewWillAppear (animated);
-			//AutomaticallyAdjustsScrollViewInsets = true;
 			View.Frame =View.Bounds;
 
 			List<UIViewController> pages = new List<UIViewController> ();
@@ -38,13 +32,12 @@ namespace WebApp_iOS
 			PorjectOverviewScreenController porjectOverviewScreenController = new PorjectOverviewScreenController (theProject);
 			pages.Add (porjectOverviewScreenController);
 
-			ProjectSupportScreenController projectSupportScreenController = new ProjectSupportScreenController (theProject);
+			ProjectSupportScreenController projectSupportScreenController = new ProjectSupportScreenController (theProject,FromScreenToSupport.Project);
 			pages.Add (projectSupportScreenController);
 
 			DataSource = new CustomScreenPageDataSource<UIViewController> (pages);
 			SetViewControllers (new UIViewController[] { pages [0] }, UIPageViewControllerNavigationDirection.Forward, false, null);
 			GlobalAPI.Manager ().PageDefault (this, theProject.name, true, true);
-			//UIPageControl.Appearance.PageIndicatorTintColor = UIColor.White;
 		}
 	}
 

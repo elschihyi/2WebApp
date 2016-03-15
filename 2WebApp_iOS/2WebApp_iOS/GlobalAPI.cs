@@ -173,7 +173,7 @@ namespace WebApp_iOS
 					} else {
 						//PushPage (page.NavigationController, new MainSupport ()); 
 						//PushPage(page.NavigationController,getMainSupport());
-						//page.NavigationController.PushViewController (new MainSupport (), true);
+						page.NavigationController.PushViewController (new SupportMainScreenController (), true);
 					}
 					; 
 				};

@@ -42,7 +42,7 @@ namespace WebApp_iOS
 			var y = statusbar + navigationbarHeight;
 
 			projectStatusScreenView = new ProjectStatusScreenView (new RectangleF(0f,(float)y,
-				(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y-66.0f)),theProject.phase,"completed");		
+				(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y-66.0f)),theProject);		
 			projectStatusScreenView.titleLabel.Text="Project Status";
 			View.Add (projectStatusScreenView);
 		}

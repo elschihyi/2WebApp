@@ -36,14 +36,7 @@ namespace WebApp_iOS
 
 			//check if loggin screen need to pop or not
 			initLoadingScreenView ("Loading...");
-			bool userisloggedin = true;
-			if (userisloggedin) {
-				//sync data and get project
-				GetProjectList();
-				//projectList = myProjects ();
-			} else {
-				//insert login page
-			}	
+			GetProjectList();
 		}
 		/********************************************************************************
 		*Views initializations
@@ -72,7 +65,9 @@ namespace WebApp_iOS
 			DataService dataService = GlobalAPI.GetDataService();
 			string errmsg;
 			if (!dataService.ProjectInfo (out projectList, out errmsg)) {
-				projectList = new List<projectsummary> ();
+				if(projectList==null){
+					projectList = new List<projectsummary> ();
+				}
 				InvokeOnMainThread (() => {
 					initTableView ();
 					//put menu and setting
@@ -106,7 +101,7 @@ namespace WebApp_iOS
 		public void CellViewClick(int Row)
 		{
 			GlobalAPI.Manager().PushPage(NavigationController,
-				new ProjectSupportScreenController(projectList[Row]));	
+				new ProjectSupportScreenController(projectList[Row],FromScreenToSupport.Support));	
 		}
 	}
 }

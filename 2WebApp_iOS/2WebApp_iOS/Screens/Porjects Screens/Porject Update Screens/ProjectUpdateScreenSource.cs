@@ -58,6 +58,7 @@ namespace WebApp_iOS
 				cell.dateLabel.Text = theDate.ToString("MMMM dd, yyyy");
 			}
 			cell.Row = indexPath.Row;
+			cell.viewBtn.Hidden = String.IsNullOrEmpty (theProject.tasks [indexPath.Row].file_url);
 			return cell;
 		}
 

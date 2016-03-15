@@ -34,14 +34,7 @@ namespace WebApp_iOS
 
 			//check if loggin screen need to pop or not
 			initLoadingScreenView ("Loading...");
-			bool userisloggedin = true;
-			if (userisloggedin) {
-				//sync data and get project
-				GetProjectList();
-				//projectList = myProjects ();
-			} else {
-				//insert login page
-			}	
+			GetProjectList();
 		}
 		/********************************************************************************
 		*Views initializations
@@ -56,7 +49,7 @@ namespace WebApp_iOS
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
 			var y = statusbar + navigationbarHeight;
-			TableView.Frame=new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y));
+			TableView.Frame=new RectangleF(0f,(float)y+5f,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y-5f));
 			TableView.BackgroundColor = UIColor.Clear;
 			TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 			TableView.Source = new ProjectMainScreenScource (this);
@@ -70,11 +63,13 @@ namespace WebApp_iOS
 			DataService dataService = GlobalAPI.GetDataService();
 			string errmsg;
 			if (!dataService.ProjectInfo (out projectList, out errmsg)) {
-				projectList = new List<projectsummary> ();
+				if(projectList==null){
+					projectList = new List<projectsummary> ();
+				}
 				InvokeOnMainThread (() => {
 					initTableView ();
 					//put menu and setting
-					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+					//GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
 					loadingOverlayView.Hide ();
 					//alert
 					UIAlertController Alert = UIAlertController.Create ("Error",
@@ -91,71 +86,11 @@ namespace WebApp_iOS
 				InvokeOnMainThread (() => {
 					initTableView ();
 					//put menu and setting
-					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+					//GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
 					loadingOverlayView.Hide ();
 				});
 			}	
 	
-		}	
-		
-
-		//***********************************************************************
-		public List<projectsummary> myProjects(){
-			List<projectsummary> projectList = new List<projectsummary>();
-			//p1******************************************
-			projectsummary p1 = new projectsummary ();
-			p1.name = "Sarc";
-			p1.type  = "Redesign";
-			p1.phase  = "design";
-			p1.org_name  = "Sarc";
-			p1.client_name  = "Sydney Smith";
-			p1.client_email  = "ssmith@clientorg.com";
-			p1.staff_name  = "Jillian Hare";
-			p1.staff_email  = "jHare@2web.com";
-
-			p1.tasks = new List<task> ();
-			task p1t1 = new task ();
-			p1t1.name="update name 1";
-			p1t1.date = "2015/12/01";
-			p1t1.file_url="https://www.google.com";
-			p1.tasks.Add (p1t1);
-
-			task p1t2 = new task ();
-			p1t2.name="update name 2";
-			p1t2.date = "2015/12/02";
-			p1t2.file_url="https://www.google.com";
-			p1.tasks.Add (p1t2);
-
-			p1.support_package = null;
-			projectList.Add (p1);
-
-			//p1******************************************
-			projectsummary p2 = new projectsummary ();
-			p2.name = "Sarcan";
-			p2.type  = "Redesign";
-			p2.phase  = "design";
-			p2.org_name  = "Sarc";
-			p2.client_name  = "Sydney Smith";
-			p2.client_email  = "ssmith@clientorg.com";
-			p2.staff_name  = "Jillian Hare";
-			p2.staff_email  = "jHare@2web.com";
-
-			p2.tasks = new List<task> ();
-			task p2t1 = new task ();
-			p2t1.name="update name 1";
-			p2t1.date = "2015/12/03";
-			p2t1.file_url="https://www.google.com";
-			p2.tasks.Add (p2t1);
-
-			task p2t2 = new task ();
-			p2t2.name="update name 2";
-			p2t2.date = "2015/12/04";
-			p2t2.file_url="https://www.google.com";
-			p2.tasks.Add (p2t2);
-
-			p2.support_package = null;
-			projectList.Add (p2);
-			return projectList;
 		}	
 	}
 }

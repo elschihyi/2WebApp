@@ -11,8 +11,7 @@ namespace WebApp_iOS
 
 		//*******************************************
 		public UILabel TypeLabel{ get; set;}
-		public UILabel HourRemainLabel1{ get; set;}
-		public UILabel HourRemainLabel2{ get; set;}
+		public UILabel HourRemainLabel{ get; set;}
 		public UILabel LatestBackUpLabel{ get; set;}
 		public UILabel LastRestoredLabel{ get; set;}
 		public UILabel SystemStatusLabel{ get; set;}
@@ -29,7 +28,7 @@ namespace WebApp_iOS
 		public UILabel comma7{ get; set;}
 
 		//*******************************************
-		public UILabel TypeValueLabel{ get; set;}
+		public UITextView TypeValueTextView{ get; set;}
 		public UILabel HourRemainValueLabel{ get; set;}
 		public UILabel LatestBackUpValueLabel{ get; set;}
 		public UILabel LastRestoredValueLabel{ get; set;}
@@ -61,7 +60,7 @@ namespace WebApp_iOS
 			};
 			Add(TypeLabel);
 
-			HourRemainLabel1= new UILabel () 
+			HourRemainLabel= new UILabel () 
 			{
 				BackgroundColor=UIColor.Clear,
 				TextColor = UIColor.White,
@@ -69,17 +68,7 @@ namespace WebApp_iOS
 				Text="Consultation Hours",
 				Font = UIFont.SystemFontOfSize (16.0f)
 			};
-			Add(HourRemainLabel1);
-
-			HourRemainLabel2= new UILabel () 
-			{
-				BackgroundColor=UIColor.Clear,
-				TextColor = UIColor.White,
-				TextAlignment=UITextAlignment.Left,
-				Text="Remaining",
-				Font = UIFont.SystemFontOfSize (16.0f)
-			};
-			Add(HourRemainLabel2);
+			Add(HourRemainLabel);
 
 			LatestBackUpLabel= new UILabel () 
 			{
@@ -198,14 +187,16 @@ namespace WebApp_iOS
 
 
 			//*******************************************
-			TypeValueLabel= new UILabel () 
+			TypeValueTextView= new UITextView () 
 			{
 				BackgroundColor=UIColor.Clear,
 				TextColor = UIColor.White,
 				TextAlignment=UITextAlignment.Left,
-				Font = UIFont.SystemFontOfSize (16.0f)
+				Font = UIFont.SystemFontOfSize (16.0f),
+				Editable=false,
+				ScrollEnabled=false,
 			};
-			Add(TypeValueLabel);
+			Add(TypeValueTextView);
 
 			HourRemainValueLabel= new UILabel () 
 			{
@@ -223,7 +214,7 @@ namespace WebApp_iOS
 				TextAlignment=UITextAlignment.Left,
 				Font = UIFont.SystemFontOfSize (16.0f)
 			};
-			Add(TypeValueLabel);
+			Add(LatestBackUpValueLabel);
 
 			LastRestoredValueLabel= new UILabel () 
 			{
@@ -262,8 +253,10 @@ namespace WebApp_iOS
 			Add(ContactSupportBtn);
 
 			try{
-				TypeValueLabel.Text=theProject.support_package[0].name;
-				HourRemainValueLabel.Text=theProject.support_package[0].hourused;
+				TypeValueTextView.Text=theProject.support_package[0].name;
+				string remainHour=(Int32.Parse(theProject.support_package[0].totalhour)-Int32.Parse(theProject.support_package[0].hourused)).ToString();
+				HourRemainValueLabel.Text=remainHour+"/"+theProject.support_package[0].totalhour;
+				//HourRemainValueLabel.Text=theProject.support_package[0].hourused+"/"+theProject.support_package[0].totalhour;
 				DateTime theDate1 = DateTime.ParseExact (theProject.support_package[0].lastbackup, "yyyy-MM-dd HH:mm:ss", null);	
 				LatestBackUpValueLabel.Text=theDate1.ToString("MMMM dd, yyyy");
 				DateTime theDate2 = DateTime.ParseExact (theProject.support_package[0].lastpost, "yyyy-MM-dd HH:mm:ss", null);	
@@ -292,33 +285,32 @@ namespace WebApp_iOS
 
 			//*******************************************
 			TypeLabel.Frame = new RectangleF (5f,40f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
-			HourRemainLabel1.Frame = new RectangleF (5f,80f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
-			HourRemainLabel2.Frame = new RectangleF (5f,120f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
-			LatestBackUpLabel.Frame = new RectangleF (5f,160f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
-			LastRestoredLabel.Frame = new RectangleF (5f,200f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
+			HourRemainLabel.Frame = new RectangleF (5f,90f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
+			LatestBackUpLabel.Frame = new RectangleF (5f,140f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
+			LastRestoredLabel.Frame = new RectangleF (5f,190f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
 			SystemStatusLabel.Frame = new RectangleF (5f,240f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
-			WebSiteAuditsLabel.Frame = new RectangleF (5f,280f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
-			YearAndAnalysisLabel.Frame = new RectangleF (5f,320f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
+			WebSiteAuditsLabel.Frame = new RectangleF (5f,290f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
+			YearAndAnalysisLabel.Frame = new RectangleF (5f,340f, (float)UIScreen.MainScreen.Bounds.Width/2-7f, 30.0f);
 
 			//*******************************************
 			comma1.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,40f, 4f, 30.0f);
-			comma2.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,120f, 4f, 30.0f);
-			comma3.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,160f, 4f, 30.0f);
-			comma4.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,200f, 4f, 30.0f);
+			comma2.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,90f, 4f, 30.0f);
+			comma3.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,140f, 4f, 30.0f);
+			comma4.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,190f, 4f, 30.0f);
 			comma5.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,240f, 4f, 30.0f);
-			comma6.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,280f, 4f, 30.0f);
-			comma7.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,320f, 4f, 30.0f);
+			comma6.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,290f, 4f, 30.0f);
+			comma7.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2-2f,340f, 4f, 30.0f);
 
 			//*******************************************
-			TypeValueLabel.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,40f, (float)UIScreen.MainScreen.Bounds.Width/2-10f, 30.0f);
-			HourRemainValueLabel.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,120f, (float)UIScreen.MainScreen.Bounds.Width/2-10f, 30.0f);
-			LatestBackUpValueLabel.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,160f, (float)UIScreen.MainScreen.Bounds.Width/2-10f, 30.0f);
-			LastRestoredValueLabel.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,200f, (float)UIScreen.MainScreen.Bounds.Width/2-10f, 30.0f);
+			TypeValueTextView.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,40f, (float)UIScreen.MainScreen.Bounds.Width/2-10f, 50.0f);
+			HourRemainValueLabel.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,90f, (float)UIScreen.MainScreen.Bounds.Width/2-10f, 30.0f);
+			LatestBackUpValueLabel.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,140f, (float)UIScreen.MainScreen.Bounds.Width/2-10f, 30.0f);
+			LastRestoredValueLabel.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,190f, (float)UIScreen.MainScreen.Bounds.Width/2-10f, 30.0f);
 			SystemStatusValueLabel.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,240f, (float)UIScreen.MainScreen.Bounds.Width/2-10f, 30.0f);
-			WebSiteAuditsBtn.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,280f, (float)UIScreen.MainScreen.Bounds.Width/4-10f, 30.0f);
-			YearAndAnalysisBtn.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,320f, (float)UIScreen.MainScreen.Bounds.Width/4-10f, 30.0f);
+			WebSiteAuditsBtn.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,290f, (float)UIScreen.MainScreen.Bounds.Width/4, 30.0f);
+			YearAndAnalysisBtn.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/2+10f,340f, (float)UIScreen.MainScreen.Bounds.Width/4, 30.0f);
 
-			ContactSupportBtn.Frame = new RectangleF ((float)UIScreen.MainScreen.Bounds.Width/4f,370f, (float)UIScreen.MainScreen.Bounds.Width/2f, 30.0f);
+			ContactSupportBtn.Frame = new RectangleF (0.2f*(float)UIScreen.MainScreen.Bounds.Width,410f, 0.6f*(float)UIScreen.MainScreen.Bounds.Width, 44.0f);
 		}
 	}
 }

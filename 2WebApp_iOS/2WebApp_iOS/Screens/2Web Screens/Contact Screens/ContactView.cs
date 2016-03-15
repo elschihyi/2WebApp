@@ -116,7 +116,7 @@ namespace WebApp_iOS
 			Add(LinkInBtn);
 
 			PinterestBtn = UIButton.FromType (UIButtonType.RoundedRect);
-			PinterestBtn.SetBackgroundImage (new UIImage ("Cut_Images/Pinterest_Icon.png"), UIControlState.Normal);
+			PinterestBtn.SetBackgroundImage (new UIImage ("Cut_Images/Youtube_Icon.png"), UIControlState.Normal);
 			PinterestBtn.BackgroundColor = UIColor.Clear;
 			Add(PinterestBtn);
 		}

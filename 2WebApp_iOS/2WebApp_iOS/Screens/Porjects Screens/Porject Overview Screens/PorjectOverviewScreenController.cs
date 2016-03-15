@@ -2,6 +2,7 @@
 using UIKit;
 using CoreDataService;
 using System.Drawing;
+using MessageUI;
 
 namespace WebApp_iOS
 {
@@ -53,6 +54,24 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void ScheduleMeetingClick()
 		{
+			if (!MFMailComposeViewController.CanSendMail) {
+				return;
+			}	
+			MFMailComposeViewController mailController = new MFMailComposeViewController();
+			if (!MFMailComposeViewController.CanSendMail)
+			{
+				return;
+			}
+				
+			mailController.SetToRecipients(new string[]{theProject.staff_email});
+			mailController.SetSubject("");
+			mailController.SetMessageBody("", false);
+			mailController.Finished += ( s, args) =>
+			{
+				args.Controller.DismissViewController(true,null);
+			};
+			//NavigationController.PushViewController (mailController, true);
+			this.PresentViewController(mailController, true, null);
 		}
 	}
 }

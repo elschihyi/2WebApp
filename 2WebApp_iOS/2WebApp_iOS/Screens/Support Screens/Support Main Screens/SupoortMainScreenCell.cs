@@ -29,8 +29,8 @@ namespace WebApp_iOS
 			ViewBtn = UIButton.FromType (UIButtonType.RoundedRect);
 			ViewBtn.BackgroundColor = UIColor.White;
 			ViewBtn.SetTitle ("View",UIControlState.Normal);
-			ViewBtn.Frame = new RectangleF (0.75f * (float)Frame.Width,  0.25f * (float)Frame.Height,
-				0.225f * (float)Frame.Width,  0.5f * (float)Frame.Height);
+			ViewBtn.Frame = new RectangleF (0.75f * (float)Frame.Width,  0.3f * (float)Frame.Height,
+				0.225f * (float)Frame.Width,  0.4f * (float)Frame.Height);
 			Add (ViewBtn);
 		}
 	}
