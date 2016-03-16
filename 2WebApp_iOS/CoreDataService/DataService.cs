@@ -107,6 +107,49 @@ namespace CoreDataService
 			syncThread.Start ();
 		}
 
+
+
+		// create a new user account
+		public Boolean CreatAccount (clientaccount userinfo, out string errmsg)
+		{
+			errmsg = "";
+
+			// send the request and obtain the data
+			string json;
+			Dictionary<string, string> request = BuildRequest (userinfo, RequestOption.Acct);
+			if (!MakeRequest (request, out json)) {
+				return false;
+			}
+
+			// build a data object based on the downloaded JSON
+			object dataset;
+			if (!JSONtoObject (json, out dataset, out errmsg))
+				return false;
+
+			DBCache info;
+			if (!ParseData (dataset, out info, out errmsg) || info == null || info.userinfo == null ) {
+				return false;
+			}
+
+			if ( info.userinfo.status.ToUpper() != "CREATED" ) {
+
+				if ( Settings.runmode == RunMode.Normal ) {
+					
+					errmsg = ErrorMessage.DataAccess;
+
+				} else if ( Settings.runmode == RunMode.Debug ) {
+					
+					errmsg = "Failed to create the user account";	
+				}
+
+				return false;
+			}
+
+			return true;
+
+		}
+
+
 		#endregion
 
 
@@ -515,7 +558,7 @@ namespace CoreDataService
 
 			// send the request and obtain the data
 			string json;
-			Dictionary<string, string> request = BuildRequest (userinfo.username, userinfo.password, type);
+			Dictionary<string, string> request = BuildRequest (userinfo, type);
 			if (!MakeRequest (request, out json)) {
 				return false;
 			}
@@ -567,7 +610,10 @@ namespace CoreDataService
 
 			// send the request and obtain the data
 			string json;
-			Dictionary<string, string> request = BuildRequest (Settings.test_username, Settings.test_password, RequestOption.Sync);
+			user info = new user ();
+			info.username = Settings.test_username;
+			info.password = Settings.test_password;
+			Dictionary<string, string> request = BuildRequest (info, RequestOption.Sync);
 			if (!MakeRequest (request, out json)) {
 				return false;
 			}

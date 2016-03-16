@@ -17,7 +17,7 @@ namespace CoreDataService
 
 	// cutomized data type
 	public enum RequestType { GET, POST };
-	public enum RequestOption { Auth, Sync };		// should be conform with the backend system
+	public enum RequestOption { Auth, Sync, Acct };		// should be conform with the backend system
 	public enum DatabaseType { Sqlite, Json };
 	public enum RunMode { Normal, Debug };
 
@@ -31,6 +31,7 @@ namespace CoreDataService
 		public static string ws_address = "http://www.2web.cc.php53-4.ord1-1.websitetestlink.com";
 		public static string ws_basepath = "/webservice/common/";
 		public static string ws_svcname = "Service";
+		public static string ws_reqname = "Request";
 		public static RequestType ws_reqtype = RequestType.POST;
 		public static int ws_timeout = 15000;
 
@@ -305,6 +306,21 @@ namespace CoreDataService
 			// Button click event
 			testBtn.TouchUpInside += (s, e) =>  {
 
+				// Create user account
+//				clientaccount acctinfo = new clientaccount();
+//				acctinfo.client_email = "test@test1.com";
+//				acctinfo.client_password = "123";
+//				acctinfo.client_firstname = "123";
+//				acctinfo.client_lastname = "123";
+//
+//				string errmsg;
+//				if ( !ds.CreatAccount(acctinfo, out errmsg) )
+//					testView.Text += "\n\n" + errmsg + "\n\n";
+//				else 
+//					testView.Text += "\n\nThe user account has been created\n\n";
+//				
+//				return;
+
 				if ( testField1.Text != "" ) {
 
 					int useridx = 0;
@@ -334,6 +350,7 @@ namespace CoreDataService
 					info.username = text1;
 					info.password = text2;
 					ds.Sync(info, true, x);
+
 				}
 
 			};

@@ -43,14 +43,29 @@ namespace CoreDataService
 		// Return
 		//		true	sucessful
 		//		false	returned with error in errmsg
-		protected Dictionary<string, string> BuildRequest ( string username, string password, RequestOption option )
+		protected Dictionary<string, string> BuildRequest ( object info, RequestOption option )
 		{
 			
 			Dictionary<string, string> request = new Dictionary<string, string> ();
-			request.Add ("ADDRESS", Settings.ws_address);
-			request.Add ("PATH", Settings.ws_basepath + Settings.ws_svcname);
-			request.Add ("FORMAT", "json");
-			request.Add ("BODY",string.Format("{{\"username\":\"{0}\",\"password\":\"{1}\",\"option\":\"{2}\"}}", username, password, option));
+
+			switch (option) {
+			case RequestOption.Auth:
+			case RequestOption.Sync:
+				user userinfo = (user)info;
+				request.Add ("ADDRESS", Settings.ws_address);
+				request.Add ("PATH", Settings.ws_basepath + Settings.ws_svcname);
+				request.Add ("FORMAT", "json");
+				request.Add ("BODY",string.Format("{{\"username\":\"{0}\",\"password\":\"{1}\",\"option\":\"{2}\"}}", userinfo.username, userinfo.password, option));
+				break;
+
+			case RequestOption.Acct:
+				clientaccount acctinfo = (clientaccount)info;
+				request.Add ("ADDRESS", Settings.ws_address);
+				request.Add ("PATH", Settings.ws_basepath + Settings.ws_reqname);
+				request.Add ("FORMAT", "json");
+				request.Add ("BODY",string.Format("{{\"username\":\"{0}\",\"password\":\"{1}\",\"firstname\":\"{2}\",\"lastname\":\"{3}\",\"option\":\"{4}\"}}", acctinfo.client_email, acctinfo.client_password, acctinfo.client_firstname, acctinfo.client_lastname, option));
+				break;
+			}
 			return request;
 		}
 
