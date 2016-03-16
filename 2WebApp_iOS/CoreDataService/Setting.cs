@@ -218,6 +218,11 @@ namespace CoreDataService
 		private static DataService ds = null;
 		private UITextView testView = null;
 
+		// credential groups
+		private string[] username = { "test@test.com", "alicia.hanwell@gmail.com" };
+		private string[] password = { "test", "2WebDesign" };
+
+
 		public CoreDataServiceTestUI () 
 		{
 		}
@@ -250,6 +255,10 @@ namespace CoreDataService
 			testField1.KeyboardType = UIKeyboardType.EmailAddress;
 			testField1.MinimumFontSize = 17f;
 			testField1.AdjustsFontSizeToFitWidth = true;
+			testField1.ShouldReturn += (field) => {
+				field.ResignFirstResponder ();
+				return true;
+			};
 			Add (testField1);
 
 			// UITextField
@@ -262,6 +271,10 @@ namespace CoreDataService
 			testField2.KeyboardType = UIKeyboardType.ASCIICapable;
 			testField2.MinimumFontSize = 17f;
 			testField2.AdjustsFontSizeToFitWidth = true;
+			testField2.ShouldReturn += (field) => {
+				field.ResignFirstResponder ();
+				return true;
+			};
 			Add (testField2);
 
 			// UISwitch
@@ -289,34 +302,42 @@ namespace CoreDataService
 			testView.TextAlignment = UITextAlignment.Center;
 			Add (testView);
 
-
 			// Button click event
 			testBtn.TouchUpInside += (s, e) =>  {
 
-				string text1 = testField1.Text;
-				string text2 = testField2.Text;
-				Boolean switchbox = testSwitch.On;
+				if ( testField1.Text != "" ) {
 
-				List<projectsummary> projs;
-				string errmsg;
-				if ( !ds.ProjectInfo(out projs, out errmsg) ) {
-					testView.Text = "Error: \n" + errmsg;	
-				} else {
-					testView.Text = "Project Information:\n";
-					foreach(var item in projs) {
-						testView.Text += String.Format("Name: {0}\nType: {1}\nStatus: {2}\n",item.name,item.type,item.phase);
+					int useridx = 0;
+
+					if ( !Int32.TryParse(testField1.Text, out useridx) ||
+							useridx < 0 || 
+							useridx >= username.Length ) { 
+
+						var msgController = UIAlertController.Create ("Error Message", "Either the input is not a number or the number is out of range 0-" + (username.Length - 1), UIAlertControllerStyle.Alert);
+						msgController.AddAction (UIAlertAction.Create ("OK", UIAlertActionStyle.Default, null));
+						PresentViewController (msgController, true, null);
+
+						return; 
 					}
+						
+					testField1.Text = username[useridx];
+					testField2.Text = password[useridx];
+
+					// collect the inputs
+					string text1 = testField1.Text;
+					string text2 = testField2.Text;
+					Boolean switchbox = testSwitch.On;
+
+					// Start synchronization
+					SyncCallback x = new SyncCallback(callBack);
+					user info = new user ();
+					info.username = text1;
+					info.password = text2;
+					ds.Sync(info, true, x);
 				}
 
 			};
 
-
-			// Start synchronization
-//			SyncCallback x = new SyncCallback(callBack);
-//			user info = new user ();
-//			info.username = "test@test.com";
-//			info.password = "test";
-//			ds.Sync(info, true, x);
 
 		}
 
@@ -324,7 +345,24 @@ namespace CoreDataService
 		void callBack (Boolean succeed, string errmsg)
 		{
 			InvokeOnMainThread(()=>{
-				testView.Text += "\nBackground synchronization is done\n\n";
+				
+				testView.Text += "\n-----Background synchronization is done-----\n\n";
+
+				List<projectsummary> projs;
+				if ( !ds.ProjectInfo(out projs, out errmsg) ) {
+					
+					testView.Text += "Error: \n\n" + errmsg;
+
+				} else {
+					
+					testView.Text += "Project Information:\n\n";
+					foreach(var item in projs) {
+						testView.Text += String.Format("Name: {0}\nType: {1}\nStatus: {2}\n\n",item.name,item.type,item.phase);
+					}
+
+				}
+
+
 			});
 		}
 
