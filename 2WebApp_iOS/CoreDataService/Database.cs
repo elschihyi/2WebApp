@@ -318,6 +318,8 @@ namespace CoreDataService
 
 		public string support_email { get; set; } = "";
 
+		public string admin_email { get; set; } = "";
+
 		public string phone { get; set; } = "";
 
 		public string visit { get; set; } = "";
