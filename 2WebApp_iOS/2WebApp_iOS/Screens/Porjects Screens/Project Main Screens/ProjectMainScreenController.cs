@@ -3,6 +3,7 @@ using UIKit;
 using System.Collections.Generic;
 using CoreDataService;
 using System.Drawing;
+using MessageUI;
 
 namespace WebApp_iOS
 {
@@ -10,6 +11,7 @@ namespace WebApp_iOS
 	{
 		//Views
 		LoadingOverlay2 loadingOverlayView;
+		LinkProjectView LinkProjectView;
 		UITableView TableView;
 
 		//objects
@@ -44,17 +46,29 @@ namespace WebApp_iOS
 			View.Add (loadingOverlayView);
 		}
 
-		public void initTableView(){
+		public void initView(bool isDemo){
 			TableView = new UITableView ();
+			LinkProjectView = new LinkProjectView ();
+			LinkProjectView.Button1.TouchUpInside += (s, e) => {
+				LinkProjectBtnClick();
+			};	
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
 			var y = statusbar + navigationbarHeight;
-			TableView.Frame=new RectangleF(0f,(float)y+5f,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y-5f));
+			if (isDemo) {
+				LinkProjectView.Hidden = false;
+				LinkProjectView.Frame=new RectangleF ((float)LinkProjectView.Frame.X,(float)y + 5f , (float)LinkProjectView.Frame.Width, (float)LinkProjectView.Frame.Height);
+				TableView.Frame = new RectangleF (0f, (float)y + 20f+90f, (float)UIScreen.MainScreen.Bounds.Width, (float)(UIScreen.MainScreen.Bounds.Height - y - 20f-90f));
+			} else {
+				LinkProjectView.Hidden = true;
+				TableView.Frame = new RectangleF (0f, (float)y + 5f, (float)UIScreen.MainScreen.Bounds.Width, (float)(UIScreen.MainScreen.Bounds.Height - y - 5f));
+			}	
 			TableView.BackgroundColor = UIColor.Clear;
 			TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 			TableView.Source = new ProjectMainScreenScource (this);
 			TableView.AllowsSelection = true;
 			View.Add (TableView);
+			View.Add (LinkProjectView);
 		}
 		/********************************************************************************
 		*Load data from database
@@ -67,10 +81,13 @@ namespace WebApp_iOS
 					projectList = new List<projectsummary> ();
 				}
 				InvokeOnMainThread (() => {
-					initTableView ();
-					//put menu and setting
-					//GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
 					loadingOverlayView.Hide ();
+					Random rnd1 = new Random();
+					initView (rnd1.Next(2)==0);
+
+					//put menu and setting
+					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+
 					//alert
 					UIAlertController Alert = UIAlertController.Create ("Error",
 						                         errmsg, UIAlertControllerStyle.Alert);
@@ -84,14 +101,34 @@ namespace WebApp_iOS
 					projectList = new List<projectsummary> ();
 				}
 				InvokeOnMainThread (() => {
-					initTableView ();
+					Random rnd1 = new Random();
+					initView (rnd1.Next(2)==0);
 					//put menu and setting
-					//GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
+					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
 					loadingOverlayView.Hide ();
 				});
 			}	
 	
+		}
+		/********************************************************************************
+		*Btn clicks
+		********************************************************************************/
+		public void LinkProjectBtnClick(){
+			contact contactInfo;
+			string errmsg="";
+			GlobalAPI.GetDataService ().ContactInfo (out contactInfo, out errmsg);
+			if (MFMailComposeViewController.CanSendMail && !String.IsNullOrEmpty (contactInfo.email)) {;
+				MFMailComposeViewController mailController = new MFMailComposeViewController (); 
+				mailController.SetToRecipients (new string[]{ contactInfo.email }); 
+				mailController.SetSubject (""); 
+				mailController.SetMessageBody ("", false);
+				mailController.Finished += (object s1, MFComposeResultEventArgs args) => {
+					args.Controller.DismissViewController (true, null);
+				};
+				PresentViewController (mailController, true, null);
+			}
 		}	
+
 	}
 }
 

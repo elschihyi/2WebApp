@@ -73,7 +73,7 @@ namespace WebApp_iOS
 
 				if (!SyncSuccess) {
 					//alert
-					UIAlertController Alert = UIAlertController.Create ("Sync Error",
+					UIAlertController Alert = UIAlertController.Create ("",
 						SyncErrMsg, UIAlertControllerStyle.Alert);
 					Alert.AddAction (UIAlertAction.Create ("OK",
 						UIAlertActionStyle.Cancel, action=>{

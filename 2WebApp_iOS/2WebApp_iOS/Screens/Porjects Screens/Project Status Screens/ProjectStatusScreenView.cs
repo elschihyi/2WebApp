@@ -222,6 +222,7 @@ namespace WebApp_iOS
 				Add (ResultBorderView);
 
 				ResultLabelView= new UILabel () {
+					//BackgroundColor=UIColor.FromRGB(0,172,237),
 					BackgroundColor =UIColor.FromRGB(35,40,46),
 					TextColor=UIColor.White,
 					TextAlignment=UITextAlignment.Center,
@@ -313,13 +314,13 @@ namespace WebApp_iOS
 
 			float largestWidth = 0f;
 			for (int i = 0; i < ResultLabelViews.Length; i++) {
+				ResultLabelViews[i].Font=UIFont.SystemFontOfSize (12.0f);
 				if((float)ResultLabelViews[i].IntrinsicContentSize.Width>largestWidth){
 					largestWidth=(float)ResultLabelViews[i].IntrinsicContentSize.Width;
 				}	
 			}	
 
 			for (int i = 0; i < ResultLabelViews.Length; i++) {
-				ResultLabelViews[i].Font=UIFont.SystemFontOfSize (12.0f);
 				ResultLabelViews[i].Frame=new RectangleF((SWidth-largestWidth)/2.0f,totalHeight,largestWidth,25f);
 				ResultBorderViews[i].Frame=new RectangleF((float)ResultLabelViews[i].Frame.X-1f,(float)ResultLabelViews[i].Frame.Y-1f,
 					(float)ResultLabelViews[i].Frame.Width+2f,(float)ResultLabelViews[i].Frame.Height+2f);

@@ -41,7 +41,7 @@ namespace WebApp_iOS
 			if (cell == null) {
 				cell = new SupportMainScreenCell ();
 				cell.ViewBtn.TouchUpInside += (s, e) => {
-					supportMainScreenController.CellViewClick(indexPath.Row);
+					supportMainScreenController.CellViewClick(cell.Row);
 				};	
 			}
 			projectsummary project = supportMainScreenController.projectList [indexPath.Row];

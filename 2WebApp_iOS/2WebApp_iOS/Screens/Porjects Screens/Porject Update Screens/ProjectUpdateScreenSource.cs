@@ -46,7 +46,7 @@ namespace WebApp_iOS
 			if (cell == null) {
 				cell = new ProjectUpdateScreenCell ();
 				cell.viewBtn.TouchUpInside += (s, e) => {
-					ProjectUpdateScreenController.CellViewClick(indexPath.Row);
+					ProjectUpdateScreenController.CellViewClick(cell.Row);
 				};
 			}
 			cell.nameLabel.Text = theProject.tasks [indexPath.Row].name;

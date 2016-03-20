@@ -49,7 +49,7 @@
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <MtouchProfiling>true</MtouchProfiling>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Developer: chihyi huang (RE6LL2S9E2)</CodesignKey>
     <MtouchDebug>true</MtouchDebug>
     <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <IpaPackageName>
@@ -128,14 +128,8 @@
     <InterfaceDefinition Include="Screens\2Web Screens\ContactUs~iphone.xib" />
     <InterfaceDefinition Include="Screens\2Web Screens\TwoWebDesignMain~ipad.xib" />
     <InterfaceDefinition Include="Screens\2Web Screens\TwoWebDesignMain~iphone.xib" />
-    <InterfaceDefinition Include="Screens\Login Screens\LoginFirstPage~ipad.xib" />
-    <InterfaceDefinition Include="Screens\Login Screens\LoginFirstPage~iphone.xib" />
     <InterfaceDefinition Include="Screens\Lunch Screens\LunchPage~ipad.xib" />
     <InterfaceDefinition Include="Screens\Lunch Screens\LunchPage~iphone.xib" />
-    <InterfaceDefinition Include="Screens\Settings Screens\Settings2_iPad.xib" />
-    <InterfaceDefinition Include="Screens\Settings Screens\Settings2_iPhone.xib" />
-    <InterfaceDefinition Include="Screens\SignUp Screens\SignUpUser~ipad.xib" />
-    <InterfaceDefinition Include="Screens\SignUp Screens\SignUpUser~iphone.xib" />
     <InterfaceDefinition Include="Screens\Welcome Screens\WelcomePage~ipad.xib" />
     <InterfaceDefinition Include="Screens\Welcome Screens\WelcomePage~iphone.xib" />
     <InterfaceDefinition Include="Screens\Article Screens\ArticlePage~ipad.xib" />
@@ -386,30 +380,11 @@
     <Compile Include="Screens\2Web Screens\TwoWebDesignMain.designer.cs">
       <DependentUpon>..\..\2Web Screens\TwoWebDesignMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Screens\Login Screens\LoginFirstPage.cs" />
-    <Compile Include="Screens\Login Screens\LoginFirstPage.designer.cs">
-      <DependentUpon>..\..\Login Screens\LoginFirstPage.cs</DependentUpon>
-    </Compile>
     <Compile Include="Screens\Lunch Screens\LunchPage.cs" />
     <Compile Include="Screens\Lunch Screens\LunchPage.designer.cs">
       <DependentUpon>..\..\Lunch Screens\LunchPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Screens\Settings Screens\2WebDesignBadgeElement.cs" />
-    <Compile Include="Screens\Settings Screens\2WebDesignBooleanElement.cs" />
-    <Compile Include="Screens\Settings Screens\2WebDesignButtonElement.cs" />
-    <Compile Include="Screens\Settings Screens\2WebDesignElement.cs" />
-    <Compile Include="Screens\Settings Screens\2WebDesignEntryElement.cs" />
-    <Compile Include="Screens\Settings Screens\2WebDesignRootElement.cs" />
-    <Compile Include="Screens\Settings Screens\MainSettingPage.cs" />
-    <Compile Include="Screens\Settings Screens\Settings.designer_1.cs">
-      <DependentUpon>..\..\Settings Screens\Settings_1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Screens\Settings Screens\Settings_1.cs" />
     <Compile Include="Screens\WebView\WebViewController.cs" />
-    <Compile Include="Screens\SignUp Screens\SignUpUser.cs" />
-    <Compile Include="Screens\SignUp Screens\SignUpUser.designer.cs">
-      <DependentUpon>..\..\SignUp Screens\SignUpUser.cs</DependentUpon>
-    </Compile>
     <Compile Include="Screens\Welcome Screens\WelcomePage.cs" />
     <Compile Include="Screens\Welcome Screens\WelcomePage.designer.cs">
       <DependentUpon>..\..\Welcome Screens\WelcomePage.cs</DependentUpon>
@@ -439,12 +414,44 @@
     <Compile Include="Screens\Support Screens\Support Main Screens\SupportMainScreenController.cs" />
     <Compile Include="Screens\Support Screens\Support Main Screens\SupportMainScreenSource.cs" />
     <Compile Include="Screens\Support Screens\Support Main Screens\SupoortMainScreenCell.cs" />
+    <Compile Include="Screens\Porjects Screens\Project Main Screens\LinkProjectView.cs" />
+    <Compile Include="Screens\Setting Screens\Setting Menu Screen\SettingMenuScreenCell.cs" />
+    <Compile Include="Screens\Setting Screens\Setting Menu Screen\SettingMenuScreenSource.cs" />
+    <Compile Include="Screens\Setting Screens\Setting Menu Screen\SettingMenuScreenController.cs" />
+    <Compile Include="Screens\Setting Screens\Project Screen\ProjectSettingsCell.cs" />
+    <Compile Include="Screens\Setting Screens\Project Screen\ProjectSettingsView.cs" />
+    <Compile Include="Screens\Setting Screens\Project Screen\ProjectSettingsSource.cs" />
+    <Compile Include="Screens\Setting Screens\Project Screen\ProjectSettingsController.cs" />
+    <Compile Include="Screens\Setting Screens\Organization Screen\OrganizationSettingCell.cs" />
+    <Compile Include="Screens\Setting Screens\Organization Screen\OrganizationSettingView.cs" />
+    <Compile Include="Screens\Setting Screens\Organization Screen\OrganizationSettingSource.cs" />
+    <Compile Include="Screens\Setting Screens\Organization Screen\OrganizationSettingController.cs" />
+    <Compile Include="Screens\Setting Screens\Email Notification Screen\EmailNotificationCell.cs" />
+    <Compile Include="Screens\Setting Screens\Email Notification Screen\EmailNotificationView.cs" />
+    <Compile Include="Screens\Setting Screens\Email Notification Screen\EmailNotificationSource.cs" />
+    <Compile Include="Screens\Setting Screens\Email Notification Screen\EmailNotificationController.cs" />
+    <Compile Include="Screens\Setting Screens\Project Screen\RequestProjectCell.cs" />
+    <Compile Include="Screens\Setting Screens\Organization Screen\RequestOrganizationCell.cs" />
+    <Compile Include="Screens\Setting Screens\Push Notification Screen\PushNotificationCell.cs" />
+    <Compile Include="Screens\Setting Screens\Push Notification Screen\PushNotificationView.cs" />
+    <Compile Include="Screens\Setting Screens\Push Notification Screen\PushNotificationSource.cs" />
+    <Compile Include="Screens\Setting Screens\Push Notification Screen\PushNotificationController.cs" />
+    <Compile Include="Screens\Setting Screens\Profile Screen\ProfileSettingCell.cs" />
+    <Compile Include="Screens\Setting Screens\Profile Screen\ProfileSettingView.cs" />
+    <Compile Include="Screens\Setting Screens\Profile Screen\ProfileSettingSource.cs" />
+    <Compile Include="Screens\Setting Screens\Profile Screen\ProfileSettingUpdateCell.cs" />
+    <Compile Include="Screens\Setting Screens\Profile Screen\ProfileSettingController.cs" />
+    <Compile Include="Screens\Login Register Screens\LoginRegisterView.cs" />
+    <Compile Include="Screens\Login Register Screens\LoginView.cs" />
+    <Compile Include="Screens\Login Register Screens\RegisterView.cs" />
+    <Compile Include="Screens\Login Register Screens\LoginRegisterController.cs" />
+    <Compile Include="Screens\Register Success Screen\RegisterSuccessView.cs" />
+    <Compile Include="Screens\Register Success Screen\RegisterSuccessScreenController.cs" />
   </ItemGroup>
   <Import Project="..\CoreDataService\CoreDataService.projitems" Label="Shared" Condition="Exists('..\CoreDataService\CoreDataService.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\SQLitePCL.raw.0.8.6\build\Xamarin.iOS10\SQLitePCL.raw.targets" Condition="Exists('..\packages\SQLitePCL.raw.0.8.6\build\Xamarin.iOS10\SQLitePCL.raw.targets')" />
   <ItemGroup>
-    <Folder Include="Database\" />
     <Folder Include="Additions\" />
     <Folder Include="Resources\2WebDesignImages\" />
     <Folder Include="Resources\Settings\" />
@@ -454,11 +461,8 @@
     <Folder Include="Screens\" />
     <Folder Include="Screens\2Web Library Screens\" />
     <Folder Include="Screens\2Web Screens\" />
-    <Folder Include="Screens\Login Screens\" />
     <Folder Include="Screens\Lunch Screens\" />
-    <Folder Include="Screens\Settings Screens\" />
     <Folder Include="Screens\WebView\" />
-    <Folder Include="Screens\SignUp Screens\" />
     <Folder Include="Screens\Welcome Screens\" />
     <Folder Include="Screens\Article Screens\" />
     <Folder Include="Screens\2Web Screens\Contact Screens\" />
@@ -470,6 +474,15 @@
     <Folder Include="Screens\Porjects Screens\Project Support Screens\" />
     <Folder Include="Screens\Support Screens\" />
     <Folder Include="Screens\Support Screens\Support Main Screens\" />
+    <Folder Include="Screens\Setting Screens\" />
+    <Folder Include="Screens\Setting Screens\Setting Menu Screen\" />
+    <Folder Include="Screens\Setting Screens\Profile Screen\" />
+    <Folder Include="Screens\Setting Screens\Push Notification Screen\" />
+    <Folder Include="Screens\Setting Screens\Email Notification Screen\" />
+    <Folder Include="Screens\Setting Screens\Organization Screen\" />
+    <Folder Include="Screens\Setting Screens\Project Screen\" />
+    <Folder Include="Screens\Login Register Screens\" />
+    <Folder Include="Screens\Register Success Screen\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\gear.png" />

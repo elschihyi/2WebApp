@@ -52,6 +52,7 @@ namespace WebApp_iOS
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
 			var y = statusbar + navigationbarHeight;
 			TableView.Frame=new RectangleF(0f,(float)y,(float)UIScreen.MainScreen.Bounds.Width,(float)(UIScreen.MainScreen.Bounds.Height-y));
+			TableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 			TableView.BackgroundColor = UIColor.Clear;
 			TableView.Source = new SupportMainScreenSource (this);
 			TableView.AllowsSelection = true;

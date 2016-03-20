@@ -92,6 +92,8 @@ namespace WebApp_iOS
 				}		
 			};
 			View.Add (hiddenBtn);
+
+			GlobalAPI.welcomePage = this;
 		}
 	}
 }

@@ -98,8 +98,8 @@ namespace WebApp_iOS
 						mailController.Finished += (object s1, MFComposeResultEventArgs args) => {
 							args.Controller.DismissViewController (true, null);
 						};
-						//PresentViewController (mailController, true, null);
-						UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController (mailController, true, null);
+						PresentViewController (mailController, true, null);
+						//UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController (mailController, true, null);
 					};	
 				} else {
 					newContactView.emailLabel.Hidden = true;

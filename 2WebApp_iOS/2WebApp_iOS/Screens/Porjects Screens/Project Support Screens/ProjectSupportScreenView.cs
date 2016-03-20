@@ -254,9 +254,7 @@ namespace WebApp_iOS
 
 			try{
 				TypeValueTextView.Text=theProject.support_package[0].name;
-				string remainHour=(Int32.Parse(theProject.support_package[0].totalhour)-Int32.Parse(theProject.support_package[0].hourused)).ToString();
-				HourRemainValueLabel.Text=remainHour+"/"+theProject.support_package[0].totalhour;
-				//HourRemainValueLabel.Text=theProject.support_package[0].hourused+"/"+theProject.support_package[0].totalhour;
+				HourRemainValueLabel.Text=theProject.support_package[0].hourused+"/"+theProject.support_package[0].totalhour;
 				DateTime theDate1 = DateTime.ParseExact (theProject.support_package[0].lastbackup, "yyyy-MM-dd HH:mm:ss", null);	
 				LatestBackUpValueLabel.Text=theDate1.ToString("MMMM dd, yyyy");
 				DateTime theDate2 = DateTime.ParseExact (theProject.support_package[0].lastpost, "yyyy-MM-dd HH:mm:ss", null);	
