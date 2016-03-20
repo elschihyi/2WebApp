@@ -335,6 +335,50 @@ namespace CoreDataService
 		public string youtube { get; set; } = "";
 	}
 
+
+	[Serializable]
+	public class usersettings
+	{
+		public string client_accountid { get; set; } = "";
+
+		// this member only used by local
+		public string remember_password { get; set; } = "0";
+
+		public string push_new_event { get; set; } = "0";
+
+		public string push_news_update { get; set; } = "0";
+
+		public string push_project_update { get; set; } = "0";
+
+		public string push_approval_doc { get; set; } = "0";
+
+		public string push_release_doc { get; set; } = "0";
+
+		public string push_support_update { get; set; } = "0";
+
+		public string push_website_audit { get; set; } = "0";
+
+		public string push_yearly_analysis { get; set; } = "0";
+
+		public string email_new_event { get; set; } = "0";
+
+		public string email_news_update { get; set; } = "0";
+
+		public string email_project_update { get; set; } = "0";
+
+		public string email_approval_doc { get; set; } = "0";
+
+		public string email_release_doc { get; set; } = "0";
+
+		public string email_support_update { get; set; } = "0";
+
+		public string email_website_audit { get; set; } = "0";
+
+		public string email_yearly_analysis { get; set; } = "0";
+
+		public string email_blasts { get; set; } = "0";
+	}
+
 	#endregion
 
 
@@ -343,43 +387,11 @@ namespace CoreDataService
 	// LOCAL PRIVATE TABLE CLASS
 	////////////////////////////////////////////////////////////////
 
-	[Serializable]
-	public class user
-	{
-		public string username { get; set; } = "";
-
-		public string password { get; set; } = "";
-		
-		public string status { get; set; } = "";
-	}
-	
-
 	
 	////////////////////////////////////////////////////////////////
 	// DATA INTERFACE CLASS
 	////////////////////////////////////////////////////////////////
 
-	[Serializable]
-	public class project
-	{
-		public string id { get; set; } = "";
-
-		public string name { get; set; } = "";
-
-		public string type { get; set; } = "";
-
-		public string phase { get; set; } = "";
-
-		public string org_name { get; set; } = "";
-
-		public string client_name { get; set; } = "";
-
-		public string client_email { get; set; } = "";
-
-		public string staff_name { get; set; } = "";
-
-		public string staff_email { get; set; } = "";
-	}
 
 	[Serializable]
 	public class task
@@ -394,6 +406,7 @@ namespace CoreDataService
 
 		public string file_url { get; set; } = "";
 	}
+
 
 	[Serializable]
 	public class support
@@ -410,6 +423,7 @@ namespace CoreDataService
 
 		public string lastpost { get; set; } = "";
 	}
+
 
 	[Serializable]
 	public class projectsummary
@@ -433,6 +447,46 @@ namespace CoreDataService
 		public List<task> tasks { get; set; } = null;
 
 		public List<support> support_package { get; set; } = null;
+
+		// only used for local checking
+		public string status = "";
+	}
+
+
+	[Serializable]
+	public class userorg
+	{
+		public string name { get; set; } = "";
+	}
+
+
+	[Serializable]
+	public class userproj
+	{
+		public string name { get; set; } = "";
+
+		public string primary_contact { get; set; } = "";
+	}
+
+
+	[Serializable]
+	public class accountsummary
+	{
+		public string client_email { get; set; } = "";
+
+		public string client_password { get; set; } = "";
+
+		public string client_firstname { get; set; } = "";
+
+		public string client_lastname { get; set; } = "";
+
+		public UserStatus status { get; set; } = UserStatus.NULL;
+
+		public usersettings settings { get; set; } = null;
+
+		public List<userorg> organizations { get; set; } = null;
+
+		public List<userproj> projects  { get; set; } = null;
 	}
 
 
@@ -452,7 +506,7 @@ namespace CoreDataService
 
 	public class DBCache {
 		
-		public user userinfo = null;
+		public accountsummary acctinfo = null;
 		public contact continfo = null;
 		public List<projectsummary> projects = null;
 	}

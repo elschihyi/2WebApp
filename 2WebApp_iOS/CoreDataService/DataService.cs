@@ -30,7 +30,6 @@ namespace CoreDataService
 		{
 			Settings.local_dbpath = dbpath;
 			cache = new DBCache();
-			cache.projects = new List<projectsummary> ();	
 
 			SyncTable = new Dictionary<string, Boolean> ();
 			foreach (var item in Settings.local_tables) {
@@ -38,53 +37,9 @@ namespace CoreDataService
 			}
 		}
 
-		
-		
-		#region Public Functions
-
-		public Boolean ProjectInfo (out List<projectsummary> projsum, out string errmsg)
-		{
-			projsum = null;
-			errmsg = "";
-
-			// check the cache first
-			// no matter the cached is synced or not, either global sync or local
-			// to identify if it is a global sync, check Settings.local_ismemsynced
-			if ( cache.projects != null ) {
-				projsum = cache.projects;
-				return true;	
-
-			} else {
-				// return default data
-				projsum = new List<projectsummary> ();
-				projsum.Add (DefaultDataSet.Project ());
-			}
-
-			return true;
-		}
 
 
-
-		public Boolean ContactInfo (out contact info, out string errmsg)
-		{
-			info = null;
-			errmsg = "";
-
-			// check the cache first
-			// no matter the cached is synced or not, either global sync or local
-			// to identify if it is a global sync, check Settings.local_ismemsynced
-			if ( cache.continfo != null ) {
-				info = cache.continfo;
-				return true;	
-
-			} else {
-				// return default data
-				info = DefaultDataSet.Contact();
-			}
-			return true;
-		}
-
-
+		#region Interfaces
 
 		// Set all tables to sync
 		public void SetSyncTagForAll (Boolean on)
@@ -93,62 +48,141 @@ namespace CoreDataService
 				SyncTable [item.Key] = on;
 			}
 		}
-		
-		
-		
-		// Do table synchronization
-		public void Sync (user userinfo, Boolean ToSave, SyncCallback func)
-		{
-			//
-			// WARNING: MAKE SURE SETUP PROPER TABLE'S FLAG BEFORE CALL THIS
-			//
-
-			Thread syncThread = new Thread (() => SyncThread ( userinfo, ToSave, func ));
-			syncThread.Start ();
-		}
 
 
 
-		// create a new user account
-		public Boolean CreatAccount (clientaccount userinfo, out string errmsg)
-		{
-			errmsg = "";
+		// Single action interface for upper layers
+		public Boolean Action( ref ActionParameters actioninfo ) {
 
-			// send the request and obtain the data
-			string json;
-			Dictionary<string, string> request = BuildRequest (userinfo, RequestOption.Acct);
-			if (!MakeRequest (request, out json)) {
-				return false;
-			}
+			switch (actioninfo.IN.type) {
 
-			// build a data object based on the downloaded JSON
-			object dataset;
-			if (!JSONtoObject (json, out dataset, out errmsg))
-				return false;
+			case ActionType.LOGOUT:
 
-			DBCache info;
-			if (!ParseData (dataset, out info, out errmsg) || info == null || info.userinfo == null ) {
-				return false;
-			}
+				// remove all local data
+				cache.acctinfo = null;
+				cache.projects = null;
+				// update local data
+				string errmsg;
+				if ( !SaveCacheData(false, out errmsg) ) {
+					return false;
+				}
+				break;
+			
+			case ActionType.SYNCATSTARTUP:
+			case ActionType.LOGIN:
+			case ActionType.SYNC:
 
-			if ( info.userinfo.status.ToUpper() != "CREATED" ) {
+				//
+				// WARNING: MAKE SURE SETUP PROPER TABLE'S FLAG BEFORE CALL THIS
+				//
 
-				if ( Settings.runmode == RunMode.Normal ) {
-					
-					errmsg = ErrorMessage.DataAccess;
+				accountsummary data = actioninfo.IN.data;
+				ActionCallback func = actioninfo.IN.func;
+				Boolean SaveUser = false;
+				if ( data.settings != null && data.settings.remember_password == "1" ) SaveUser = true;
+				Thread syncThread = new Thread (() => SyncThread ( data, SaveUser, func ));
+				syncThread.Start ();
+				break;
 
-				} else if ( Settings.runmode == RunMode.Debug ) {
-					
-					errmsg = "Failed to create the user account";	
+			case ActionType.CREATEACCOUNT:
+			case ActionType.UPDATEACCOUNT:
+			case ActionType.UPDATESETTINGS:
+
+				// send the request and obtain the data
+				string json;
+				Dictionary<string, string> request = BuildRequest (actioninfo.IN.data, actioninfo.IN.type);
+				if (!MakeRequest (request, out json)) {
+					return false;
 				}
 
-				return false;
+				// build a data object based on the downloaded JSON
+				object retobj;
+				if (!JSONtoObject (json, out retobj, out actioninfo.OUT.errmsg))
+					return false;
+
+				DBCache info;
+				if (!ParseData (retobj, out info, out actioninfo.OUT.errmsg) || info == null || info.acctinfo == null) {
+					return false;
+				}
+
+				UserStatus status;
+				if (actioninfo.IN.type == ActionType.CREATEACCOUNT)
+					status = UserStatus.CREATED;
+				else
+					status = UserStatus.UPDATED;
+				if (info.acctinfo.status != status) {
+
+					if (Settings.runmode == RunMode.Normal) {
+
+						actioninfo.OUT.errmsg = ErrorMessage.DataAccess;
+
+					} else if (Settings.runmode == RunMode.Debug) {
+
+						actioninfo.OUT.errmsg = ErrorMessage.Account_Update;	
+					}
+
+					return false;
+				} else {
+					// update and save the cache
+					cache.acctinfo = actioninfo.IN.data;
+					if ( !SaveCacheData(true, out errmsg) ) {
+						return false;
+					}
+				}
+				break;
+
+			case ActionType.GETPROJINFO:
+
+				// check the cache first
+				// no matter the cached is synced or not, either global sync or local
+				// to identify if it is a global sync, check Settings.local_ismemsynced
+				if ( cache.projects != null ) {
+
+					actioninfo.OUT.dataset = cache.projects;
+
+				} else {
+					// return default data
+					actioninfo.OUT.dataset = new List<projectsummary> ();
+					((List<projectsummary>)actioninfo.OUT.dataset).Add (DefaultDataSet.Project ());
+				}
+				break;
+
+			case ActionType.GETCONTINFO:
+
+				// check the cache first
+				// no matter the cached is synced or not, either global sync or local
+				// to identify if it is a global sync, check Settings.local_ismemsynced
+				if ( cache.continfo != null ) {
+					actioninfo.OUT.dataset = cache.continfo;
+					return true;	
+
+				} else {
+					// return default data
+					actioninfo.OUT.dataset = DefaultDataSet.Contact();
+				}
+				break;
+
+			case ActionType.GETACCTINFO:
+
+				// check the cache first
+				// no matter the cached is synced or not, either global sync or local
+				// to identify if it is a global sync, check Settings.local_ismemsynced
+				if ( cache.acctinfo != null ) {
+					actioninfo.OUT.dataset = cache.acctinfo;
+					return true;
+
+				} else {
+					// no default data
+					actioninfo.OUT.dataset = new accountsummary();
+					((accountsummary)actioninfo.OUT.dataset).settings = new usersettings ();
+					((accountsummary)actioninfo.OUT.dataset).organizations = new List<userorg>();
+					((accountsummary)actioninfo.OUT.dataset).projects = new List<userproj>();
+				}
+				break;
 			}
 
 			return true;
-
 		}
-
 
 		#endregion
 
@@ -157,14 +191,14 @@ namespace CoreDataService
 		#region Internal Functions - Common
 
 		// Synchronize table data at background
-		private void SyncThread (user userinfo, Boolean ToSave, SyncCallback func)
+		private void SyncThread (accountsummary userinfo, Boolean ToSave, ActionCallback func)
 		{
 
 			string errmsg;
-			SyncCallback callback = new SyncCallback (func);
+			ActionCallback callback = new ActionCallback (func);
 
 			// handle user information
-			if (userinfo.username == "" && userinfo.password == "") {
+			if (userinfo.client_email == "" && userinfo.client_password == "") {
 				// check if the credential is saved
 				if ( !GetSavedUserInfo (out errmsg) ) {
 					// no given and no saved
@@ -174,10 +208,10 @@ namespace CoreDataService
 					return;
 				}
 				// if found, keep saving it
-				cache.userinfo.status = "SAVED";
+				cache.acctinfo.status = UserStatus.SAVED;
 				ToSave = true;
 				
-			} else if ( userinfo.username == "" ) {
+			} else if ( userinfo.client_email == "" ) {
 				// no saved and try to login
 				cache.projects = null;
 
@@ -194,19 +228,19 @@ namespace CoreDataService
 				
 			} else {
 				
-				if ( cache.userinfo == null ) {
-					cache.userinfo = new user();
+				if ( cache.acctinfo == null ) {
+					cache.acctinfo = new accountsummary();
 				}
-				cache.userinfo.username = userinfo.username;
+				cache.acctinfo.client_email = userinfo.client_email;
 				MD5 hash = new MD5CryptoServiceProvider ();
-				byte[] data = hash.ComputeHash(Encoding.UTF8.GetBytes(userinfo.password));
+				byte[] data = hash.ComputeHash(Encoding.UTF8.GetBytes(userinfo.client_password));
 				StringBuilder result = new StringBuilder();
 				for (int i=0;i<data.Length;i++)
 				{
 					result.Append(data[i].ToString("x2"));
 				}
-				cache.userinfo.password = result.ToString();
-				cache.userinfo.status = null;
+				cache.acctinfo.client_password = result.ToString();
+				cache.acctinfo.status = UserStatus.NULL;
 			}
 
 
@@ -230,7 +264,7 @@ namespace CoreDataService
 				} else if ( Settings.local_dbtype == DatabaseType.Json ) {
 					
 					// download stream data
-					if (!DownloadData (cache.userinfo, RequestOption.Sync, out data, out errmsg)) {
+					if (!DownloadData (cache.acctinfo, ActionType.SYNC, out data, out errmsg)) {
 						callback (false, errmsg);
 						return;
 					}
@@ -243,7 +277,7 @@ namespace CoreDataService
 					return;
 				}
 
-				if ( tmpcache.userinfo.status.ToUpper() != "VALID" ) {
+				if ( tmpcache.acctinfo.status != UserStatus.VALID ) {
 					cache.projects = null;
 
 					if ( Settings.runmode == RunMode.Normal ) {
@@ -294,46 +328,46 @@ namespace CoreDataService
 					// obtain the related tasks and supportpackages
 					foreach (var item in projdata as IEnumerable<object>) {
 
-						project proj = (project)item;
-						projectsummary sum = new projectsummary ();
-						sum.name = proj.name;
-						sum.type = proj.type;
-						sum.phase = proj.phase;
-						sum.org_name = proj.org_name;
-						sum.client_name = proj.client_name;
-						sum.client_email = proj.client_email;
-						sum.staff_name = proj.staff_name;
-						sum.staff_email = proj.staff_email;
-
-						// for tasks
-						object taskdata;
-						sql = "select b.task_update as name, b.row_update_date as date, b.task_fileurl from projects a, tasks b" +
-							" where a.project_id = b.project_id and a.project_id = " + proj.id;
-						req.sql = sql;
-						req.tablename = "task";
-						if (!LocalDB.ReadData (req, out taskdata, out errmsg)) {
-							cache.projects = null;
-							callback (false, errmsg);
-							return;
-						}
-						sum.tasks = (List<task>)taskdata;
-
-						// for support packages
-						object suppkgdata;
-						sql = "select c.sup_package_name as name, c.sup_package_hours as totalhour, b.proj_supp_rel_hours as hourused," +
-							" b.proj_supp_rel_status as status, b.proj_supp_rel_backupdate as lastbackup, b.row_update_date as lastpost" +
-							" from projects a, project_support_rel b, supportpackage c where a.project_id = b.project_id" +
-							" and b.sup_package_id = c.sup_package_id and a.project_id = " + proj.id;
-						req.sql = sql;
-						req.tablename = "support";
-						if (!LocalDB.ReadData (req, out suppkgdata, out errmsg)) {
-							cache.projects = null;
-							callback (false, errmsg);
-							return;
-						}
-						sum.support_package = (List<support>)suppkgdata;
-
-						cache.projects.Add (sum);
+//						project proj = (project)item;
+//						projectsummary sum = new projectsummary ();
+//						sum.name = proj.name;
+//						sum.type = proj.type;
+//						sum.phase = proj.phase;
+//						sum.org_name = proj.org_name;
+//						sum.client_name = proj.client_name;
+//						sum.client_email = proj.client_email;
+//						sum.staff_name = proj.staff_name;
+//						sum.staff_email = proj.staff_email;
+//
+//						// for tasks
+//						object taskdata;
+//						sql = "select b.task_update as name, b.row_update_date as date, b.task_fileurl from projects a, tasks b" +
+//							" where a.project_id = b.project_id and a.project_id = " + proj.id;
+//						req.sql = sql;
+//						req.tablename = "task";
+//						if (!LocalDB.ReadData (req, out taskdata, out errmsg)) {
+//							cache.projects = null;
+//							callback (false, errmsg);
+//							return;
+//						}
+//						sum.tasks = (List<task>)taskdata;
+//
+//						// for support packages
+//						object suppkgdata;
+//						sql = "select c.sup_package_name as name, c.sup_package_hours as totalhour, b.proj_supp_rel_hours as hourused," +
+//							" b.proj_supp_rel_status as status, b.proj_supp_rel_backupdate as lastbackup, b.row_update_date as lastpost" +
+//							" from projects a, project_support_rel b, supportpackage c where a.project_id = b.project_id" +
+//							" and b.sup_package_id = c.sup_package_id and a.project_id = " + proj.id;
+//						req.sql = sql;
+//						req.tablename = "support";
+//						if (!LocalDB.ReadData (req, out suppkgdata, out errmsg)) {
+//							cache.projects = null;
+//							callback (false, errmsg);
+//							return;
+//						}
+//						sum.support_package = (List<support>)suppkgdata;
+//
+//						cache.projects.Add (sum);
 
 					}
 
@@ -368,7 +402,7 @@ namespace CoreDataService
 
 					// offline cases
 
-					if (cache.userinfo.status == "SAVED" && cache.projects != null) {
+					if (cache.acctinfo.status == UserStatus.SAVED && cache.projects != null) {
 						// do nothing
 						callback (true, "");
 						return;
@@ -413,17 +447,17 @@ namespace CoreDataService
 
 			if ( Settings.local_dbtype == DatabaseType.Sqlite ) {
 
-				DBRequest req = new DBRequest ();
-				req.sql = "select * from userinfo";
-				req.tablename = "userinfo";
-				if (!LocalDB.ReadData (req, out obj, out errmsg)) {
-					return false;
-				}
-				if ( obj == null )
-					return false;
-
-				cache.userinfo = (user)obj;
-				return true;
+//				DBRequest req = new DBRequest ();
+//				req.sql = "select * from userinfo";
+//				req.tablename = "userinfo";
+//				if (!LocalDB.ReadData (req, out obj, out errmsg)) {
+//					return false;
+//				}
+//				if ( obj == null )
+//					return false;
+//
+//				cache.acctinfo = (accountsummary)obj;
+//				return true;
 
 			} else if ( Settings.local_dbtype == DatabaseType.Json ) {
 
@@ -432,7 +466,7 @@ namespace CoreDataService
 				}
 
 				DBCache info;
-				if (!ParseData (obj, out info, out errmsg) || info == null || info.userinfo == null ) {
+				if (!ParseData (obj, out info, out errmsg) || info == null || info.acctinfo == null ) {
 					return false;
 				}
 
@@ -442,7 +476,7 @@ namespace CoreDataService
 				if ( info.continfo != null && cache.continfo == null ) cache.continfo = info.continfo;
 				if ( info.projects != null && cache.projects == null ) cache.projects = info.projects;
 
-				cache.userinfo = info.userinfo;
+				cache.acctinfo = info.acctinfo;
 				return true;
 			}
 
@@ -459,7 +493,7 @@ namespace CoreDataService
 			// save the data to local
 			object[] cleaneddata;
 			if ( SaveUser )
-				cleaneddata = new object[]{new object[]{cache.userinfo}, cache.projects,new object[]{cache.continfo} };
+				cleaneddata = new object[]{new object[]{cache.acctinfo}, cache.projects,new object[]{cache.continfo} };
 			else
 				cleaneddata = new object[]{new object[]{null}, new object[]{null}, new object[]{cache.continfo} };
 			DBRequest req = new DBRequest ();
@@ -515,8 +549,8 @@ namespace CoreDataService
 
 				foreach (var item in data as IEnumerable<object>) {
 					foreach (var subitem in item as IEnumerable<object>) {
-						if (subitem.GetType () == Type.GetType (Settings.local_dbschema + "user"))
-							cache.userinfo = (user)subitem;
+						if (subitem.GetType () == Type.GetType (Settings.local_dbschema + "accountsummary"))
+							cache.acctinfo = (accountsummary)subitem;
 						else if (subitem.GetType () == Type.GetType (Settings.local_dbschema + "contact"))
 							cache.continfo = (contact)subitem;
 						else if (subitem.GetType () == Type.GetType (Settings.local_dbschema + "projectsummary")) {
@@ -551,7 +585,7 @@ namespace CoreDataService
 		// Return:
 		//		true successful
 		//		false return with error as result
-		private Boolean DownloadData (user userinfo, RequestOption type, out object dataset, out string errmsg)
+		private Boolean DownloadData (accountsummary userinfo, ActionType type, out object dataset, out string errmsg)
 		{
 			errmsg = "";
 			dataset = null;
@@ -609,19 +643,19 @@ namespace CoreDataService
 			}
 
 			// send the request and obtain the data
-			string json;
-			user info = new user ();
-			info.username = Settings.test_username;
-			info.password = Settings.test_password;
-			Dictionary<string, string> request = BuildRequest (info, RequestOption.Sync);
-			if (!MakeRequest (request, out json)) {
-				return false;
-			}
-
-			// build a data object based on the downloaded JSON
-			if (!JSONtoObject (json, out datasets, out errmsg))
-				return false;
-
+//			string json;
+//			accountsummary info = new accountsummary ();
+//			info.client_email = Settings.test_username;
+//			info.client_password = Settings.test_password;
+//			Dictionary<string, string> request = BuildRequest (info, RequestOption.Sync);
+//			if (!MakeRequest (request, out json)) {
+//				return false;
+//			}
+//
+//			// build a data object based on the downloaded JSON
+//			if (!JSONtoObject (json, out datasets, out errmsg))
+//				return false;
+//
 			return true;
 		}
 

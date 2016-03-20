@@ -4,6 +4,7 @@ using RestSharp;
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
+using Newtonsoft.Json;
 
 
 namespace CoreDataService
@@ -37,33 +38,32 @@ namespace CoreDataService
 
 		// build and return request block
 		// Parameters
-		//		username	for backend login
-		//		papssword	for backend login
-		//		option		AUTH | SYNC
+		//		info		body message's object
 		// Return
-		//		true	sucessful
-		//		false	returned with error in errmsg
-		protected Dictionary<string, string> BuildRequest ( object info, RequestOption option )
+		//		non-null	sucessful
+		//		null		returned with error in errmsg
+		protected Dictionary<string, string> BuildRequest ( object info, ActionType action )
 		{
 			
 			Dictionary<string, string> request = new Dictionary<string, string> ();
+			request.Add ("ADDRESS", Settings.ws_address);
+			request.Add ("FORMAT", "json");
 
-			switch (option) {
-			case RequestOption.Auth:
-			case RequestOption.Sync:
-				user userinfo = (user)info;
-				request.Add ("ADDRESS", Settings.ws_address);
+			// add action type into the request json
+			string json = JsonConvert.SerializeObject (info);
+			json = json.Replace ("}", ",\"option\":\""+action+"\"}");
+			request.Add ("BODY", json);
+
+			switch (action) {
+			case ActionType.LOGIN:
+			case ActionType.SYNC:
 				request.Add ("PATH", Settings.ws_basepath + Settings.ws_svcname);
-				request.Add ("FORMAT", "json");
-				request.Add ("BODY",string.Format("{{\"username\":\"{0}\",\"password\":\"{1}\",\"option\":\"{2}\"}}", userinfo.username, userinfo.password, option));
 				break;
 
-			case RequestOption.Acct:
-				clientaccount acctinfo = (clientaccount)info;
-				request.Add ("ADDRESS", Settings.ws_address);
+			case ActionType.CREATEACCOUNT:
+			case ActionType.UPDATEACCOUNT:
+			case ActionType.UPDATESETTINGS:
 				request.Add ("PATH", Settings.ws_basepath + Settings.ws_reqname);
-				request.Add ("FORMAT", "json");
-				request.Add ("BODY",string.Format("{{\"username\":\"{0}\",\"password\":\"{1}\",\"firstname\":\"{2}\",\"lastname\":\"{3}\",\"option\":\"{4}\"}}", acctinfo.client_email, acctinfo.client_password, acctinfo.client_firstname, acctinfo.client_lastname, option));
 				break;
 			}
 			return request;

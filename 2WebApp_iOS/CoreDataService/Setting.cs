@@ -8,18 +8,43 @@ using System.IO;
 namespace CoreDataService
 {
 
+	// cutomized data type
+	public enum RunMode { Normal, Debug };
+	public enum DatabaseType { Sqlite, Json };
+	public enum RequestType { GET, POST };
+	public enum ActionType { LOGIN, LOGOUT, SYNCATSTARTUP, SYNC, CREATEACCOUNT, UPDATEACCOUNT, UPDATESETTINGS, GETPROJINFO, GETCONTINFO, GETACCTINFO };	// should be conform with the backend system
+	public enum UserStatus { VALID, INVALID, CREATED, UPDATED, SAVED, NULL };
+
+	// parameter class for data service action interface
+	public class ActionParameters {
+
+		public parain IN;
+		public paraout OUT;
+
+		public ActionParameters() {
+			IN = new parain ();
+			OUT = new paraout ();
+		}
+
+		// declare internal classes
+		public class parain {
+			public ActionType type;
+			public accountsummary data;
+			public ActionCallback func;
+		}
+
+		public class paraout {
+			public object dataset;
+			public string errmsg;
+		}
+	}
+
 	// callback function definition
 	// Parameters:
 	// succeed		true | false
 	// errmsg		error message
-	public delegate void SyncCallback (Boolean succeed, string errmsg);
+	public delegate void ActionCallback (Boolean succeed, string errmsg);
 
-
-	// cutomized data type
-	public enum RequestType { GET, POST };
-	public enum RequestOption { Auth, Sync, Acct };		// should be conform with the backend system
-	public enum DatabaseType { Sqlite, Json };
-	public enum RunMode { Normal, Debug };
 
 
 	public static class Settings
@@ -30,15 +55,10 @@ namespace CoreDataService
 		// remote settings
 		public static string ws_address = "http://www.2web.cc.php53-4.ord1-1.websitetestlink.com";
 		public static string ws_basepath = "/webservice/common/";
-		public static string ws_svcname = "Service";
+		public static string ws_svcname = "ServiceNew";
 		public static string ws_reqname = "Request";
 		public static RequestType ws_reqtype = RequestType.POST;
 		public static int ws_timeout = 15000;
-
-		// for test purpose
-		// will be removed eventually
-		public static string test_username = "test@test.com";
-		public static string test_password = "test";
 
 		// local status
 		public static Boolean local_ismemsynced = false;
@@ -52,8 +72,8 @@ namespace CoreDataService
 		public static string local_dbschema = "CoreDataService.";
 		public static string[] local_tables = { "organization","staffaccount","taskupdatetypes","notification_type","notifications",
 			"client_organization_rel","projects","tasks","project_support_rel","clientaccount",
-			"projectstatus","projecttype","projectphase","supportpackage","contact"};
-		public static string[] local_privatetables = {"userinfo"};
+			"projectstatus","projecttype","projectphase","supportpackage","contact","usersettings"};
+		public static string[] local_privatetables = {""};
 
 	}
 
@@ -75,6 +95,7 @@ namespace CoreDataService
 		public static string Login_Missing = "Username is reqired";
 		public static string Login_Failed = "User login is failed";
 		public static string Login_Offline = "Offline login doesn't support";
+		public static string Account_Update = "Failed to create/update user account";
 
 	}
 
@@ -113,6 +134,7 @@ namespace CoreDataService
 			demo.client_email = "test@test.com";
 			demo.staff_name = "Hardik Patel";
 			demo.staff_email = "hardik@2webdesign.com";
+			demo.status = "DEMO";
 
 			demo.tasks =new List<task> ();
 			task newtask = new task ();
@@ -306,21 +328,6 @@ namespace CoreDataService
 			// Button click event
 			testBtn.TouchUpInside += (s, e) =>  {
 
-				// Create user account
-//				clientaccount acctinfo = new clientaccount();
-//				acctinfo.client_email = "test@test1.com";
-//				acctinfo.client_password = "123";
-//				acctinfo.client_firstname = "123";
-//				acctinfo.client_lastname = "123";
-//
-//				string errmsg;
-//				if ( !ds.CreatAccount(acctinfo, out errmsg) )
-//					testView.Text += "\n\n" + errmsg + "\n\n";
-//				else 
-//					testView.Text += "\n\nThe user account has been created\n\n";
-//				
-//				return;
-
 				if ( testField1.Text != "" ) {
 
 					int useridx = 0;
@@ -344,17 +351,45 @@ namespace CoreDataService
 					string text2 = testField2.Text;
 					Boolean switchbox = testSwitch.On;
 
-					// Start synchronization
-					SyncCallback x = new SyncCallback(callBack);
-					user info = new user ();
-					info.username = text1;
-					info.password = text2;
-					ds.Sync(info, true, x);
+					// Start an action
+					accountsummary info = new accountsummary ();
+					info.client_email = text1;
+					info.client_password = text2;
+
+					ActionParameters para = new ActionParameters ();
+					para.IN.data = info;
+
+					// for sync
+					para.IN.type = ActionType.SYNC;
+					para.IN.func = new ActionCallback(callBack);;
+
+					// for create profile
+//					para.IN.type = ActionType.CREATEACCOUNT;
+//					para.IN.data.client_email = "new email";
+//					para.IN.data.client_password = "new passord";
+//					para.IN.data.client_firstname = "new firstname";
+//					para.IN.data.client_lastname = "new lastname";
+
+					// for update profile
+//					para.IN.type = ActionType.UPDATEACCOUNT;
+//					para.IN.data.client_firstname = "updated firstname";
+//					para.IN.data.client_lastname = "update lastname";
+
+					// for update settings
+//					para.IN.type = ActionType.UPDATESETTINGS;
+//					para.IN.data.settings = new usersettings();
+//					para.IN.data.settings.push_new_event = "1";
+//					para.IN.data.settings.push_news_update = "1";
+
+					if ( !ds.Action(ref para) ) {
+						testView.Text += "There is an error happened during the action\n\n Error: " + para.OUT.errmsg + "\n\n";
+					} else {
+						testView.Text += "\n\nThe action is successful\n\n";
+					}
 
 				}
 
 			};
-
 
 		}
 
@@ -366,12 +401,15 @@ namespace CoreDataService
 				testView.Text += "\n-----Background synchronization is done-----\n\n";
 
 				List<projectsummary> projs;
-				if ( !ds.ProjectInfo(out projs, out errmsg) ) {
+				ActionParameters para = new ActionParameters ();
+				para.IN.type = ActionType.GETPROJINFO;
+				if ( !ds.Action(ref para) ) {
 					
-					testView.Text += "Error: \n\n" + errmsg;
+					testView.Text += "Error: \n\n" + para.OUT.errmsg;
 
 				} else {
-					
+
+					projs = (List<projectsummary>)para.OUT.dataset;
 					testView.Text += "Project Information:\n\n";
 					foreach(var item in projs) {
 						testView.Text += String.Format("Name: {0}\nType: {1}\nStatus: {2}\n\n",item.name,item.type,item.phase);
