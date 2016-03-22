@@ -13,10 +13,13 @@ namespace WebApp_iOS
 
 		//object
 		public accountsummary theaccountsummary;
+		public accountsummary OriginAccountSummary;
+
 
 		public PushNotificationController (accountsummary theaccountsummary)
 		{
 			this.theaccountsummary = theaccountsummary;
+			this.OriginAccountSummary = EmailNotificationController.CloneAccountSummary (theaccountsummary);
 		}
 
 		public override void DidReceiveMemoryWarning ()
@@ -42,22 +45,25 @@ namespace WebApp_iOS
 		public override void ViewWillDisappear (bool animated)
 		{
 			base.ViewWillDisappear (animated);
-			string errmsg;
-			ActionParameters ap = new ActionParameters ();
-			ap.IN.type = ActionType.UPDATESETTINGS;
-			ap.IN.data = theaccountsummary;
-			ap.IN.func = (o,e) => {};
-			if (GlobalAPI.GetDataService ().Action (ref ap)) {
-				//do nothing if success
-			} else {
-				//alert
-				errmsg = ap.OUT.errmsg;
-				UIAlertController Alert = UIAlertController.Create ("Error",
-					errmsg, UIAlertControllerStyle.Alert);
-				Alert.AddAction (UIAlertAction.Create ("OK",
-					UIAlertActionStyle.Cancel, null
-				));
-				PresentViewController (Alert, true, null);
+			if (ValueChanged ()) {
+				string errmsg;
+				ActionParameters ap = new ActionParameters ();
+				ap.IN.type = ActionType.UPDATESETTINGS;
+				ap.IN.data = theaccountsummary;
+				ap.IN.func = (o, e) => {
+				};
+				if (GlobalAPI.GetDataService ().Action (ref ap)) {
+					//do nothing if success
+				} else {
+					//alert
+					errmsg = ap.OUT.errmsg;
+					UIAlertController Alert = UIAlertController.Create ("Error",
+						                         errmsg, UIAlertControllerStyle.Alert);
+					Alert.AddAction (UIAlertAction.Create ("OK",
+						UIAlertActionStyle.Cancel, null
+					));
+					PresentViewController (Alert, true, null);
+				}
 			}
 		}
 		/********************************************************************************
@@ -126,27 +132,39 @@ namespace WebApp_iOS
 			default:
 				break;
 			}
-			/*
-			string errmsg;
-			ActionParameters ap = new ActionParameters ();
-			ap.IN.type = ActionType.UPDATESETTINGS;
-			ap.IN.data = theaccountsummary;
-			ap.IN.func = (o,e) => {};
-			if (GlobalAPI.GetDataService ().Action (ref ap)) {
-				//do nothing if success
-			} else {
-				//alert
-				errmsg = ap.OUT.errmsg;
-				UIAlertController Alert = UIAlertController.Create ("Error",
-					errmsg, UIAlertControllerStyle.Alert);
-				Alert.AddAction (UIAlertAction.Create ("OK",
-					UIAlertActionStyle.Cancel, action=>{
-						NavigationController.PopViewController(true);
-					}		
-				));
-				PresentViewController (Alert, true, null);
+		}
+		/********************************************************************************
+		*functions
+		********************************************************************************/
+		public bool ValueChanged(){
+			if (OriginAccountSummary.client_email != theaccountsummary.client_email ||
+				OriginAccountSummary.client_password != theaccountsummary.client_password ||
+				OriginAccountSummary.client_firstname != theaccountsummary.client_firstname ||
+				OriginAccountSummary.client_lastname != theaccountsummary.client_lastname ||
+				OriginAccountSummary.status != theaccountsummary.status ||
+				OriginAccountSummary.settings.client_accountid != theaccountsummary.settings.client_accountid ||
+				OriginAccountSummary.settings.remember_password != theaccountsummary.settings.remember_password ||
+				OriginAccountSummary.settings.push_new_event != theaccountsummary.settings.push_new_event ||
+				OriginAccountSummary.settings.push_news_update != theaccountsummary.settings.push_news_update ||
+				OriginAccountSummary.settings.push_project_update != theaccountsummary.settings.push_project_update ||
+				OriginAccountSummary.settings.push_approval_doc != theaccountsummary.settings.push_approval_doc ||
+				OriginAccountSummary.settings.push_release_doc != theaccountsummary.settings.push_release_doc ||
+				OriginAccountSummary.settings.push_support_update != theaccountsummary.settings.push_support_update ||
+				OriginAccountSummary.settings.push_website_audit != theaccountsummary.settings.push_website_audit ||
+				OriginAccountSummary.settings.push_yearly_analysis != theaccountsummary.settings.push_yearly_analysis ||
+				OriginAccountSummary.settings.email_new_event != theaccountsummary.settings.email_new_event ||
+				OriginAccountSummary.settings.email_news_update != theaccountsummary.settings.email_news_update ||
+				OriginAccountSummary.settings.email_project_update != theaccountsummary.settings.email_project_update ||
+				OriginAccountSummary.settings.email_approval_doc != theaccountsummary.settings.email_approval_doc ||
+				OriginAccountSummary.settings.email_release_doc != theaccountsummary.settings.email_release_doc ||
+				OriginAccountSummary.settings.email_support_update != theaccountsummary.settings.email_support_update ||
+				OriginAccountSummary.settings.email_website_audit != theaccountsummary.settings.email_website_audit ||
+				OriginAccountSummary.settings.email_yearly_analysis != theaccountsummary.settings.email_yearly_analysis ||
+				OriginAccountSummary.settings.email_blasts != theaccountsummary.settings.email_blasts) {
+				return true;
 			}
-			*/
+
+			return false;
 		}
 	}
 }

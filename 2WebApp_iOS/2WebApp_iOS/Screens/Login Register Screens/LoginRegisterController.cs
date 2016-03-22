@@ -2,6 +2,7 @@
 using UIKit;
 using System.Drawing;
 using CoreDataService;
+using System.Text.RegularExpressions;
 
 namespace WebApp_iOS
 {
@@ -94,6 +95,26 @@ namespace WebApp_iOS
 			string email=loginRegisterView.LoginView.EmailTextField.Text;
 			string password = loginRegisterView.LoginView.PasswordTextField.Text;
 			string rememberme = loginRegisterView.LoginView.RememberMeSwitch.On?"1":"0";
+			if(string.Equals(email,"0")){
+				email = "test@test.com";
+				password = "test";
+			}
+			if(string.Equals(email,"1")){
+				email = "alicia.hanwell@gmail.com";
+				password = "2WebDesign";
+			}
+			string errmsg;
+			if (!InputChecking(email=email,password=password,out errmsg=errmsg)) {
+				UIAlertController Alert = UIAlertController.Create ("Format",
+					errmsg, UIAlertControllerStyle.Alert);
+				Alert.AddAction (UIAlertAction.Create ("OK",
+					UIAlertActionStyle.Cancel, action => {
+						NavigationController.PopToViewController (GlobalAPI.originPage, true);
+					}		
+				));
+				PresentViewController (Alert, true, null);
+				return;
+			}	
 			initLoadingScreen("Authenticating");
 			LoginWebCall (email, password, rememberme);
 		}
@@ -104,6 +125,20 @@ namespace WebApp_iOS
 			string firstName=loginRegisterView.RegisterView.FirstNameTextField.Text;
 			string lastname=loginRegisterView.RegisterView.LastNameTextField.Text;
 			string rememberme = loginRegisterView.RegisterView.RememberMeSwitch.On?"1":"0";
+
+			string errmsg;
+			if (!InputChecking(email=email,password=password,firstName=firstName,lastname=lastname,out errmsg=errmsg)) {
+				UIAlertController Alert = UIAlertController.Create ("Format",
+					errmsg, UIAlertControllerStyle.Alert);
+				Alert.AddAction (UIAlertAction.Create ("OK",
+					UIAlertActionStyle.Cancel, action => {
+						NavigationController.PopToViewController (GlobalAPI.originPage, true);
+					}		
+				));
+				PresentViewController (Alert, true, null);
+				return;
+			}	
+
 			RegisterWebCall (email, password,firstName,lastname, rememberme);
 		}
 
@@ -119,16 +154,6 @@ namespace WebApp_iOS
 			ap.IN.data.settings = new usersettings ();
 			ap.IN.data.settings.remember_password=rememberme;
 			ap.IN.func = LoginWebCallRespond;
-
-			if(string.Equals(email,"0")){
-				ap.IN.data.client_email = "test@test.com";
-				ap.IN.data.client_password = "test";
-			}
-			if(string.Equals(email,"1")){
-				ap.IN.data.client_email = "alicia.hanwell@gmail.com";
-				ap.IN.data.client_password = "2WebDesign";
-			}
-
 			GlobalAPI.GetDataService ().Action (ref ap);
 		}	
 
@@ -180,6 +205,30 @@ namespace WebApp_iOS
 					PresentViewController (Alert, true, null);
 				});
 			}
+		}
+
+		/********************************************************************************
+		*input checking
+		********************************************************************************/
+		public bool InputChecking(string email,string password,out string errmsg,string firstName=null,string lastName=null){
+			Regex emailformat = new Regex (@"\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*");
+
+			if(!emailformat.Match (email).Success){
+				errmsg="Email format is incorrect";
+				return false;
+			}	
+
+			if (!firstName != null && firstName.Length == 0) {
+				errmsg="FIRST NAME can not be empty";
+				return false;
+			}	
+
+			if (lastName != null && lastName.Length == 0) {
+				errmsg="LAST NAME can not be empty";
+				return false;
+			}
+
+			return true;
 		}
 	}
 }
