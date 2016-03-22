@@ -35,7 +35,7 @@ namespace WebApp_iOS
 
 			EmailTextField=new UITextField( ) 
 			{
-				KeyboardType=UIKeyboardType.Default,
+				KeyboardType=UIKeyboardType.EmailAddress,
 				ReturnKeyType=UIReturnKeyType.Done,
 				TextColor = UIColor.White,
 				BackgroundColor = UIColor.Clear,

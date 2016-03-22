@@ -39,6 +39,28 @@ namespace WebApp_iOS
 			base.ViewDidAppear (animated);
 		}
 
+
+		public override void ViewWillDisappear (bool animated)
+		{
+			base.ViewWillDisappear (animated);
+			string errmsg;
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.UPDATESETTINGS;
+			ap.IN.data = theaccountsummary;
+			ap.IN.func = (o,e) => {};
+			if (GlobalAPI.GetDataService ().Action (ref ap)) {
+				//do nothing if success
+			} else {
+				//alert
+				errmsg = ap.OUT.errmsg;
+				UIAlertController Alert = UIAlertController.Create ("Error",
+					errmsg, UIAlertControllerStyle.Alert);
+				Alert.AddAction (UIAlertAction.Create ("OK",
+					UIAlertActionStyle.Cancel, null
+				));
+				PresentViewController (Alert, true, null);
+			}
+		}
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
@@ -105,7 +127,7 @@ namespace WebApp_iOS
 			default:
 				break;
 			}
-
+			/*
 			string errmsg;
 			ActionParameters ap = new ActionParameters ();
 			ap.IN.type = ActionType.UPDATESETTINGS;
@@ -125,6 +147,7 @@ namespace WebApp_iOS
 				));
 				PresentViewController (Alert, true, null);
 			}
+			*/
 		}
 	}
 }
