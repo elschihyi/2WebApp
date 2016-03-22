@@ -13,7 +13,7 @@ namespace CoreDataService
 	public enum DatabaseType { Sqlite, Json };
 	public enum RequestType { GET, POST };
 	public enum ActionType { LOGIN, LOGOUT, SYNCATSTARTUP, SYNC, CREATEACCOUNT, UPDATEACCOUNT, UPDATESETTINGS, GETPROJINFO, GETCONTINFO, GETACCTINFO };	// should be conform with the backend system
-	public enum UserStatus { VALID, INVALID, CREATED, UPDATED, SAVED, NULL };
+	public enum UserStatus { VALID, INVALID, CREATED, UPDATED, FAILED, SAVED, NULL };
 
 	// parameter class for data service action interface
 	public class ActionParameters {

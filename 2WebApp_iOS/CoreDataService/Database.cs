@@ -340,10 +340,7 @@ namespace CoreDataService
 	public class usersettings
 	{
 		public string client_accountid { get; set; } = "";
-
-		// this member only used by local
-		public string remember_password { get; set; } = "0";
-
+		
 		public string push_new_event { get; set; } = "0";
 
 		public string push_news_update { get; set; } = "0";
@@ -377,6 +374,11 @@ namespace CoreDataService
 		public string email_yearly_analysis { get; set; } = "0";
 
 		public string email_blasts { get; set; } = "0";
+		
+		// the members only used by local
+		public string remember_password { get; set; } = "0";
+		public string new_password { get; set; } = "";
+		public string profile_updated { get; set; } = "0";
 	}
 
 	#endregion
@@ -638,7 +640,7 @@ namespace CoreDataService
 		{
 			try {
 				dbconn = new SQLiteConnection (Settings.local_dbpath);
-			} catch ( Exception e ) {
+			} catch {
 				return;
 			}
 		}

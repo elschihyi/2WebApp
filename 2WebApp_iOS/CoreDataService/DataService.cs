@@ -78,9 +78,7 @@ namespace CoreDataService
 
 				accountsummary data = actioninfo.IN.data;
 				ActionCallback func = actioninfo.IN.func;
-				Boolean SaveUser = false;
-				if ( data.settings != null && data.settings.remember_password == "1" ) SaveUser = true;
-				Thread syncThread = new Thread (() => SyncThread ( data, SaveUser, func ));
+				Thread syncThread = new Thread (() => SyncThread ( data, func ));
 				syncThread.Start ();
 				break;
 
@@ -88,6 +86,14 @@ namespace CoreDataService
 			case ActionType.UPDATEACCOUNT:
 			case ActionType.UPDATESETTINGS:
 
+				// save setting regardless online/offline if UPDATESETTINGS
+				if ( actioninfo.IN.type == ActionType.UPDATESETTINGS && cache.acctinfo.settings.remember_password == "1" ) {
+					cache.acctinfo.settings = actioninfo.IN.data.settings;
+					if ( !SaveCacheData(true, out errmsg) ) {
+						return false;
+					}
+				}
+					
 				// send the request and obtain the data
 				string json;
 				Dictionary<string, string> request = BuildRequest (actioninfo.IN.data, actioninfo.IN.type);
@@ -112,6 +118,9 @@ namespace CoreDataService
 					status = UserStatus.UPDATED;
 				if (info.acctinfo.status != status) {
 
+					// !!! reset new value
+					actioninfo.IN.data.settings.new_password = "";
+					
 					if (Settings.runmode == RunMode.Normal) {
 
 						actioninfo.OUT.errmsg = ErrorMessage.DataAccess;
@@ -123,8 +132,17 @@ namespace CoreDataService
 
 					return false;
 				} else {
+					// !!! make sure input data is upate too
+					if ( actioninfo.IN.type == ActionType.UPDATESETTINGS && actioninfo.IN.data.settings.new_password != "") {
+						actioninfo.IN.data.client_password = GetMD5(actioninfo.IN.data.settings.new_password);
+						actioninfo.IN.data.settings.new_password = "";
+					} else if ( actioninfo.IN.type == ActionType.UPDATESETTINGS ) {
+						actioninfo.IN.data.settings.profile_updated = "0";
+					}
+					
 					// update and save the cache
 					cache.acctinfo = actioninfo.IN.data;
+					
 					if ( !SaveCacheData(true, out errmsg) ) {
 						return false;
 					}
@@ -191,7 +209,7 @@ namespace CoreDataService
 		#region Internal Functions - Common
 
 		// Synchronize table data at background
-		private void SyncThread (accountsummary userinfo, Boolean ToSave, ActionCallback func)
+		private void SyncThread (accountsummary userinfo, ActionCallback func)
 		{
 
 			string errmsg;
@@ -203,16 +221,15 @@ namespace CoreDataService
 				if ( !GetSavedUserInfo (out errmsg) ) {
 					// no given and no saved
 					// use the default project
+					cache.acctinfo = null;
 					cache.projects = null;
 					callback (true, errmsg);
 					return;
 				}
-				// if found, keep saving it
-				cache.acctinfo.status = UserStatus.SAVED;
-				ToSave = true;
 				
 			} else if ( userinfo.client_email == "" ) {
 				// no saved and try to login
+				cache.acctinfo = null;
 				cache.projects = null;
 
 				if ( Settings.runmode == RunMode.Normal ) {
@@ -223,23 +240,20 @@ namespace CoreDataService
 
 					callback(false, ErrorMessage.Login_Missing);
 				}
-								
+
 				return;
 				
 			} else {
 				
 				if ( cache.acctinfo == null ) {
 					cache.acctinfo = new accountsummary();
+					cache.acctinfo.settings = new usersettings ();
+					cache.acctinfo.organizations = new List<userorg> ();
+					cache.acctinfo.projects = new List<userproj> ();
 				}
 				cache.acctinfo.client_email = userinfo.client_email;
-				MD5 hash = new MD5CryptoServiceProvider ();
-				byte[] data = hash.ComputeHash(Encoding.UTF8.GetBytes(userinfo.client_password));
-				StringBuilder result = new StringBuilder();
-				for (int i=0;i<data.Length;i++)
-				{
-					result.Append(data[i].ToString("x2"));
-				}
-				cache.acctinfo.client_password = result.ToString();
+				cache.acctinfo.client_password = GetMD5(userinfo.client_password);
+				cache.acctinfo.settings.remember_password = userinfo.settings.remember_password;
 				cache.acctinfo.status = UserStatus.NULL;
 			}
 
@@ -277,10 +291,15 @@ namespace CoreDataService
 					return;
 				}
 
+				// check authentication status
 				if ( tmpcache.acctinfo.status != UserStatus.VALID ) {
 
 					cache.acctinfo = null;
 					cache.projects = null;
+					
+					if ( !SaveCacheData(false, out errmsg) ) {
+						callback(false, errmsg);
+					}
 
 					if ( Settings.runmode == RunMode.Normal ) {
 
@@ -296,10 +315,14 @@ namespace CoreDataService
 
 				if ( tmpcache.projects != null && tmpcache.continfo != null ) {
 
+					// before the new value applied, reassign the local vars
+					tmpcache.acctinfo.client_password = cache.acctinfo.client_password;
+					tmpcache.acctinfo.settings.remember_password = cache.acctinfo.settings.remember_password;
+					// !!! for profile_updated
 					cache = tmpcache;
 					Settings.local_ismemsynced = true;
 
-					if ( !SaveCacheData(ToSave, out errmsg) ) {
+					if ( cache.acctinfo.settings.remember_password == "1" && !SaveCacheData(true, out errmsg) ) {
 						callback(false, errmsg);
 					}
 				}
@@ -412,6 +435,7 @@ namespace CoreDataService
 					} else if ( cache.projects != null )  {
 
 						// new user login at offline
+						cache.acctinfo = null;
 						cache.projects = null;
 						if ( Settings.runmode == RunMode.Normal ) {
 
@@ -422,7 +446,6 @@ namespace CoreDataService
 							callback(false, ErrorMessage.Login_Offline);
 						}
 						return;
-
 					}
 				}
 			}
@@ -430,7 +453,8 @@ namespace CoreDataService
 			// always make sure the cache and disk are synced
 			if ( Settings.local_ismemsynced && !Settings.local_isdisksynced ) {
 				
-				if ( !SaveCacheData(ToSave, out errmsg) ) {
+				Boolean SaveUser = (cache.acctinfo.status == UserStatus.SAVED || (cache.acctinfo.status == UserStatus.VALID && cache.acctinfo.settings.remember_password == "1"));
+				if ( !SaveCacheData(SaveUser, out errmsg) ) {
 					callback(false, errmsg);
 				}
 			}
@@ -439,7 +463,22 @@ namespace CoreDataService
 		}
 
 
+		
+		// return MD5 code by given string
+		private string GetMD5(string text) {
+			
+			MD5 hash = new MD5CryptoServiceProvider ();
+			byte[] data = hash.ComputeHash(Encoding.UTF8.GetBytes(text));
+			StringBuilder result = new StringBuilder();
+			for (int i=0;i<data.Length;i++)
+			{
+				result.Append(data[i].ToString("x2"));
+			}
+			return result.ToString();
+		}
 
+		
+		
 		// obtain the user record from the database
 		// regardless if the current user is same or has been authenticated
 		private Boolean GetSavedUserInfo (out string errmsg)
@@ -478,6 +517,7 @@ namespace CoreDataService
 				if ( info.continfo != null && cache.continfo == null ) cache.continfo = info.continfo;
 				if ( info.projects != null && cache.projects == null ) cache.projects = info.projects;
 
+				info.acctinfo.status = UserStatus.SAVED;
 				cache.acctinfo = info.acctinfo;
 				return true;
 			}
