@@ -19,7 +19,7 @@ namespace WebApp_iOS
 		public PushNotificationController (accountsummary theaccountsummary)
 		{
 			this.theaccountsummary = theaccountsummary;
-			this.OriginAccountSummary = EmailNotificationController.CloneAccountSummary (theaccountsummary);
+			this.OriginAccountSummary = CloneAccountSummary (theaccountsummary);
 		}
 
 		public override void DidReceiveMemoryWarning ()
@@ -166,6 +166,54 @@ namespace WebApp_iOS
 
 			return false;
 		}
+
+		public accountsummary CloneAccountSummary(accountsummary oldaccountsummary){
+			accountsummary newAccountSummary=new accountsummary();
+
+			newAccountSummary.client_email = oldaccountsummary.client_email;
+			newAccountSummary.client_password = oldaccountsummary.client_password;
+			newAccountSummary.client_firstname = oldaccountsummary.client_firstname;
+			newAccountSummary.client_lastname = oldaccountsummary.client_lastname;
+			newAccountSummary.status = oldaccountsummary.status;
+
+			newAccountSummary.settings = new usersettings();
+			newAccountSummary.settings.client_accountid = oldaccountsummary.settings.client_accountid;
+			newAccountSummary.settings.remember_password = oldaccountsummary.settings.remember_password;
+			newAccountSummary.settings.push_new_event = oldaccountsummary.settings.push_new_event;
+			newAccountSummary.settings.push_news_update = oldaccountsummary.settings.push_news_update;
+			newAccountSummary.settings.push_project_update = oldaccountsummary.settings.push_project_update;
+			newAccountSummary.settings.push_approval_doc = oldaccountsummary.settings.push_approval_doc;
+			newAccountSummary.settings.push_release_doc = oldaccountsummary.settings.push_release_doc;
+			newAccountSummary.settings.push_support_update = oldaccountsummary.settings.push_support_update;
+			newAccountSummary.settings.push_website_audit = oldaccountsummary.settings.push_website_audit;
+			newAccountSummary.settings.push_yearly_analysis = oldaccountsummary.settings.push_yearly_analysis;
+
+			newAccountSummary.settings.email_new_event = oldaccountsummary.settings.email_new_event;
+			newAccountSummary.settings.email_news_update = oldaccountsummary.settings.email_news_update;
+			newAccountSummary.settings.email_project_update = oldaccountsummary.settings.email_project_update;
+			newAccountSummary.settings.email_approval_doc = oldaccountsummary.settings.email_approval_doc;
+			newAccountSummary.settings.email_release_doc = oldaccountsummary.settings.email_release_doc;
+			newAccountSummary.settings.email_support_update = oldaccountsummary.settings.email_support_update;
+			newAccountSummary.settings.email_website_audit = oldaccountsummary.settings.email_website_audit;
+			newAccountSummary.settings.email_yearly_analysis = oldaccountsummary.settings.email_yearly_analysis;
+			newAccountSummary.settings.email_blasts = oldaccountsummary.settings.email_blasts;
+
+			newAccountSummary.organizations = new List<userorg> ();
+			foreach (var x in oldaccountsummary.organizations) {
+				userorg newuserorg = new userorg ();
+				newuserorg.name = x.name;
+				newAccountSummary.organizations.Add (newuserorg);
+			}	
+
+			newAccountSummary.projects = new List<userproj> ();
+			foreach (var x in oldaccountsummary.projects) {
+				userproj newProj = new userproj ();
+				newProj.name = x.name;
+				newProj.primary_contact = x.primary_contact;
+			}
+
+			return newAccountSummary;
+		}	
 	}
 }
 

@@ -104,13 +104,11 @@ namespace WebApp_iOS
 				password = "2WebDesign";
 			}
 			string errmsg;
-			if (!InputChecking(email=email,password=password,out errmsg=errmsg)) {
+			if (!InputChecking(out errmsg,email: email, password: password)) {
 				UIAlertController Alert = UIAlertController.Create ("Format",
 					errmsg, UIAlertControllerStyle.Alert);
 				Alert.AddAction (UIAlertAction.Create ("OK",
-					UIAlertActionStyle.Cancel, action => {
-						NavigationController.PopToViewController (GlobalAPI.originPage, true);
-					}		
+					UIAlertActionStyle.Cancel, null
 				));
 				PresentViewController (Alert, true, null);
 				return;
@@ -127,13 +125,11 @@ namespace WebApp_iOS
 			string rememberme = loginRegisterView.RegisterView.RememberMeSwitch.On?"1":"0";
 
 			string errmsg;
-			if (!InputChecking(email=email,password=password,firstName=firstName,lastname=lastname,out errmsg=errmsg)) {
+			if (!InputChecking(out errmsg,email:email,password: password,firstName:firstName,lastName:lastname)) {
 				UIAlertController Alert = UIAlertController.Create ("Format",
 					errmsg, UIAlertControllerStyle.Alert);
 				Alert.AddAction (UIAlertAction.Create ("OK",
-					UIAlertActionStyle.Cancel, action => {
-						NavigationController.PopToViewController (GlobalAPI.originPage, true);
-					}		
+					UIAlertActionStyle.Cancel, null
 				));
 				PresentViewController (Alert, true, null);
 				return;
@@ -154,6 +150,9 @@ namespace WebApp_iOS
 			ap.IN.data.settings = new usersettings ();
 			ap.IN.data.settings.remember_password=rememberme;
 			ap.IN.func = LoginWebCallRespond;
+			foreach (var x in NavigationItem.LeftBarButtonItems) {
+				x.Enabled = false;
+			}	
 			GlobalAPI.GetDataService ().Action (ref ap);
 		}	
 
@@ -190,11 +189,17 @@ namespace WebApp_iOS
 			if (succeed) {
 				InvokeOnMainThread (() => {
 					loadingScreen.Hide();
+					foreach (var x in NavigationItem.LeftBarButtonItems) {
+						x.Enabled = true;
+					}
 					NavigationController.PopViewController (true);
 				});
 			} else {
 				InvokeOnMainThread (() => {
 					loadingScreen.Hide ();
+					foreach (var x in NavigationItem.LeftBarButtonItems) {
+						x.Enabled = true;
+					}
 					UIAlertController Alert = UIAlertController.Create ("Error",
 						                         errmsg, UIAlertControllerStyle.Alert);
 					Alert.AddAction (UIAlertAction.Create ("OK",
@@ -210,7 +215,9 @@ namespace WebApp_iOS
 		/********************************************************************************
 		*input checking
 		********************************************************************************/
-		public bool InputChecking(string email,string password,out string errmsg,string firstName=null,string lastName=null){
+		public bool InputChecking(out string errmsg,string email,string password,string firstName=null,string lastName=null){
+
+			errmsg = "";
 			Regex emailformat = new Regex (@"\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*");
 
 			if(!emailformat.Match (email).Success){
@@ -218,7 +225,7 @@ namespace WebApp_iOS
 				return false;
 			}	
 
-			if (!firstName != null && firstName.Length == 0) {
+			if (firstName != null && firstName.Length == 0) {
 				errmsg="FIRST NAME can not be empty";
 				return false;
 			}	
