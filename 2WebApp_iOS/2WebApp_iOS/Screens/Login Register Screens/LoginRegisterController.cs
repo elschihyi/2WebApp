@@ -104,7 +104,6 @@ namespace WebApp_iOS
 			string firstName=loginRegisterView.RegisterView.FirstNameTextField.Text;
 			string lastname=loginRegisterView.RegisterView.LastNameTextField.Text;
 			string rememberme = loginRegisterView.RegisterView.RememberMeSwitch.On?"1":"0";
-			initLoadingScreen("Registering");
 			RegisterWebCall (email, password,firstName,lastname, rememberme);
 		}
 
@@ -133,8 +132,20 @@ namespace WebApp_iOS
 			ap.IN.data.client_lastname = lastname;
 			ap.IN.data.settings = new usersettings ();
 			ap.IN.data.settings.remember_password=rememberme;
-			ap.IN.func =RegisterWebCallRespond;
-			GlobalAPI.GetDataService ().Action (ref ap);
+			ap.IN.func = (o, e) => {};
+			if (GlobalAPI.GetDataService ().Action (ref ap)) {
+				GlobalAPI.Manager ().PushPage (NavigationController, new RegisterSuccessScreenController ());
+			} else {
+				string errmsg = ap.OUT.errmsg;
+				UIAlertController Alert = UIAlertController.Create ("Error",
+					errmsg, UIAlertControllerStyle.Alert);
+				Alert.AddAction (UIAlertAction.Create ("OK",
+					UIAlertActionStyle.Cancel, action => {
+						NavigationController.PopToViewController (GlobalAPI.originPage, true);
+					}		
+				));
+				PresentViewController (Alert, true, null);
+			}		
 		}
 
 		/********************************************************************************
@@ -145,27 +156,6 @@ namespace WebApp_iOS
 				InvokeOnMainThread (() => {
 					loadingScreen.Hide();
 					NavigationController.PopViewController (true);
-				});
-			} else {
-				InvokeOnMainThread (() => {
-					loadingScreen.Hide ();
-					UIAlertController Alert = UIAlertController.Create ("Error",
-						                         errmsg, UIAlertControllerStyle.Alert);
-					Alert.AddAction (UIAlertAction.Create ("OK",
-						UIAlertActionStyle.Cancel, action => {
-						NavigationController.PopToViewController (GlobalAPI.originPage, true);
-					}		
-					));
-					PresentViewController (Alert, true, null);
-				});
-			}
-		}
-
-		public void RegisterWebCallRespond(Boolean succeed, string errmsg){
-			if (succeed) {
-				InvokeOnMainThread (() => {
-					loadingScreen.Hide ();
-					GlobalAPI.Manager ().PushPage (NavigationController, new RegisterSuccessScreenController ());
 				});
 			} else {
 				InvokeOnMainThread (() => {
