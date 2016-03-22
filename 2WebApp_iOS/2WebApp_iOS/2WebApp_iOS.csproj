@@ -49,12 +49,11 @@
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <MtouchProfiling>true</MtouchProfiling>
-    <CodesignKey>iPhone Developer: chihyi huang (RE6LL2S9E2)</CodesignKey>
+    <CodesignKey>iPhone Developer: YI XUE (APU66GFV43)</CodesignKey>
     <MtouchDebug>true</MtouchDebug>
     <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <IpaPackageName>
     </IpaPackageName>
-    <CodesignProvision>714fab09-8158-4a6d-8343-8e9e6013b036</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>full</DebugType>

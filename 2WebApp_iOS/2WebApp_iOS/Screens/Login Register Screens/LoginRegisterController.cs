@@ -125,7 +125,7 @@ namespace WebApp_iOS
 
 		public void RegisterWebCall(string email,string password,string firstName,string lastname,string rememberme){
 			ActionParameters ap = new ActionParameters ();
-			ap.IN.type = ActionType.LOGIN;
+			ap.IN.type = ActionType.CREATEACCOUNT;
 			ap.IN.data = new accountsummary();
 			ap.IN.data.client_email = email;
 			ap.IN.data.client_password = password;

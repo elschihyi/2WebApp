@@ -116,7 +116,7 @@ namespace WebApp_iOS
 
 			string errmsg;
 			ActionParameters ap = new ActionParameters ();
-			ap.IN.type = ActionType.UPDATESETTINGS;
+			ap.IN.type = ActionType.UPDATEACCOUNT;
 			ap.IN.data = theaccountsummary;
 			ap.IN.func = (o,e) => {};
 			if (GlobalAPI.GetDataService ().Action (ref ap)) {
