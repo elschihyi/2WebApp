@@ -70,27 +70,23 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void ContractSupportClick()
 		{
-			if (!MFMailComposeViewController.CanSendMail) {
-				return;
-			}	
-			MFMailComposeViewController mailController = new MFMailComposeViewController();
-			if (!MFMailComposeViewController.CanSendMail)
-			{
-				return;
-			}
 			contact contactInfo;
-			string errmsg;
-			if (!GlobalAPI.GetDataService ().ContactInfo (out contactInfo, out errmsg)) {
-				return;
-			}	
-			mailController.SetToRecipients(new string[]{contactInfo.support_email});
-			mailController.SetSubject("");
-			mailController.SetMessageBody("", false);
-			mailController.Finished += ( s, args) =>
-			{
-				args.Controller.DismissViewController(true,null);
-			};
-			this.PresentViewController(mailController, true, null);
+			string errmsg="";
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.GETCONTINFO;
+			ap.IN.data = new accountsummary ();
+			ap.IN.func = (o,e) => {};
+			if (GlobalAPI.GetDataService ().Action (ref ap)&&MFMailComposeViewController.CanSendMail) {
+				contactInfo = (contact)ap.OUT.dataset;
+				MFMailComposeViewController mailController = new MFMailComposeViewController ();
+				mailController.SetToRecipients (new string[]{ contactInfo.support_email });
+				mailController.SetSubject ("");
+				mailController.SetMessageBody ("", false);
+				mailController.Finished += ( s, args) => {
+					args.Controller.DismissViewController (true, null);
+				};
+				this.PresentViewController (mailController, true, null);
+			}
 		}
 
 		public void WebSiteAuditsClick()

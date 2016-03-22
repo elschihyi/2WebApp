@@ -3,18 +3,19 @@ using UIKit;
 using System.Collections.Generic;
 using System.Drawing;
 using Foundation;
+using CoreDataService;
 
 namespace WebApp_iOS
 {
 	public class PushNotificationSource: UITableViewSource
 	{
 		PushNotificationController pushNotificationController;
-		List<bool> PushNotificationList;
+		usersettings PushNotificationList;
 
 		public PushNotificationSource (PushNotificationController pushNotificationController)
 		{
 			this.pushNotificationController = pushNotificationController;
-			PushNotificationList = pushNotificationController.PushNotificationList;
+			PushNotificationList = pushNotificationController.theaccountsummary.settings;
 		}
 
 		public override nint NumberOfSections (UITableView tableView)
@@ -109,11 +110,11 @@ namespace WebApp_iOS
 				switch (indexPath.Row) {
 				case 0:
 					cell.nameLabel.Text = "On new event";
-					cell.switchBtn.On = PushNotificationList [0];
+					cell.switchBtn.On = PushNotificationList.push_new_event=="1";
 					break;
 				case 1:
 					cell.nameLabel.Text = "On new update";
-					cell.switchBtn.On = PushNotificationList [1];
+					cell.switchBtn.On = PushNotificationList .push_news_update=="1";
 					break;
 				default:
 					cell.nameLabel.Text = "";
@@ -124,15 +125,15 @@ namespace WebApp_iOS
 				switch (indexPath.Row) {
 				case 0:
 					cell.nameLabel.Text = "On project update";
-					cell.switchBtn.On = PushNotificationList [2];
+					cell.switchBtn.On = PushNotificationList.push_project_update=="1";
 					break;
 				case 1:
 					cell.nameLabel.Text = "On design approved document";
-					cell.switchBtn.On = PushNotificationList [3];
+					cell.switchBtn.On = PushNotificationList.push_approval_doc=="1";
 					break;
 				case 2:
 					cell.nameLabel.Text = "On website release document";
-					cell.switchBtn.On = PushNotificationList [4];
+					cell.switchBtn.On = PushNotificationList.push_release_doc=="1";
 					break;
 				default:
 					cell.nameLabel.Text = "";
@@ -143,15 +144,15 @@ namespace WebApp_iOS
 				switch (indexPath.Row) {
 				case 0:
 					cell.nameLabel.Text = "For support updates";
-					cell.switchBtn.On = PushNotificationList [5];
+					cell.switchBtn.On = PushNotificationList.push_support_update=="1";
 					break;
 				case 1:
 					cell.nameLabel.Text = "For website audit";
-					cell.switchBtn.On = PushNotificationList [6];
+					cell.switchBtn.On = PushNotificationList.push_website_audit=="1";
 					break;
 				case 2:
 					cell.nameLabel.Text = "For yearly analysis";
-					cell.switchBtn.On = PushNotificationList [7];
+					cell.switchBtn.On = PushNotificationList.push_yearly_analysis=="1";
 					break;
 				default:
 					cell.nameLabel.Text = "";

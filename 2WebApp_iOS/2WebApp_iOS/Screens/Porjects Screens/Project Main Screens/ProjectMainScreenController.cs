@@ -10,7 +10,6 @@ namespace WebApp_iOS
 	public class ProjectMainController: UIViewController
 	{
 		//Views
-		LoadingOverlay2 loadingOverlayView;
 		LinkProjectView LinkProjectView;
 		UITableView TableView;
 
@@ -33,19 +32,11 @@ namespace WebApp_iOS
 		{
 			base.ViewDidLoad ();
 			AutomaticallyAdjustsScrollViewInsets = false;
-
-			//check if loggin screen need to pop or not
-			initLoadingScreenView ("Loading...");
 			GetProjectList();
 		}
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
-		public void initLoadingScreenView(string Text){
-			loadingOverlayView=new LoadingOverlay2 (Text);
-			View.Add (loadingOverlayView);
-		}
-
 		public void initView(bool isDemo){
 			TableView = new UITableView ();
 			LinkProjectView = new LinkProjectView ();
@@ -74,39 +65,38 @@ namespace WebApp_iOS
 		*Load data from database
 		********************************************************************************/
 		public void GetProjectList(){
-			DataService dataService = GlobalAPI.GetDataService();
 			string errmsg;
-			if (!dataService.ProjectInfo (out projectList, out errmsg)) {
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.GETPROJINFO;
+			ap.IN.data = new accountsummary ();
+			ap.IN.func = (o,e) => {};
+			if (GlobalAPI.GetDataService ().Action (ref ap)) {
+				projectList = (List<projectsummary>)ap.OUT.dataset;
+				errmsg = ap.OUT.errmsg;
 				if(projectList==null){
 					projectList = new List<projectsummary> ();
 				}
-				InvokeOnMainThread (() => {
-					loadingOverlayView.Hide ();
-					Random rnd1 = new Random();
-					initView (rnd1.Next(2)==0);
+				try{
+					initView (projectList[0].status=="DEMO");
+				}
+				catch{
+					initView(true);
+				}	
+				//put menu and setting
+				GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
 
-					//put menu and setting
-					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
 
-					//alert
-					UIAlertController Alert = UIAlertController.Create ("Error",
-						                         errmsg, UIAlertControllerStyle.Alert);
-					Alert.AddAction (UIAlertAction.Create ("OK",
-						UIAlertActionStyle.Cancel, null
-					));
-					PresentViewController (Alert, true, null);
-				});
 			} else {
-				if(projectList==null){
-					projectList = new List<projectsummary> ();
-				}
-				InvokeOnMainThread (() => {
-					Random rnd1 = new Random();
-					initView (rnd1.Next(2)==0);
-					//put menu and setting
-					GlobalAPI.Manager ().PageDefault (this, "Projects", true, true);
-					loadingOverlayView.Hide ();
-				});
+				//alert
+				errmsg = ap.OUT.errmsg;
+				UIAlertController Alert = UIAlertController.Create ("Error",
+					errmsg, UIAlertControllerStyle.Alert);
+				Alert.AddAction (UIAlertAction.Create ("OK",
+					UIAlertActionStyle.Cancel, action=>{
+						NavigationController.PopViewController(true);
+					}		
+				));
+				PresentViewController (Alert, true, null);
 			}	
 	
 		}
@@ -115,18 +105,24 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void LinkProjectBtnClick(){
 			contact contactInfo;
-			string errmsg="";
-			GlobalAPI.GetDataService ().ContactInfo (out contactInfo, out errmsg);
-			if (MFMailComposeViewController.CanSendMail && !String.IsNullOrEmpty (contactInfo.email)) {;
-				MFMailComposeViewController mailController = new MFMailComposeViewController (); 
-				mailController.SetToRecipients (new string[]{ contactInfo.email }); 
-				mailController.SetSubject (""); 
-				mailController.SetMessageBody ("", false);
-				mailController.Finished += (object s1, MFComposeResultEventArgs args) => {
-					args.Controller.DismissViewController (true, null);
-				};
-				PresentViewController (mailController, true, null);
-			}
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.GETCONTINFO;
+			ap.IN.data = new accountsummary ();
+			ap.IN.func = (o,e) => {};
+			if (GlobalAPI.GetDataService ().Action (ref ap)) {
+				contactInfo = (contact)ap.OUT.dataset;
+				if (MFMailComposeViewController.CanSendMail && !String.IsNullOrEmpty (contactInfo.email)) {
+					;
+					MFMailComposeViewController mailController = new MFMailComposeViewController (); 
+					mailController.SetToRecipients (new string[]{ contactInfo.email }); 
+					mailController.SetSubject (""); 
+					mailController.SetMessageBody ("", false);
+					mailController.Finished += (object s1, MFComposeResultEventArgs args) => {
+						args.Controller.DismissViewController (true, null);
+					};
+					PresentViewController (mailController, true, null);
+				}
+			} 
 		}	
 
 	}

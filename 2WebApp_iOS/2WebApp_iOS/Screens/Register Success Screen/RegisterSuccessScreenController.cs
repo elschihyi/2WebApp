@@ -55,7 +55,7 @@ namespace WebApp_iOS
 		*Btn clicks
 		********************************************************************************/
 		public void OKBtnClick(){
-			NavigationController.PopToViewController(GlobalAPI.welcomePage,true);
+			NavigationController.PopToViewController(GlobalAPI.originPage,true);
 		}
 	}
 }

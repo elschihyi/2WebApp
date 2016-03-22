@@ -1,6 +1,7 @@
 ﻿using System;
 using UIKit;
 using System.Drawing;
+using CoreDataService;
 
 namespace WebApp_iOS
 {
@@ -8,6 +9,10 @@ namespace WebApp_iOS
 	{
 		//Views
 		UITableView TableView;
+
+		//object
+		public accountsummary theaccountsummary;
+		bool isLogin = false;
 
 		public SettingMenuScreenController ()
 		{
@@ -25,17 +30,22 @@ namespace WebApp_iOS
 		{
 			base.ViewDidLoad ();
 			AutomaticallyAdjustsScrollViewInsets = false;
-			//NavigationItem.Title="Settings";
 			setNavigationItems ();
 			initView ();
 			GlobalAPI.Manager ().PageDefault (this, "Settings", true, false);
 
-			bool isLogin = false;
+
+		}
+
+		public override void ViewWillAppear (bool animated)
+		{
+			base.ViewWillAppear (animated);
+			//get user info
+			GetAccountSummary();
+
 			if (!isLogin) {
 				GlobalAPI.Manager().PushPage(NavigationController,new LoginRegisterController ());
 			}
-
-
 		}
 		/********************************************************************************
 		*Set navigation Items
@@ -44,7 +54,27 @@ namespace WebApp_iOS
 			bool isLogin = true;
 			if (isLogin) {
 				NavigationItem.RightBarButtonItem = new UIBarButtonItem (UIImage.FromFile ("Cut_Images/Log_Out_Icon.png"), UIBarButtonItemStyle.Plain, (s,a)=> {
-					NavigationController.PopViewController (true);
+					string errmsg;
+					ActionParameters ap = new ActionParameters ();
+					ap.IN.type = ActionType.LOGOUT;
+					ap.IN.data = theaccountsummary;
+					ap.IN.func = (o,e) => {};
+					if (GlobalAPI.GetDataService ().Action (ref ap)) {
+						NavigationController.PopViewController (true);
+					} else {
+						//alert
+						errmsg = ap.OUT.errmsg;
+						UIAlertController Alert = UIAlertController.Create ("Error",
+							errmsg, UIAlertControllerStyle.Alert);
+						Alert.AddAction (UIAlertAction.Create ("OK",
+							UIAlertActionStyle.Cancel, action=>{
+								NavigationController.PopViewController(true);
+							}		
+						));
+						PresentViewController (Alert, true, null);
+					}	
+
+
 				});
 			}
 		}
@@ -65,6 +95,32 @@ namespace WebApp_iOS
 			TableView.ScrollEnabled = false;
 			View.Add (TableView);
 		}
+
+		/********************************************************************************
+		*Load data from database
+		********************************************************************************/
+		public void GetAccountSummary(){
+			string errmsg;
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.GETACCTINFO;
+			ap.IN.data = new accountsummary ();
+			ap.IN.func = (o,e) => {};
+			if (GlobalAPI.GetDataService ().Action (ref ap)) {
+				theaccountsummary = (accountsummary)ap.OUT.dataset;
+				isLogin = !String.IsNullOrEmpty (theaccountsummary.client_email);
+			} else {
+				//alert
+				errmsg = ap.OUT.errmsg;
+				UIAlertController Alert = UIAlertController.Create ("Error",
+					errmsg, UIAlertControllerStyle.Alert);
+				Alert.AddAction (UIAlertAction.Create ("OK",
+					UIAlertActionStyle.Cancel, action=>{
+						NavigationController.PopViewController(true);
+					}		
+				));
+				PresentViewController (Alert, true, null);
+			}	
+		}	
 	}
 }
 

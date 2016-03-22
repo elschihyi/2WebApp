@@ -46,7 +46,6 @@ namespace WebApp_iOS
 				// Increment
 				i = i + 5;
 			} else if (!SyncFinished) {
-				//do nothing..
 				if (SyncLabel == null) {
 					SyncLabel = new UILabel ();
 					SyncLabel.BackgroundColor = UIColor.Clear;
@@ -55,15 +54,30 @@ namespace WebApp_iOS
 					SyncLabel.Font=UIFont.SystemFontOfSize (20f);
 					SyncLabel.TextAlignment = UITextAlignment.Center;
 					SyncLabel.Frame=new RectangleF(0f*(float)UIScreen.MainScreen.Bounds.Width,
-						0.8f*(float)UIScreen.MainScreen.Bounds.Height,
+						0.6f*(float)UIScreen.MainScreen.Bounds.Height,
 						1.0f*(float)UIScreen.MainScreen.Bounds.Width,
 						0.2f*(float)UIScreen.MainScreen.Bounds.Height);
 					View.AddSubview (SyncLabel);
+					//preload rss feed
+					GlobalAPI.Manager ().loadRss ();
 				}	
 
 			} else {// Stop if at end
-				//preload rss feed
-				GlobalAPI.Manager ().loadRss ();
+				if (SyncLabel == null) {
+					SyncLabel = new UILabel ();
+					SyncLabel.BackgroundColor = UIColor.Clear;
+					SyncLabel.TextColor = UIColor.White;
+					SyncLabel.Text="Loading Data..";
+					SyncLabel.Font=UIFont.SystemFontOfSize (20f);
+					SyncLabel.TextAlignment = UITextAlignment.Center;
+					SyncLabel.Frame=new RectangleF(0f*(float)UIScreen.MainScreen.Bounds.Width,
+						0.6f*(float)UIScreen.MainScreen.Bounds.Height,
+						1.0f*(float)UIScreen.MainScreen.Bounds.Width,
+						0.2f*(float)UIScreen.MainScreen.Bounds.Height);
+					View.AddSubview (SyncLabel);
+					//preload rss feed
+					GlobalAPI.Manager ().loadRss ();
+				}
 
 				//dispose timer
 				timer.Invalidate ();
@@ -113,18 +127,18 @@ namespace WebApp_iOS
 		}
 
 		/********************************************************************************
-		*Load data from database
+		*Sync
 		********************************************************************************/
 		public void syncData(){
-			DataService dataService = GlobalAPI.GetDataService();
-			user testUser = new user ();
-			testUser.username = CoreDataService.Settings.test_username;
-			testUser.password = CoreDataService.Settings.test_password;
-			dataService.Sync (testUser,false,SyncRespond);
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.SYNCATSTARTUP;
+			ap.IN.data = new accountsummary ();
+			ap.IN.func=SyncRespond;
+			GlobalAPI.GetDataService ().Action (ref ap);
 		}
 
 		/********************************************************************************
-		*Load data responds
+		*Sync responds
 		********************************************************************************/
 		public void SyncRespond(Boolean succeed, string errmsg){
 			SyncSuccess=succeed;

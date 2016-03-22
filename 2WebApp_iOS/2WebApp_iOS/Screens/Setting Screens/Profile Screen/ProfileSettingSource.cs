@@ -2,6 +2,7 @@
 using UIKit;
 using System.Drawing;
 using Foundation;
+using CoreDataService;
 
 namespace WebApp_iOS
 {
@@ -9,12 +10,12 @@ namespace WebApp_iOS
 	{
 		 
 		ProfileSettingController profileSettingController;
-		UserProfile userProfile;
+		accountsummary userProfile;
 
 		public ProfileSettingSource (ProfileSettingController profileSettingController)
 		{
 			this.profileSettingController = profileSettingController;
-			userProfile = profileSettingController.userProfile;
+			userProfile = profileSettingController.theaccountsummary;
 		}
 
 		public override nint NumberOfSections (UITableView tableView)
@@ -93,7 +94,7 @@ namespace WebApp_iOS
 				if (cell == null) {
 					cell = new ProfileSettingCell ();
 					cell.TextField.EditingDidEnd += (s, e) => {
-						EditEnd(cell.Section,cell.Row,cell.TextField.Text);
+						profileSettingController.EditEnd(cell.Section,cell.Row,cell.TextField.Text);
 					};	
 				}
 				cell.Section = indexPath.Section;
@@ -106,23 +107,21 @@ namespace WebApp_iOS
 						cell.TextField.AttributedPlaceholder = new NSAttributedString ("FIRST NAME",null,UIColor.LightGray);
 						cell.TextField.Enabled = true;
 						cell.TextField.SecureTextEntry = false;
-						cell.TextField.Text = userProfile.firstName;
+						cell.TextField.Text = userProfile.client_firstname;
 						break;
 					case 1:
 						cell.IconImageView.Image = UIImage.FromFile ("Cut_Images/Name_Icon.png");
 						cell.TextField.AttributedPlaceholder = new NSAttributedString ("LAST NAME",null,UIColor.LightGray);
-						//cell.TextField.Placeholder = "LAST NAME";
 						cell.TextField.Enabled = true;
 						cell.TextField.SecureTextEntry = false;
-						cell.TextField.Text = userProfile.lastName;
+						cell.TextField.Text = userProfile.client_lastname;
 						break;
 					case 2:
 						cell.IconImageView.Image = UIImage.FromFile ("Cut_Images/Email_Icon.png");
 						cell.TextField.AttributedPlaceholder = new NSAttributedString ("EMAIL",null,UIColor.LightGray);
-						//cell.TextField.Placeholder = "EMAIL";
 						cell.TextField.Enabled = false;
 						cell.TextField.SecureTextEntry = false;
-						cell.TextField.Text = userProfile.email;
+						cell.TextField.Text = userProfile.client_email;
 						break;
 					default:
 						cell.IconImageView.Image = null;
@@ -138,7 +137,6 @@ namespace WebApp_iOS
 					case 0:
 						cell.IconImageView.Image = UIImage.FromFile ("Cut_Images/Password_Icon.png");
 						cell.TextField.AttributedPlaceholder = new NSAttributedString ("OLD PASSWORD",null,UIColor.LightGray);
-						//cell.TextField.Placeholder = "OLD PASSWORD";
 						cell.TextField.Enabled = true;
 						cell.TextField.SecureTextEntry = true;
 						cell.TextField.Text = profileSettingController.oldpassword;
@@ -146,7 +144,6 @@ namespace WebApp_iOS
 					case 1:
 						cell.IconImageView.Image = UIImage.FromFile ("Cut_Images/Password_Icon.png");
 						cell.TextField.AttributedPlaceholder = new NSAttributedString ("NEW PASSWORD",null,UIColor.LightGray);
-						//cell.TextField.Placeholder = "NEW PASSWORD";
 						cell.TextField.Enabled = true;
 						cell.TextField.SecureTextEntry = true;
 						cell.TextField.Text = profileSettingController.newpassword;
@@ -154,7 +151,6 @@ namespace WebApp_iOS
 					case 2:
 						cell.IconImageView.Image = UIImage.FromFile ("Cut_Images/Confirm_Password_Icon.png");
 						cell.TextField.AttributedPlaceholder = new NSAttributedString ("CONFIREM PASSWORD",null,UIColor.LightGray);
-						//cell.TextField.Placeholder = "CONFIREM PASSWORD";
 						cell.TextField.Enabled = true;
 						cell.TextField.SecureTextEntry = true;
 						cell.TextField.Text = profileSettingController.confirmpassword;
@@ -195,42 +191,7 @@ namespace WebApp_iOS
 			return 66f;
 		}
 
-		public void EditEnd(int Section,int Row,string Text){
-			switch (Section) {
-			case 0:
-				switch (Row) {
-				case 0:
-					userProfile.firstName=Text;
-					break;
-				case 1:
-					userProfile.lastName=Text;
-					break;
-				case 2:
-					userProfile.email=Text;
-					break;
-				default:
-					break;
-				}
-				break;
-			case 1:
-				switch (Row) {
-				case 0:
-					profileSettingController.oldpassword=Text;
-					break;
-				case 1:
-					profileSettingController.newpassword=Text;
-					break;
-				case 2:
-					profileSettingController.confirmpassword=Text;
-					break;
-				default:
-					break;
-				}
-				break;
-			default:
-				break;
-			}
-		}	
+			
 	}
 }
 

@@ -8,7 +8,7 @@ namespace WebApp_iOS
 {
 	public class ProjectSettingsSource: UITableViewSource
 	{
-		List<projectsummary> theProjectList;
+		List<userproj> theProjectList;
 		ProjectSettingsController projectSettingsController;
 
 		public ProjectSettingsSource (ProjectSettingsController projectSettingsController)

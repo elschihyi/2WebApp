@@ -10,14 +10,16 @@ namespace WebApp_iOS
 	public class OrganizationSettingController: UIViewController
 	{
 		//views
-		LoadingOverlay2 loadingOverlayView;
 		OrganizationSettingView organizationSettingView;
 
 		//object
-		public List<string> theOrganizationList;
+		public accountsummary theaccountsummary;
+		public List<userorg> theOrganizationList;
 
-		public OrganizationSettingController ()
+		public OrganizationSettingController (accountsummary theaccountsummary)
 		{
+			this.theaccountsummary = theaccountsummary;
+			theOrganizationList = theaccountsummary.organizations;
 		}
 
 		public override void DidReceiveMemoryWarning ()
@@ -31,10 +33,8 @@ namespace WebApp_iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-			initLoadingScreenView ("Loading...");
 			NavigationItem.Title="Settings";
-			GetOrganizationList();
-			//initView ();
+			initView ();
 		}
 
 		public override void ViewDidAppear (bool animated)
@@ -45,11 +45,6 @@ namespace WebApp_iOS
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
-		public void initLoadingScreenView(string Text){
-			loadingOverlayView=new LoadingOverlay2 (Text);
-			View.Add (loadingOverlayView);
-		}
-
 		public void initView(){
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
@@ -67,11 +62,7 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void RequestBtnClick(int Row)
 		{
-			Console.WriteLine ("Organiztion Setting Row " + Row + " Clicked");
-		}
-			
-		public void RequestBtn2Click(int Row)
-		{
+			/*
 			if (MFMailComposeViewController.CanSendMail) {;
 				MFMailComposeViewController mailController = new MFMailComposeViewController (); 
 				mailController.SetToRecipients (new string[]{""}); 
@@ -82,56 +73,24 @@ namespace WebApp_iOS
 				};
 				PresentViewController (mailController, true, null);
 			}
+			*/
 		}
-		/********************************************************************************
-		*Load data from database
-		********************************************************************************/
-		public void GetOrganizationList(){
-			DataService dataService = GlobalAPI.GetDataService();
-			string errmsg;
-			//if (!dataService.ProjectInfo (out theProjectList, out errmsg)) {
-			if(!true){
-				if(theOrganizationList==null){
-					theOrganizationList = new List<string> ();
-				}
-				InvokeOnMainThread (() => {
-					loadingOverlayView.Hide ();
-					initView ();
-					GlobalAPI.Manager ().PageDefault (this, "Settings", true, false);
-					//alert
-					UIAlertController Alert = UIAlertController.Create ("Error",
-						errmsg, UIAlertControllerStyle.Alert);
-					Alert.AddAction (UIAlertAction.Create ("OK",
-						UIAlertActionStyle.Cancel, null
-					));
-					PresentViewController (Alert, true, null);
-				});
-			} else {
-				if(theOrganizationList==null){
-					//theOrganizationList = new List<string> ();
-					theOrganizationList=MyOrgList();
-				}
-				/*
-				InvokeOnMainThread (() => {
-					initView ();
-					loadingOverlayView.Hide ();
-				});
-				*/
-				initView ();
-				loadingOverlayView.Hide ();
-				GlobalAPI.Manager ().PageDefault (this, "Settings", true, false);
-			}	
-
+			
+		public void RequestBtn2Click(int Row)
+		{
+			/*
+			if (MFMailComposeViewController.CanSendMail) {;
+				MFMailComposeViewController mailController = new MFMailComposeViewController (); 
+				mailController.SetToRecipients (new string[]{""}); 
+				mailController.SetSubject (""); 
+				mailController.SetMessageBody ("", false);
+				mailController.Finished += (object s1, MFComposeResultEventArgs args) => {
+					args.Controller.DismissViewController (true, null);
+				};
+				PresentViewController (mailController, true, null);
+			}
+			*/
 		}
-
-		public List<string> MyOrgList(){
-			List<string> returnList = new List<string> ();
-			returnList.Add ("SARC");
-			returnList.Add ("Rock Paper Coffee");
-			returnList.Add ("BreakOutSask");
-			returnList.Add ("SARC222");
-			return returnList;
-		}	
 	}
 }
 

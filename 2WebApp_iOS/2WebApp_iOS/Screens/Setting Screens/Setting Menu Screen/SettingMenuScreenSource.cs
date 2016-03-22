@@ -128,20 +128,20 @@ namespace WebApp_iOS
 		{
 			switch (indexPath.Section) {
 			case 0:
-				GlobalAPI.Manager().PushPage(settingMenuScreenController.NavigationController,new ProfileSettingController());
+				GlobalAPI.Manager().PushPage(settingMenuScreenController.NavigationController,new ProfileSettingController(settingMenuScreenController.theaccountsummary));
 				break;
 			case 1:
 				if (indexPath.Row == 0) {
-					GlobalAPI.Manager().PushPage(settingMenuScreenController.NavigationController,new PushNotificationController());
+					GlobalAPI.Manager().PushPage(settingMenuScreenController.NavigationController,new PushNotificationController(settingMenuScreenController.theaccountsummary));
 				} else {
-					GlobalAPI.Manager().PushPage(settingMenuScreenController.NavigationController,new EmailNotificationController());
+					GlobalAPI.Manager().PushPage(settingMenuScreenController.NavigationController,new EmailNotificationController(settingMenuScreenController.theaccountsummary));
 				}	
 				break;
 			case 2:
 				if (indexPath.Row == 0) {
-					GlobalAPI.Manager().PushPage(settingMenuScreenController.NavigationController,new OrganizationSettingController());
+					GlobalAPI.Manager().PushPage(settingMenuScreenController.NavigationController,new OrganizationSettingController(settingMenuScreenController.theaccountsummary));
 				} else {
-					GlobalAPI.Manager().PushPage(settingMenuScreenController.NavigationController,new ProjectSettingsController());
+					GlobalAPI.Manager().PushPage(settingMenuScreenController.NavigationController,new ProjectSettingsController(settingMenuScreenController.theaccountsummary));
 				}
 				break;
 			default:

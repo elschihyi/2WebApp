@@ -9,14 +9,14 @@ namespace WebApp_iOS
 	public class PushNotificationController: UIViewController
 	{
 		//views
-		LoadingOverlay2 loadingOverlayView;
 		PushNotificationView pushNotificationView;
 
 		//object
-		public List<bool> PushNotificationList;
+		public accountsummary theaccountsummary;
 
-		public PushNotificationController ()
+		public PushNotificationController (accountsummary theaccountsummary)
 		{
+			this.theaccountsummary = theaccountsummary;
 		}
 
 		public override void DidReceiveMemoryWarning ()
@@ -30,10 +30,8 @@ namespace WebApp_iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-			initLoadingScreenView ("Loading...");
 			NavigationItem.Title="Settings";
-			GetEmailNotificationList();
-			//initView ();
+			initView ();
 		}
 
 		public override void ViewDidAppear (bool animated)
@@ -44,11 +42,6 @@ namespace WebApp_iOS
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
-		public void initLoadingScreenView(string Text){
-			loadingOverlayView=new LoadingOverlay2 (Text);
-			View.Add (loadingOverlayView);
-		}
-
 		public void initView(){
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
@@ -65,61 +58,72 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void SwitchValueChanges(int Section,int Row)
 		{
-			Console.WriteLine ("Push Notification section:"+Section+" Row:" + Row + " Clicked");;
-		}
+			switch (Section) {
+			case 0:
+				switch (Row) {
+				case 0:
+					theaccountsummary.settings.push_new_event = theaccountsummary.settings.push_new_event=="1"?"0":"1";
+					break;
+				case 1:
+					theaccountsummary.settings.push_news_update = theaccountsummary.settings.push_news_update=="1"?"0":"1";
+					break;
+				default:
+					break;
+				}
+				break;
+			case 1:
+				switch (Row) {
+				case 0:
+					theaccountsummary.settings.push_project_update = theaccountsummary.settings.push_project_update=="1"?"0":"1";
+					break;
+				case 1:
+					theaccountsummary.settings.push_approval_doc = theaccountsummary.settings.push_approval_doc=="1"?"0":"1";
+					break;
+				case 2:
+					theaccountsummary.settings.push_release_doc = theaccountsummary.settings.push_release_doc=="1"?"0":"1";
+					break;
+				default:
+					break;
+				}
+				break;
+			case 2:
+				switch (Row) {
+				case 0:
+					theaccountsummary.settings.push_support_update = theaccountsummary.settings.push_support_update=="1"?"0":"1";
+					break;
+				case 1:
+					theaccountsummary.settings.push_website_audit = theaccountsummary.settings.push_website_audit=="1"?"0":"1";
+					break;
+				case 2:
+					theaccountsummary.settings.push_yearly_analysis = theaccountsummary.settings.push_yearly_analysis=="1"?"0":"1";
+					break;
+				default:
+					break;
+				}
+				break;
+			default:
+				break;
+			}
 
-		/********************************************************************************
-		*Load data from database
-		********************************************************************************/
-		public void GetEmailNotificationList(){
-			DataService dataService = GlobalAPI.GetDataService();
 			string errmsg;
-			//if (!dataService.ProjectInfo (out theProjectList, out errmsg)) {
-			if(!true){
-				if(PushNotificationList==null){
-					PushNotificationList = new List<bool> ();
-				}
-				InvokeOnMainThread (() => {
-					loadingOverlayView.Hide ();
-					initView ();
-					GlobalAPI.Manager ().PageDefault (this, "Settings", true, false);
-					//alert
-					UIAlertController Alert = UIAlertController.Create ("Error",
-						errmsg, UIAlertControllerStyle.Alert);
-					Alert.AddAction (UIAlertAction.Create ("OK",
-						UIAlertActionStyle.Cancel, null
-					));
-					PresentViewController (Alert, true, null);
-				});
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.UPDATESETTINGS;
+			ap.IN.data = theaccountsummary;
+			ap.IN.func = (o,e) => {};
+			if (GlobalAPI.GetDataService ().Action (ref ap)) {
+				//do nothing if success
 			} else {
-				if(PushNotificationList==null){
-					//EmailNotificationList = new List<string> ();
-					PushNotificationList=MyPushNotificationList();
-				}
-				/*
-				InvokeOnMainThread (() => {
-					initView ();
-					loadingOverlayView.Hide ();
-				});
-				*/
-				initView ();
-				loadingOverlayView.Hide ();
-				GlobalAPI.Manager ().PageDefault (this, "Settings", true, false);
-			}	
-
-		}
-
-		public List<bool> MyPushNotificationList(){
-			List<bool> returnList = new List<bool> ();
-			returnList.Add (true);
-			returnList.Add (false);
-			returnList.Add (true);
-			returnList.Add (false);
-			returnList.Add (true);
-			returnList.Add (false);
-			returnList.Add (true);
-			returnList.Add (false);
-			return returnList;
+				//alert
+				errmsg = ap.OUT.errmsg;
+				UIAlertController Alert = UIAlertController.Create ("Error",
+					errmsg, UIAlertControllerStyle.Alert);
+				Alert.AddAction (UIAlertAction.Create ("OK",
+					UIAlertActionStyle.Cancel, action=>{
+						NavigationController.PopViewController(true);
+					}		
+				));
+				PresentViewController (Alert, true, null);
+			}
 		}
 	}
 }

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UIKit;
 using Foundation;
+using CoreDataService;
 
 namespace WebApp_iOS
 {
 	public class OrganizationSettingSource: UITableViewSource
 	{
-		List<string> theOrganizationList;
+		List<userorg> theOrganizationList;
 		OrganizationSettingController organizationSettingsController;
 
 		public OrganizationSettingSource (OrganizationSettingController organizationSettingsController)
@@ -46,7 +47,7 @@ namespace WebApp_iOS
 					};
 				}
 				cell.Row = indexPath.Row;
-				cell.nameLabel.Text = theOrganizationList [indexPath.Row];
+				cell.nameLabel.Text = theOrganizationList [indexPath.Row].name;
 				return cell;
 			} else {
 				var cell = tableView.DequeueReusableCell (RequestOrganizationCell.Key) as RequestOrganizationCell;

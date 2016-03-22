@@ -11,14 +11,16 @@ namespace WebApp_iOS
 	{
 
 		//views
-		LoadingOverlay2 loadingOverlayView;
 		ProjectSettingsView projectSettingsView;
 
 		//object
-		public List<projectsummary> theProjectList;
+		public accountsummary theaccountsummary;
+		public List<userproj> theProjectList;
 
-		public ProjectSettingsController ()
+		public ProjectSettingsController (accountsummary theaccountsummary)
 		{
+			this.theaccountsummary=theaccountsummary;
+			theProjectList=theaccountsummary.projects;
 		}
 
 		public override void DidReceiveMemoryWarning ()
@@ -32,10 +34,9 @@ namespace WebApp_iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-			initLoadingScreenView ("Loading...");
 			NavigationItem.Title="Settings";
-			GetProjectList();
-			//initView ();
+			//GetProjectList();
+			initView ();
 		}
 
 		public override void ViewDidAppear (bool animated)
@@ -46,11 +47,6 @@ namespace WebApp_iOS
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
-		public void initLoadingScreenView(string Text){
-			loadingOverlayView=new LoadingOverlay2 (Text);
-			View.Add (loadingOverlayView);
-		}
-
 		public void initView(){
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
@@ -68,11 +64,23 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void RequestBtnClick(int Row)
 		{
-			Console.WriteLine ("Project Setting Row " + Row + " Clicked");
+			/*
+			if (MFMailComposeViewController.CanSendMail) {;
+				MFMailComposeViewController mailController = new MFMailComposeViewController (); 
+				mailController.SetToRecipients (new string[]{theProjectList[Row].primary_contact}); 
+				mailController.SetSubject (""); 
+				mailController.SetMessageBody ("", false);
+				mailController.Finished += (object s1, MFComposeResultEventArgs args) => {
+					args.Controller.DismissViewController (true, null);
+				};
+				PresentViewController (mailController, true, null);
+			}
+			*/
 		}
 
 		public void RequestBtn2Click(int Row)
 		{
+			/*
 			if (MFMailComposeViewController.CanSendMail) {;
 				MFMailComposeViewController mailController = new MFMailComposeViewController (); 
 				mailController.SetToRecipients (new string[]{""}); 
@@ -83,41 +91,7 @@ namespace WebApp_iOS
 				};
 				PresentViewController (mailController, true, null);
 			}
-		}
-
-		/********************************************************************************
-		*Load data from database
-		********************************************************************************/
-		public void GetProjectList(){
-			DataService dataService = GlobalAPI.GetDataService();
-			string errmsg;
-			if (!dataService.ProjectInfo (out theProjectList, out errmsg)) {
-				if(theProjectList==null){
-					theProjectList = new List<projectsummary> ();
-				}
-				InvokeOnMainThread (() => {
-					loadingOverlayView.Hide ();
-					initView ();
-					GlobalAPI.Manager ().PageDefault (this, "Settings", true, false);
-					//alert
-					UIAlertController Alert = UIAlertController.Create ("Error",
-						errmsg, UIAlertControllerStyle.Alert);
-					Alert.AddAction (UIAlertAction.Create ("OK",
-						UIAlertActionStyle.Cancel, null
-					));
-					PresentViewController (Alert, true, null);
-				});
-			} else {
-				if(theProjectList==null){
-					theProjectList = new List<projectsummary> ();
-				}
-				InvokeOnMainThread (() => {
-					initView ();
-					loadingOverlayView.Hide ();
-					GlobalAPI.Manager ().PageDefault (this, "Settings", true, false);
-				});
-			}	
-
+			*/
 		}
 	}
 }

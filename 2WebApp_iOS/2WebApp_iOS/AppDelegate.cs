@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Foundation;
 using UIKit;
 using SDWebImage;
+using CoreDataService;
 
 namespace WebApp_iOS
 {
@@ -20,16 +21,6 @@ namespace WebApp_iOS
 
 		public override void FinishedLaunching (UIApplication application)
 		{
-			//create tables
-			/*
-			try {
-				DbStorage.Manager ().createTables (); 
-			} catch (Exception e) {
-				//new UIAlertView ("Alert", e.Message, null, "OK", null).Show (); 
-			}
-			*/
-
-
 			window = new UIWindow ();
 
 			window.Frame = new CoreGraphics.CGRect (0, 0, UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height); 
@@ -56,7 +47,25 @@ namespace WebApp_iOS
 
 		}
 
-
+		public override void DidEnterBackground (UIApplication application)
+		{
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.SYNCATSTARTUP;
+			ap.IN.data = new accountsummary ();
+			ap.IN.func=(o,e)=>{};
+			GlobalAPI.GetDataService ().Action (ref ap);
+		}
+			
+		public override void WillEnterForeground (UIApplication application)
+		{
+			// Called as part of the transiton from background to active state.
+			// Here you can undo many of the changes made on entering the background.
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.SYNCATSTARTUP;
+			ap.IN.data = new accountsummary ();
+			ap.IN.func=(o,e)=>{};
+			GlobalAPI.GetDataService ().Action (ref ap);
+		}
 
 		public override void ReceiveMemoryWarning (UIApplication application)
 		{
@@ -64,8 +73,6 @@ namespace WebApp_iOS
 			SDWebImageManager.SharedManager.ImageCache.ClearMemory ();
 			SDWebImageManager.SharedManager.ImageCache.ClearDisk (); 
 		}
-
-
 	}
 }
 

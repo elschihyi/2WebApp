@@ -10,18 +10,17 @@ namespace WebApp_iOS
 	public class ProfileSettingController: UIViewController
 	{
 		//views
-		LoadingOverlay2 loadingOverlayView;
 		ProfileSettingView profileSettingView;
 
 		//object
-		public UserProfile userProfile;
+		public accountsummary theaccountsummary;
 		public string oldpassword="";
 		public string newpassword="";
 		public string confirmpassword="";
-		//public UserProfile newUserProfile;
 
-		public ProfileSettingController ()
+		public ProfileSettingController (accountsummary theaccountsummary)
 		{
+			this.theaccountsummary = theaccountsummary;
 		}
 
 		public override void DidReceiveMemoryWarning ()
@@ -35,10 +34,8 @@ namespace WebApp_iOS
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
-			initLoadingScreenView ("Loading...");
 			NavigationItem.Title="Settings";
-			GetUserProfile();
-			//initView ();
+			initView ();
 		}
 
 		public override void ViewDidAppear (bool animated)
@@ -48,11 +45,6 @@ namespace WebApp_iOS
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
-		public void initLoadingScreenView(string Text){
-			loadingOverlayView=new LoadingOverlay2 (Text);
-			View.Add (loadingOverlayView);
-		}
-
 		public void initView(){
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
@@ -98,71 +90,97 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void UpdateClick()
 		{
-			Console.WriteLine ("First Name:"+userProfile.firstName);
-			Console.WriteLine ("Last Name:"+userProfile.lastName);
-			Console.WriteLine ("Email:"+userProfile.email);
-			Console.WriteLine ("Old Password:"+oldpassword);
-			Console.WriteLine ("New Password:"+newpassword);
-			Console.WriteLine ("Confirm Password:"+confirmpassword);
-		}
-
-		/********************************************************************************
-		*Load data from database
-		********************************************************************************/
-		public void GetUserProfile(){
-			DataService dataService = GlobalAPI.GetDataService();
-			string errmsg;
-			//if (!dataService.ProjectInfo (out theProjectList, out errmsg)) {
-			if(!true){
-				if(userProfile==null){
-					userProfile = new UserProfile();
-				}
-				InvokeOnMainThread (() => {
-					loadingOverlayView.Hide ();
-					initView ();
-					GlobalAPI.Manager ().PageDefault (this, "Settings", true, false);
-					//alert
+			if (!string.IsNullOrEmpty (oldpassword) || !string.IsNullOrEmpty (newpassword) || !string.IsNullOrEmpty (confirmpassword)) {
+				if (!string.Equals (oldpassword, theaccountsummary.client_password)) {
 					UIAlertController Alert = UIAlertController.Create ("Error",
-						errmsg, UIAlertControllerStyle.Alert);
+						"Please re-enter your old password.", UIAlertControllerStyle.Alert);
 					Alert.AddAction (UIAlertAction.Create ("OK",
 						UIAlertActionStyle.Cancel, null
 					));
 					PresentViewController (Alert, true, null);
-				});
-			} else {
-				if(userProfile==null){
-					//userProfile = new UserProfile();
-					userProfile=MyProfile();
+					return;
 				}
-				/*
-				InvokeOnMainThread (() => {
-					initView ();
-					loadingOverlayView.Hide ();
-				});
-				*/
-				initView ();
-				loadingOverlayView.Hide ();
-				GlobalAPI.Manager ().PageDefault (this, "Settings", true, false);
-			}	
+
+				if (!string.Equals (newpassword, confirmpassword)) {
+					UIAlertController Alert = UIAlertController.Create ("Error",
+						"New password did not match.", UIAlertControllerStyle.Alert);
+					Alert.AddAction (UIAlertAction.Create ("OK",
+						UIAlertActionStyle.Cancel, null
+					));
+					PresentViewController (Alert, true, null);
+					return;
+				}
+
+				theaccountsummary.client_password = newpassword;
+			}
+
+			string errmsg;
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.UPDATESETTINGS;
+			ap.IN.data = theaccountsummary;
+			ap.IN.func = (o,e) => {};
+			if (GlobalAPI.GetDataService ().Action (ref ap)) {
+				UIAlertController Alert = UIAlertController.Create ("Success",
+					"", UIAlertControllerStyle.Alert);
+				Alert.AddAction (UIAlertAction.Create ("OK",
+					UIAlertActionStyle.Cancel, action=>{
+						NavigationController.PopViewController(true);
+					}		
+				));
+				PresentViewController (Alert, true, null);
+				NavigationController.PopViewController(true);
+			} else {
+				//alert
+				errmsg = ap.OUT.errmsg;
+				UIAlertController Alert = UIAlertController.Create ("Error",
+					errmsg, UIAlertControllerStyle.Alert);
+				Alert.AddAction (UIAlertAction.Create ("OK",
+					UIAlertActionStyle.Cancel, action=>{
+						NavigationController.PopViewController(true);
+					}		
+				));
+				PresentViewController (Alert, true, null);
+			}
 		}
 
-
-		//temp functions*********************************************
-		public UserProfile MyProfile(){
-			UserProfile returnValue = new UserProfile ();
-			returnValue.firstName="Terence";
-			returnValue.lastName="Hunag";
-			returnValue.email="chh990@mail.usask.ca";
-			returnValue.password="123456";
-			return returnValue;
-		}	
+		/********************************************************************************
+		*Edit end
+		********************************************************************************/
+		public void EditEnd(int Section,int Row,string Text){
+			switch (Section) {
+			case 0:
+				switch (Row) {
+				case 0:
+					theaccountsummary.client_firstname=Text;
+					break;
+				case 1:
+					theaccountsummary.client_lastname=Text;
+					break;
+				case 2:
+					break;
+				default:
+					break;
+				}
+				break;
+			case 1:
+				switch (Row) {
+				case 0:
+					oldpassword=Text;
+					break;
+				case 1:
+					newpassword=Text;
+					break;
+				case 2:
+					confirmpassword=Text;
+					break;
+				default:
+					break;
+				}
+				break;
+			default:
+				break;
+			}
+		}
 	}
-
-	public class UserProfile{
-		public string firstName="";
-		public string lastName="";
-		public string email="";
-		public string password="";
-	}	
 }
 

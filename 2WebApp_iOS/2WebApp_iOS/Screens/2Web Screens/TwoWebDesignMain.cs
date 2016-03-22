@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MessageUI;
 using CoreDataService;
 
+
 namespace WebApp_iOS
 {
 	public partial class TwoWebDesignMain : UIViewController
@@ -69,11 +70,18 @@ namespace WebApp_iOS
 			newContactView.ContentSize = ContactVw.Frame.Size;
 			newContactView.position ();
 			newContactView.titleLabel.Text="Contact 2 Web Design Inc.";
+
 			contact contactInfo;
 			//contact contactInfo = myHardCodeInfo ();
 			string errmsg="";
-			if (GlobalAPI.GetDataService ().ContactInfo (out contactInfo,out errmsg)) {
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.GETCONTINFO;
+			ap.IN.data = new accountsummary ();
+			ap.IN.func = (o,e) => {};
+
+			if (GlobalAPI.GetDataService ().Action (ref ap)) {
 			//if(true){
+				contactInfo=(contact)ap.OUT.dataset;
 				if (!String.IsNullOrEmpty (contactInfo.address1)) {
 					newContactView.address1Label.Hidden = false;
 					newContactView.address1Label.Text = contactInfo.address1;
@@ -192,7 +200,8 @@ namespace WebApp_iOS
 				));
 				PresentViewController (Alert, true, null);
 				
-			}		
+			}
+
 			//Courasal Pages
 			var pages = new UIView[]{ BlogView, WorkshopsView, newContactView}; 
 

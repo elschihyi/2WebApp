@@ -31,6 +31,7 @@ namespace WebApp_iOS
 			
 		}
 
+		public static UIViewController originPage{ get; set;}
 		public static WelcomePage welcomePage{ get; set;}
 
 		public static DataService GetDataService(){
@@ -117,6 +118,7 @@ namespace WebApp_iOS
 				//put settings icon
 				page.NavigationItem.RightBarButtonItem = new UIBarButtonItem (new UIImage ("Cut_Images/Setting_Icon.png"), UIBarButtonItemStyle.Plain, 
 					(sender, args) => {
+						originPage=page;
 						PushPage (page.NavigationController, new SettingMenuScreenController ());
 					});
 			}
