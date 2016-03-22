@@ -101,7 +101,7 @@ namespace WebApp_iOS
 				}
 
 				return false;
-			} catch (Exception e) {
+			} catch  {
 				return false; 
 			}
 
@@ -130,15 +130,6 @@ namespace WebApp_iOS
 				nfloat yPos;
 
 				yPos= UIScreen.MainScreen.Bounds.Height - image.Size.Height - 10;
-
-				/*
-				if (includeSettingsGear) {
-					yPos = UIScreen.MainScreen.Bounds.Height - image.Size.Height - 10;
-				} else {
-					//On the setting page itself move it up due to monotouch dialog
-					yPos = UIScreen.MainScreen.Bounds.Height - image.Size.Height * 3;
-				}
-				*/
 				var btnFrame = new CoreGraphics.CGRect (10, yPos, image.Size.Width, image.Size.Height); 
 
 				var shadow = new UIImageView (UIImage.FromFile ("Cut_Images/Radial_menu_shadow.png")); 
@@ -217,47 +208,27 @@ namespace WebApp_iOS
 		{
 
 			//send request to 2web 
-			if (true) {
-				return true;
-			} else {
-				return false; 
-			}
-
-			//return true if successfull, false otherwise
+			return true;
 		}
 
 		public Boolean ProjectAuthorization (string usr)
 		{
 			//send request to 2web 
-			if (true) {
-				return true;
-			} else {
-				return false; 
-			}
 
+			return true;
 			//return true if successfull, false otherwise
 		}
 
 		public Boolean SignUp (string fName, string lName, string usr, string pwd)
 		{
 			//send to 2web 
-
-			if (true) {
-				return true;
-			} else {
-				return false;
-			}
+			return true;
 		}
 
 		public Boolean ForgotPassword (String usr)
 		{
 			//send to 2web
-
-			if (true) {
-				return true;
-			} else {
-				return false;
-			}
+			return true;
 		}
 
 		public Blast[] LoadEmailBlasts ()
@@ -277,7 +248,7 @@ namespace WebApp_iOS
 						Link = post.Link
 					}); 
 				}
-			} catch (Exception e) {
+			} catch {
 
 			}
 
@@ -300,7 +271,7 @@ namespace WebApp_iOS
 						Url = post.Link
 					}); 
 				}
-			} catch (Exception e) {
+			} catch {
 
 			}
 
@@ -321,7 +292,7 @@ namespace WebApp_iOS
 						Url = post.Link
 					}); 
 				}
-			} catch (Exception e) {
+			} catch {
 
 			}
 
@@ -345,7 +316,7 @@ namespace WebApp_iOS
 				}
 
 				events.RemoveAt (0);
-			} catch (Exception e) {
+			} catch {
 
 			}
 				 
@@ -356,7 +327,7 @@ namespace WebApp_iOS
 		{
 			try {
 				RssFeedReader.Manager ().loadRssFeeds ();
-			} catch (Exception e) {
+			} catch {
 				return false;
 			}
 			return true; 

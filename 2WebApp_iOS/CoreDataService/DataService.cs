@@ -278,6 +278,8 @@ namespace CoreDataService
 				}
 
 				if ( tmpcache.acctinfo.status != UserStatus.VALID ) {
+
+					cache.acctinfo = null;
 					cache.projects = null;
 
 					if ( Settings.runmode == RunMode.Normal ) {

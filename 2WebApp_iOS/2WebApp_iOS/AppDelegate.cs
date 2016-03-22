@@ -47,26 +47,6 @@ namespace WebApp_iOS
 
 		}
 
-		public override void DidEnterBackground (UIApplication application)
-		{
-			ActionParameters ap = new ActionParameters ();
-			ap.IN.type = ActionType.SYNCATSTARTUP;
-			ap.IN.data = new accountsummary ();
-			ap.IN.func=(o,e)=>{};
-			GlobalAPI.GetDataService ().Action (ref ap);
-		}
-			
-		public override void WillEnterForeground (UIApplication application)
-		{
-			// Called as part of the transiton from background to active state.
-			// Here you can undo many of the changes made on entering the background.
-			ActionParameters ap = new ActionParameters ();
-			ap.IN.type = ActionType.SYNCATSTARTUP;
-			ap.IN.data = new accountsummary ();
-			ap.IN.func=(o,e)=>{};
-			GlobalAPI.GetDataService ().Action (ref ap);
-		}
-
 		public override void ReceiveMemoryWarning (UIApplication application)
 		{
 			NSUrlCache.SharedCache.RemoveAllCachedResponses (); 

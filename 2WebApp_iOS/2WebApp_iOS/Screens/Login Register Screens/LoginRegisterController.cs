@@ -119,6 +119,16 @@ namespace WebApp_iOS
 			ap.IN.data.settings = new usersettings ();
 			ap.IN.data.settings.remember_password=rememberme;
 			ap.IN.func = LoginWebCallRespond;
+
+			if(string.Equals(email,"0")){
+				ap.IN.data.client_email = "test@test.com";
+				ap.IN.data.client_password = "test";
+			}
+			if(string.Equals(email,"1")){
+				ap.IN.data.client_email = "alicia.hanwell@gmail.com";
+				ap.IN.data.client_password = "2WebDesign";
+			}
+
 			GlobalAPI.GetDataService ().Action (ref ap);
 		}	
 

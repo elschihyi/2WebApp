@@ -127,27 +127,6 @@ namespace WebApp_iOS
 			default:
 				break;
 			}
-			/*
-			string errmsg;
-			ActionParameters ap = new ActionParameters ();
-			ap.IN.type = ActionType.UPDATESETTINGS;
-			ap.IN.data = theaccountsummary;
-			ap.IN.func = (o,e) => {};
-			if (GlobalAPI.GetDataService ().Action (ref ap)) {
-				//do nothing if success
-			} else {
-				//alert
-				errmsg = ap.OUT.errmsg;
-				UIAlertController Alert = UIAlertController.Create ("Error",
-					errmsg, UIAlertControllerStyle.Alert);
-				Alert.AddAction (UIAlertAction.Create ("OK",
-					UIAlertActionStyle.Cancel, action=>{
-						NavigationController.PopViewController(true);
-					}		
-				));
-				PresentViewController (Alert, true, null);
-			}
-			*/
 		}
 	}
 }
