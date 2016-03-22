@@ -38,7 +38,7 @@ namespace WebApp_iOS
 		{
 			base.ViewDidAppear (animated);
 		}
-
+			
 		public override void ViewWillDisappear (bool animated)
 		{
 			base.ViewWillDisappear (animated);
@@ -60,7 +60,6 @@ namespace WebApp_iOS
 				PresentViewController (Alert, true, null);
 			}
 		}
-
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/

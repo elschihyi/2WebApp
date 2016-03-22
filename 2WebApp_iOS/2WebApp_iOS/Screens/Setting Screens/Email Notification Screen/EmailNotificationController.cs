@@ -38,8 +38,7 @@ namespace WebApp_iOS
 		{
 			base.ViewDidAppear (animated);
 		}
-
-
+			
 		public override void ViewWillDisappear (bool animated)
 		{
 			base.ViewWillDisappear (animated);
