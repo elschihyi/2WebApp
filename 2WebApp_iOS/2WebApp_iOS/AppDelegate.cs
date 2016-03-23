@@ -53,6 +53,46 @@ namespace WebApp_iOS
 			SDWebImageManager.SharedManager.ImageCache.ClearMemory ();
 			SDWebImageManager.SharedManager.ImageCache.ClearDisk (); 
 		}
+
+		public override void RegisteredForRemoteNotifications (UIApplication application, NSData deviceToken)
+		{
+			// Get current device token
+			var DeviceToken = deviceToken.Description;
+			if (!string.IsNullOrWhiteSpace(DeviceToken)) {
+				DeviceToken = DeviceToken.Trim('<').Trim('>');
+			}
+
+			// Get previous device token
+			var oldDeviceToken = NSUserDefaults.StandardUserDefaults.StringForKey("PushDeviceToken");
+
+			// Has the token changed?
+			if (string.IsNullOrEmpty(oldDeviceToken) || !oldDeviceToken.Equals(DeviceToken))
+			{
+				//Notice Server here
+			}
+
+			// Save new device token 
+			NSUserDefaults.StandardUserDefaults.SetString(DeviceToken, "PushDeviceToken");
+
+			Console.WriteLine ("Token is:" + DeviceToken);
+		}
+
+		public override void FailedToRegisterForRemoteNotifications (UIApplication application , NSError error)
+		{
+			Console.WriteLine ("Fail to get Token:" + error.LocalizedDescription);
+		}
+
+		public override void DidReceiveRemoteNotification (UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
+		{
+			NSObject apsValue=userInfo.ValueForKey(new NSString("aps"));
+			NSObject alertValue=apsValue.ValueForKey(new NSString("alert"));
+			try{
+				string msg=((NSString)alertValue).ToString();
+				Console.WriteLine ("Get Message:" + msg);
+			}catch {
+				Console.WriteLine ("Get Message:" +userInfo.ToString ());
+			}
+		}
 	}
 }
 
