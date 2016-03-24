@@ -91,6 +91,7 @@ namespace WebApp_iOS
 		public void UpdateClick()
 		{
 			if (!string.IsNullOrEmpty (oldpassword) || !string.IsNullOrEmpty (newpassword) || !string.IsNullOrEmpty (confirmpassword)) {
+				/*
 				if (!string.Equals (oldpassword, theaccountsummary.client_password)) {
 					UIAlertController Alert = UIAlertController.Create ("Error",
 						"Please re-enter your old password.", UIAlertControllerStyle.Alert);
@@ -100,7 +101,7 @@ namespace WebApp_iOS
 					PresentViewController (Alert, true, null);
 					return;
 				}
-
+				*/
 				if (!string.Equals (newpassword, confirmpassword)) {
 					UIAlertController Alert = UIAlertController.Create ("Error",
 						"New password did not match.", UIAlertControllerStyle.Alert);

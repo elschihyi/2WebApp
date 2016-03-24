@@ -21,6 +21,20 @@ namespace WebApp_iOS
 
 		public override void FinishedLaunching (UIApplication application)
 		{
+			//set up pushnotifications
+			if (UIDevice.CurrentDevice.CheckSystemVersion (8, 0)) {
+				var pushSettings = UIUserNotificationSettings.GetSettingsForTypes (
+					UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound,
+					new NSSet ());
+
+				UIApplication.SharedApplication.RegisterUserNotificationSettings (pushSettings);
+				UIApplication.SharedApplication.RegisterForRemoteNotifications ();
+			} else {
+				UIRemoteNotificationType notificationTypes = UIRemoteNotificationType.Alert | UIRemoteNotificationType.Badge | UIRemoteNotificationType.Sound;
+				UIApplication.SharedApplication.RegisterForRemoteNotificationTypes (notificationTypes);
+			}
+
+			//set up windowns
 			window = new UIWindow ();
 
 			window.Frame = new CoreGraphics.CGRect (0, 0, UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height); 
@@ -73,6 +87,15 @@ namespace WebApp_iOS
 
 			// Save new device token 
 			NSUserDefaults.StandardUserDefaults.SetString(DeviceToken, "PushDeviceToken");
+
+			UIAlertController Alert = UIAlertController.Create ("Recieve Token",
+				DeviceToken, UIAlertControllerStyle.Alert);
+			Alert.AddAction (UIAlertAction.Create ("OK",
+				UIAlertActionStyle.Cancel,
+				null));
+
+			int l=((UINavigationController)window.RootViewController).ViewControllers.Length;
+			((UINavigationController)window.RootViewController).ViewControllers [l - 1].PresentViewController (Alert, true, null);
 
 			Console.WriteLine ("Token is:" + DeviceToken);
 		}
