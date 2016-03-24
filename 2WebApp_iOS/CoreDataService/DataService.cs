@@ -86,6 +86,7 @@ namespace CoreDataService
 			case ActionType.UPDATEACCOUNT:
 			case ActionType.UPDATESETTINGS:
 
+				actioninfo.IN.data.settings.usersetting_updated = "1";
 				// save setting regardless online/offline if UPDATESETTINGS
 				if ( actioninfo.IN.type == ActionType.UPDATESETTINGS && cache.acctinfo.settings.remember_password == "1" ) {
 					cache.acctinfo.settings = actioninfo.IN.data.settings;
@@ -118,8 +119,18 @@ namespace CoreDataService
 					status = UserStatus.UPDATED;
 				if (info.acctinfo.status != status) {
 
-					// !!! reset new value
-					actioninfo.IN.data.settings.new_password = "";
+					if (actioninfo.IN.type == ActionType.UPDATEACCOUNT) {
+
+						actioninfo.IN.data.settings.new_password = "";
+
+					} else if (actioninfo.IN.type == ActionType.UPDATEACCOUNT) {
+
+						actioninfo.IN.data.settings.usersetting_updated = "1";
+						cache.acctinfo.settings.usersetting_updated = "1";
+						if ( !SaveCacheData(true, out errmsg) ) {
+							return false;
+						}
+					}
 					
 					if (Settings.runmode == RunMode.Normal) {
 
@@ -132,12 +143,10 @@ namespace CoreDataService
 
 					return false;
 				} else {
-					// !!! make sure input data is upate too
-					if ( actioninfo.IN.type == ActionType.UPDATESETTINGS && actioninfo.IN.data.settings.new_password != "") {
+					
+					if ( actioninfo.IN.type == ActionType.UPDATEACCOUNT && actioninfo.IN.data.settings.new_password != "") {
 						actioninfo.IN.data.client_password = GetMD5(actioninfo.IN.data.settings.new_password);
 						actioninfo.IN.data.settings.new_password = "";
-					} else if ( actioninfo.IN.type == ActionType.UPDATESETTINGS ) {
-						actioninfo.IN.data.settings.profile_updated = "0";
 					}
 					
 					// update and save the cache
@@ -318,7 +327,11 @@ namespace CoreDataService
 					// before the new value applied, reassign the local vars
 					tmpcache.acctinfo.client_password = cache.acctinfo.client_password;
 					tmpcache.acctinfo.settings.remember_password = cache.acctinfo.settings.remember_password;
-					// !!! for profile_updated
+					tmpcache.acctinfo.settings.usersetting_updated = cache.acctinfo.settings.usersetting_updated;
+
+					// reset status for user settings
+					tmpcache.acctinfo.settings.usersetting_updated = "0";
+
 					cache = tmpcache;
 					Settings.local_ismemsynced = true;
 

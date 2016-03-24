@@ -378,7 +378,7 @@ namespace CoreDataService
 		// the members only used by local
 		public string remember_password { get; set; } = "0";
 		public string new_password { get; set; } = "";
-		public string profile_updated { get; set; } = "0";
+		public string usersetting_updated { get; set; } = "0";
 	}
 
 	#endregion
