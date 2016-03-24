@@ -111,8 +111,8 @@ namespace WebApp_iOS
 					PresentViewController (Alert, true, null);
 					return;
 				}
-
-				theaccountsummary.client_password = newpassword;
+				//theaccountsummary.client_password = oldpassword;
+				theaccountsummary.settings.new_password = newpassword;
 			}
 
 			string errmsg;

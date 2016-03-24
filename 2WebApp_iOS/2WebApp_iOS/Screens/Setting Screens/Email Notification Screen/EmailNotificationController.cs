@@ -50,8 +50,8 @@ namespace WebApp_iOS
 				ActionParameters ap = new ActionParameters ();
 				ap.IN.type = ActionType.UPDATESETTINGS;
 				ap.IN.data = theaccountsummary;
-				ap.IN.func = (o, e) => {
-				};
+				ap.IN.func = (o, e) => {};
+				theaccountsummary.settings.usersetting_updated="1";
 				if (GlobalAPI.GetDataService ().Action (ref ap)) {
 					//do nothing if success
 				} else {
