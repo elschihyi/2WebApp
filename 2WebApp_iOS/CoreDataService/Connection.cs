@@ -63,6 +63,7 @@ namespace CoreDataService
 			case ActionType.CREATEACCOUNT:
 			case ActionType.UPDATEACCOUNT:
 			case ActionType.UPDATESETTINGS:
+			case ActionType.SAVETOKEN:
 				request.Add ("PATH", Settings.ws_basepath + Settings.ws_reqname);
 				break;
 			}

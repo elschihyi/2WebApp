@@ -76,7 +76,7 @@ namespace CoreDataService
 				// WARNING: MAKE SURE SETUP PROPER TABLE'S FLAG BEFORE CALL THIS
 				//
 
-				accountsummary data = actioninfo.IN.data;
+				AccountInfo data = actioninfo.IN.data;
 				ActionCallback func = actioninfo.IN.func;
 				Thread syncThread = new Thread (() => SyncThread ( data, func ));
 				syncThread.Start ();
@@ -85,10 +85,24 @@ namespace CoreDataService
 			case ActionType.CREATEACCOUNT:
 			case ActionType.UPDATEACCOUNT:
 			case ActionType.UPDATESETTINGS:
+			case ActionType.SAVETOKEN:
 
-				actioninfo.IN.data.settings.usersetting_updated = "1";
-				// save setting regardless online/offline if UPDATESETTINGS
-				if ( actioninfo.IN.type == ActionType.UPDATESETTINGS && cache.acctinfo.settings.remember_password == "1" ) {
+				// check user password if update profile
+				if ( actioninfo.IN.type == ActionType.UPDATEACCOUNT && actioninfo.IN.data.password.Length < 24 ) {
+
+					string hashedcode = GetMD5 (actioninfo.IN.data.password);
+					if (hashedcode != cache.acctinfo.client_password) {
+
+//						actioninfo.IN.data.settings.old_password = "";
+						errmsg = ErrorMessage.Login;
+						return false;
+					}
+
+					actioninfo.IN.data.password = cache.acctinfo.client_password;
+
+				} else if ( actioninfo.IN.type == ActionType.UPDATESETTINGS && actioninfo.IN.data.remember_password == "1" ) {
+
+					// save setting regardless online/offline if UPDATESETTINGS
 					cache.acctinfo.settings = actioninfo.IN.data.settings;
 					if ( !SaveCacheData(true, out errmsg) ) {
 						return false;
@@ -119,17 +133,20 @@ namespace CoreDataService
 					status = UserStatus.UPDATED;
 				if (info.acctinfo.status != status) {
 
-					if (actioninfo.IN.type == ActionType.UPDATEACCOUNT) {
+					if (actioninfo.IN.type == ActionType.SAVETOKEN) {
 
-						actioninfo.IN.data.settings.new_password = "";
+//						actioninfo.IN.data.settings.new_password = "";
+						cache.acctinfo.notification_token = actioninfo.IN.data.notification_token;
 
 					} else if (actioninfo.IN.type == ActionType.UPDATEACCOUNT) {
 
-						actioninfo.IN.data.settings.usersetting_updated = "1";
-						cache.acctinfo.settings.usersetting_updated = "1";
-						if ( !SaveCacheData(true, out errmsg) ) {
-							return false;
-						}
+//						actioninfo.IN.data.settings.usersetting_updated = "1";
+						cache.acctinfo.usersetting_updated = "1";
+
+					}
+
+					if ( !SaveCacheData(true, out errmsg) ) {
+						return false;
 					}
 					
 					if (Settings.runmode == RunMode.Normal) {
@@ -144,13 +161,15 @@ namespace CoreDataService
 					return false;
 				} else {
 					
-					if ( actioninfo.IN.type == ActionType.UPDATEACCOUNT && actioninfo.IN.data.settings.new_password != "") {
-						actioninfo.IN.data.client_password = GetMD5(actioninfo.IN.data.settings.new_password);
-						actioninfo.IN.data.settings.new_password = "";
+					if ( actioninfo.IN.type == ActionType.UPDATEACCOUNT && actioninfo.IN.data.new_password != "") {
+//						actioninfo.IN.data.client_password = GetMD5(actioninfo.IN.data.settings.new_password);
+//						actioninfo.IN.data.settings.new_password = "";
+//						actioninfo.IN.data.settings.old_password = "";
+						info.acctinfo.client_password = GetMD5(actioninfo.IN.data.new_password);
 					}
 					
 					// update and save the cache
-					cache.acctinfo = actioninfo.IN.data;
+					cache.acctinfo = info.acctinfo;
 					
 					if ( !SaveCacheData(true, out errmsg) ) {
 						return false;
@@ -218,14 +237,14 @@ namespace CoreDataService
 		#region Internal Functions - Common
 
 		// Synchronize table data at background
-		private void SyncThread (accountsummary userinfo, ActionCallback func)
+		private void SyncThread (AccountInfo userinfo, ActionCallback func)
 		{
 
 			string errmsg;
 			ActionCallback callback = new ActionCallback (func);
 
 			// handle user information
-			if (userinfo.client_email == "" && userinfo.client_password == "") {
+			if (userinfo.username == "" && userinfo.password == "") {
 				// check if the credential is saved
 				if ( !GetSavedUserInfo (out errmsg) ) {
 					// no given and no saved
@@ -236,7 +255,7 @@ namespace CoreDataService
 					return;
 				}
 				
-			} else if ( userinfo.client_email == "" ) {
+			} else if ( userinfo.username == "" ) {
 				// no saved and try to login
 				cache.acctinfo = null;
 				cache.projects = null;
@@ -260,9 +279,9 @@ namespace CoreDataService
 					cache.acctinfo.organizations = new List<userorg> ();
 					cache.acctinfo.projects = new List<userproj> ();
 				}
-				cache.acctinfo.client_email = userinfo.client_email;
-				cache.acctinfo.client_password = GetMD5(userinfo.client_password);
-				cache.acctinfo.settings.remember_password = userinfo.settings.remember_password;
+				cache.acctinfo.client_email = userinfo.username;
+				cache.acctinfo.client_password = GetMD5(userinfo.password);
+				cache.acctinfo.remember_password = userinfo.remember_password;
 				cache.acctinfo.status = UserStatus.NULL;
 			}
 
@@ -287,7 +306,11 @@ namespace CoreDataService
 				} else if ( Settings.local_dbtype == DatabaseType.Json ) {
 					
 					// download stream data
-					if (!DownloadData (cache.acctinfo, ActionType.SYNC, out data, out errmsg)) {
+					AccountInfo acctinfo = new AccountInfo();
+					acctinfo.username = cache.acctinfo.client_email;
+					acctinfo.password = cache.acctinfo.client_password;
+					acctinfo.notification_token = cache.acctinfo.notification_token;
+					if (!DownloadData (acctinfo, ActionType.SYNC, out data, out errmsg)) {
 						callback (false, errmsg);
 						return;
 					}
@@ -326,16 +349,17 @@ namespace CoreDataService
 
 					// before the new value applied, reassign the local vars
 					tmpcache.acctinfo.client_password = cache.acctinfo.client_password;
-					tmpcache.acctinfo.settings.remember_password = cache.acctinfo.settings.remember_password;
-					tmpcache.acctinfo.settings.usersetting_updated = cache.acctinfo.settings.usersetting_updated;
+					tmpcache.acctinfo.remember_password = cache.acctinfo.remember_password;
+					tmpcache.acctinfo.usersetting_updated = cache.acctinfo.usersetting_updated;
 
 					// reset status for user settings
-					tmpcache.acctinfo.settings.usersetting_updated = "0";
+					tmpcache.acctinfo.usersetting_updated = "0";
+					tmpcache.acctinfo.notification_token = "";
 
 					cache = tmpcache;
 					Settings.local_ismemsynced = true;
 
-					if ( cache.acctinfo.settings.remember_password == "1" && !SaveCacheData(true, out errmsg) ) {
+					if ( cache.acctinfo.remember_password == "1" && !SaveCacheData(true, out errmsg) ) {
 						callback(false, errmsg);
 					}
 				}
@@ -466,7 +490,7 @@ namespace CoreDataService
 			// always make sure the cache and disk are synced
 			if ( Settings.local_ismemsynced && !Settings.local_isdisksynced ) {
 				
-				Boolean SaveUser = (cache.acctinfo.status == UserStatus.SAVED || (cache.acctinfo.status == UserStatus.VALID && cache.acctinfo.settings.remember_password == "1"));
+				Boolean SaveUser = (cache.acctinfo.status == UserStatus.SAVED || (cache.acctinfo.status == UserStatus.VALID && cache.acctinfo.remember_password == "1"));
 				if ( !SaveCacheData(SaveUser, out errmsg) ) {
 					callback(false, errmsg);
 				}
@@ -478,7 +502,7 @@ namespace CoreDataService
 
 		
 		// return MD5 code by given string
-		private string GetMD5(string text) {
+		public string GetMD5(string text) {
 			
 			MD5 hash = new MD5CryptoServiceProvider ();
 			byte[] data = hash.ComputeHash(Encoding.UTF8.GetBytes(text));
@@ -640,7 +664,7 @@ namespace CoreDataService
 		// Return:
 		//		true successful
 		//		false return with error as result
-		private Boolean DownloadData (accountsummary userinfo, ActionType type, out object dataset, out string errmsg)
+		private Boolean DownloadData (AccountInfo userinfo, ActionType type, out object dataset, out string errmsg)
 		{
 			errmsg = "";
 			dataset = null;

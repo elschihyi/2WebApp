@@ -49,9 +49,15 @@ namespace WebApp_iOS
 				string errmsg;
 				ActionParameters ap = new ActionParameters ();
 				ap.IN.type = ActionType.UPDATESETTINGS;
-				ap.IN.data = theaccountsummary;
-				ap.IN.func = (o, e) => {};
-				theaccountsummary.settings.usersetting_updated="1";
+//				ap.IN.data = theaccountsummary;
+//				ap.IN.func = (o, e) => {};
+// 				theaccountsummary.settings.usersetting_updated="1";
+				ap.IN.data = new AccountInfo();
+//				ap.IN.data.usersetting_updated = "1";
+				ap.IN.data.username = theaccountsummary.client_email;
+				ap.IN.data.password = theaccountsummary.client_password;
+				ap.IN.data.remember_password = theaccountsummary.remember_password;
+				ap.IN.data.settings = theaccountsummary.settings;
 				if (GlobalAPI.GetDataService ().Action (ref ap)) {
 					//do nothing if success
 				} else {
@@ -144,7 +150,7 @@ namespace WebApp_iOS
 			    OriginAccountSummary.client_lastname != theaccountsummary.client_lastname ||
 			    OriginAccountSummary.status != theaccountsummary.status ||
 			    OriginAccountSummary.settings.client_accountid != theaccountsummary.settings.client_accountid ||
-			    OriginAccountSummary.settings.remember_password != theaccountsummary.settings.remember_password ||
+//			    OriginAccountSummary.settings.remember_password != theaccountsummary.settings.remember_password ||
 			    OriginAccountSummary.settings.push_new_event != theaccountsummary.settings.push_new_event ||
 			    OriginAccountSummary.settings.push_news_update != theaccountsummary.settings.push_news_update ||
 			    OriginAccountSummary.settings.push_project_update != theaccountsummary.settings.push_project_update ||
@@ -179,7 +185,7 @@ namespace WebApp_iOS
 
 			newAccountSummary.settings = new usersettings();
 			newAccountSummary.settings.client_accountid = oldaccountsummary.settings.client_accountid;
-			newAccountSummary.settings.remember_password = oldaccountsummary.settings.remember_password;
+//			newAccountSummary.settings.remember_password = oldaccountsummary.settings.remember_password;
 			newAccountSummary.settings.push_new_event = oldaccountsummary.settings.push_new_event;
 			newAccountSummary.settings.push_news_update = oldaccountsummary.settings.push_news_update;
 			newAccountSummary.settings.push_project_update = oldaccountsummary.settings.push_project_update;

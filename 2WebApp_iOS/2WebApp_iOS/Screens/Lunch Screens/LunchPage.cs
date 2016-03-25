@@ -132,7 +132,7 @@ namespace WebApp_iOS
 		public void syncData(){
 			ActionParameters ap = new ActionParameters ();
 			ap.IN.type = ActionType.SYNCATSTARTUP;
-			ap.IN.data = new accountsummary ();
+			ap.IN.data = new AccountInfo ();
 			ap.IN.func=SyncRespond;
 			GlobalAPI.GetDataService ().Action (ref ap);
 		}

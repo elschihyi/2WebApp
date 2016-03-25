@@ -375,10 +375,6 @@ namespace CoreDataService
 
 		public string email_blasts { get; set; } = "0";
 		
-		// the members only used by local
-		public string remember_password { get; set; } = "0";
-		public string new_password { get; set; } = "";
-		public string usersetting_updated { get; set; } = "0";
 	}
 
 	#endregion
@@ -474,6 +470,8 @@ namespace CoreDataService
 	[Serializable]
 	public class accountsummary
 	{
+		public UserStatus status { get; set; } = UserStatus.NULL;
+
 		public string client_email { get; set; } = "";
 
 		public string client_password { get; set; } = "";
@@ -482,13 +480,17 @@ namespace CoreDataService
 
 		public string client_lastname { get; set; } = "";
 
-		public UserStatus status { get; set; } = UserStatus.NULL;
-
-		public usersettings settings { get; set; } = null;
+		public string remember_password { get; set; } = "0";
 
 		public List<userorg> organizations { get; set; } = null;
 
 		public List<userproj> projects  { get; set; } = null;
+
+		public usersettings settings { get; set; } = null;
+
+		public string usersetting_updated { get; set; } = "0";
+
+		public string notification_token { get; set; } = "";
 	}
 
 

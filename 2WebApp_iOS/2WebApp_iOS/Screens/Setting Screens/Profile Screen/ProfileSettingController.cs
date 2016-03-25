@@ -14,6 +14,7 @@ namespace WebApp_iOS
 
 		//object
 		public accountsummary theaccountsummary;
+		public AccountInfo theaccountinfo;
 		public string oldpassword="";
 		public string newpassword="";
 		public string confirmpassword="";
@@ -90,6 +91,14 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void UpdateClick()
 		{
+			theaccountinfo = new AccountInfo ();
+			theaccountinfo.username = theaccountsummary.client_email;
+			theaccountinfo.password = theaccountsummary.client_password;
+			theaccountinfo.firstname = theaccountsummary.client_firstname;
+			theaccountinfo.lastname = theaccountsummary.client_lastname;
+			theaccountinfo.remember_password = theaccountsummary.remember_password;
+			theaccountinfo.settings = theaccountsummary.settings;
+
 			if (!string.IsNullOrEmpty (oldpassword) || !string.IsNullOrEmpty (newpassword) || !string.IsNullOrEmpty (confirmpassword)) {
 				/*
 				if (!string.Equals (oldpassword, theaccountsummary.client_password)) {
@@ -111,15 +120,18 @@ namespace WebApp_iOS
 					PresentViewController (Alert, true, null);
 					return;
 				}
-				//theaccountsummary.client_password = oldpassword;
-				theaccountsummary.settings.new_password = newpassword;
+
+				theaccountinfo.password = oldpassword;
+				theaccountinfo.new_password = newpassword;
 			}
 
 			string errmsg;
 			ActionParameters ap = new ActionParameters ();
 			ap.IN.type = ActionType.UPDATEACCOUNT;
-			ap.IN.data = theaccountsummary;
-			ap.IN.func = (o,e) => {};
+//			ap.IN.data = theaccountsummary;
+//			ap.IN.func = (o,e) => {};
+			ap.IN.data = theaccountinfo;
+
 			if (GlobalAPI.GetDataService ().Action (ref ap)) {
 				UIAlertController Alert = UIAlertController.Create ("Success",
 					"", UIAlertControllerStyle.Alert);

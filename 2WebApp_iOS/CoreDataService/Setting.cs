@@ -12,7 +12,7 @@ namespace CoreDataService
 	public enum RunMode { Normal, Debug };
 	public enum DatabaseType { Sqlite, Json };
 	public enum RequestType { GET, POST };
-	public enum ActionType { LOGIN, LOGOUT, SYNCATSTARTUP, SYNC, CREATEACCOUNT, UPDATEACCOUNT, UPDATESETTINGS, GETPROJINFO, GETCONTINFO, GETACCTINFO };	// should be conform with the backend system
+	public enum ActionType { LOGIN, LOGOUT, SYNCATSTARTUP, SYNC, CREATEACCOUNT, UPDATEACCOUNT, UPDATESETTINGS, GETPROJINFO, GETCONTINFO, GETACCTINFO, SAVETOKEN };	// should be conform with the backend system
 	public enum UserStatus { VALID, INVALID, CREATED, UPDATED, FAILED, SAVED, NULL };
 
 	// parameter class for data service action interface
@@ -29,7 +29,7 @@ namespace CoreDataService
 		// declare internal classes
 		public class parain {
 			public ActionType type;
-			public accountsummary data;
+			public AccountInfo data;
 			public ActionCallback func;
 		}
 
@@ -38,6 +38,28 @@ namespace CoreDataService
 			public string errmsg;
 		}
 	}
+
+	public class AccountInfo
+	{
+		public string username { get; set; } = "";
+
+		public string password { get; set; } = "";
+
+		public string new_password { get; set; } = "";
+
+		public string firstname { get; set; } = "";
+
+		public string lastname { get; set; } = "";
+
+		public string remember_password { get; set; } = "0";
+
+		public string notification_token { get; set; } = "";
+
+		public usersettings settings = null;
+
+	}
+
+
 
 	// callback function definition
 	// Parameters:
@@ -352,28 +374,28 @@ namespace CoreDataService
 					Boolean switchbox = testSwitch.On;
 
 					// Start an action
-					accountsummary info = new accountsummary ();
-					info.client_email = text1;
-					info.client_password = text2;
+					AccountInfo info = new AccountInfo ();
+					info.username = text1;
+					info.password = ds.GetMD5(text2);
 
 					ActionParameters para = new ActionParameters ();
 					para.IN.data = info;
 
 					// for sync
-					para.IN.type = ActionType.SYNC;
-					para.IN.func = new ActionCallback(callBack);;
+//					para.IN.type = ActionType.SYNC;
+//					para.IN.func = new ActionCallback(callBack);;
 
 					// for create profile
 //					para.IN.type = ActionType.CREATEACCOUNT;
-//					para.IN.data.client_email = "new email";
-//					para.IN.data.client_password = "new passord";
-//					para.IN.data.client_firstname = "new firstname";
-//					para.IN.data.client_lastname = "new lastname";
+//					para.IN.data.username = "new email";
+//					para.IN.data.password = "new passord";
+//					para.IN.data.firstname = "new firstname";
+//					para.IN.data.lastname = "new lastname";
 
 					// for update profile
 //					para.IN.type = ActionType.UPDATEACCOUNT;
-//					para.IN.data.client_firstname = "updated firstname";
-//					para.IN.data.client_lastname = "update lastname";
+//					para.IN.data.firstname = "updated firstname";
+//					para.IN.data.lastname = "update lastname";
 
 					// for update settings
 //					para.IN.type = ActionType.UPDATESETTINGS;
@@ -381,8 +403,13 @@ namespace CoreDataService
 //					para.IN.data.settings.push_new_event = "1";
 //					para.IN.data.settings.push_news_update = "1";
 
+					// for save token
+					para.IN.type = ActionType.SAVETOKEN;
+					para.IN.data.notification_token = "12345qwer";
+
+
 					if ( !ds.Action(ref para) ) {
-						testView.Text += "There is an error happened during the action\n\n Error: " + para.OUT.errmsg + "\n\n";
+						testView.Text += "\nThere is an error happened during the action\n\n Error: " + para.OUT.errmsg + "\n\n";
 					} else {
 						testView.Text += "\n\nThe action is successful\n\n";
 					}

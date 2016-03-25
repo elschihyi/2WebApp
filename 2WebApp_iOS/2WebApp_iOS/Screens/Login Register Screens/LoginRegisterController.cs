@@ -144,11 +144,11 @@ namespace WebApp_iOS
 		public void LoginWebCall(string email,string password,string rememberme){
 			ActionParameters ap = new ActionParameters ();
 			ap.IN.type = ActionType.LOGIN;
-			ap.IN.data = new accountsummary();
-			ap.IN.data.client_email = email;
-			ap.IN.data.client_password = password;
-			ap.IN.data.settings = new usersettings ();
-			ap.IN.data.settings.remember_password=rememberme;
+			ap.IN.data = new AccountInfo();
+			ap.IN.data.username = email;
+			ap.IN.data.password = password;
+//			ap.IN.data.settings = new usersettings ();
+			ap.IN.data.remember_password=rememberme;
 			ap.IN.func = LoginWebCallRespond;
 			foreach (var x in NavigationItem.LeftBarButtonItems) {
 				x.Enabled = false;
@@ -159,13 +159,13 @@ namespace WebApp_iOS
 		public void RegisterWebCall(string email,string password,string firstName,string lastname,string rememberme){
 			ActionParameters ap = new ActionParameters ();
 			ap.IN.type = ActionType.CREATEACCOUNT;
-			ap.IN.data = new accountsummary();
-			ap.IN.data.client_email = email;
-			ap.IN.data.client_password = password;
-			ap.IN.data.client_firstname = firstName;
-			ap.IN.data.client_lastname = lastname;
-			ap.IN.data.settings = new usersettings ();
-			ap.IN.data.settings.remember_password=rememberme;
+			ap.IN.data = new AccountInfo();
+			ap.IN.data.username = email;
+			ap.IN.data.password = password;
+			ap.IN.data.firstname = firstName;
+			ap.IN.data.lastname = lastname;
+//			ap.IN.data.settings = new usersettings ();
+			ap.IN.data.remember_password=rememberme;
 			ap.IN.func = (o, e) => {};
 			if (GlobalAPI.GetDataService ().Action (ref ap)) {
 				GlobalAPI.Manager ().PushPage (NavigationController, new RegisterSuccessScreenController ());

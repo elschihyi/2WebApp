@@ -57,7 +57,7 @@ namespace WebApp_iOS
 			string errmsg;
 			ActionParameters ap = new ActionParameters ();
 			ap.IN.type = ActionType.GETPROJINFO;
-			ap.IN.data = new accountsummary ();
+			ap.IN.data = new AccountInfo ();
 			ap.IN.func = (o,e) => {};
 			if (GlobalAPI.GetDataService ().Action (ref ap)) {
 				projectList = (List<projectsummary>)ap.OUT.dataset;

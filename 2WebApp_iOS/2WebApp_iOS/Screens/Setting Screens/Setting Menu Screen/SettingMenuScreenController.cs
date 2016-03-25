@@ -57,7 +57,7 @@ namespace WebApp_iOS
 					string errmsg;
 					ActionParameters ap = new ActionParameters ();
 					ap.IN.type = ActionType.LOGOUT;
-					ap.IN.data = theaccountsummary;
+//					ap.IN.data = theaccountsummary;
 					ap.IN.func = (o,e) => {};
 					if (GlobalAPI.GetDataService ().Action (ref ap)) {
 						NavigationController.PopViewController (true);
@@ -103,7 +103,7 @@ namespace WebApp_iOS
 			string errmsg;
 			ActionParameters ap = new ActionParameters ();
 			ap.IN.type = ActionType.GETACCTINFO;
-			ap.IN.data = new accountsummary ();
+			ap.IN.data = new AccountInfo ();
 			ap.IN.func = (o,e) => {};
 			if (GlobalAPI.GetDataService ().Action (ref ap)) {
 				theaccountsummary = (accountsummary)ap.OUT.dataset;
