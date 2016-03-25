@@ -513,6 +513,7 @@ namespace CoreDataService
 		public accountsummary acctinfo = null;
 		public contact continfo = null;
 		public List<projectsummary> projects = null;
+		public RSSResource rssres = null;
 	}
 
 

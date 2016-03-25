@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using SQLite;
+using System.Xml.Linq;
 
 
 
@@ -54,6 +55,8 @@ namespace CoreDataService
 		// Single action interface for upper layers
 		public Boolean Action( ref ActionParameters actioninfo ) {
 
+			ActionCallback func = actioninfo.IN.func;
+
 			switch (actioninfo.IN.type) {
 
 			case ActionType.LOGOUT:
@@ -80,7 +83,6 @@ namespace CoreDataService
 					return false;
 
 				AccountInfo data = actioninfo.IN.data;
-				ActionCallback func = actioninfo.IN.func;
 				Thread syncThread = new Thread (() => SyncThread ( data, func ));
 				syncThread.Start ();
 				break;
@@ -118,6 +120,12 @@ namespace CoreDataService
 				ActionParameters para = actioninfo;
 				Thread reqThread = new Thread (() => RequestThread ( para ));
 				reqThread.Start ();
+				break;
+
+			case ActionType.LOADRSS:
+
+				Thread rssThread = new Thread (() => RssThread ( func ));
+				rssThread.Start ();
 				break;
 
 			case ActionType.GETPROJINFO:
@@ -166,6 +174,16 @@ namespace CoreDataService
 					((accountsummary)actioninfo.OUT.dataset).settings = new usersettings ();
 					((accountsummary)actioninfo.OUT.dataset).organizations = new List<userorg>();
 					((accountsummary)actioninfo.OUT.dataset).projects = new List<userproj>();
+				}
+				break;
+
+			case ActionType.GETRSSINFO:
+
+				if ( cache.rssres != null ) {
+					actioninfo.OUT.dataset = cache.rssres;
+					return true;
+				} else {
+					actioninfo.OUT.dataset = new RSSResource();
 				}
 				break;
 			}
@@ -529,7 +547,25 @@ namespace CoreDataService
 		}
 
 
-		
+
+
+		// Load RSS resources at background
+		private void RssThread (ActionCallback func) {
+
+			ActionCallback callback = new ActionCallback (func);
+
+			if ( cache.rssres == null )
+				cache.rssres = new RSSResource();
+			cache.rssres.blogs = XDocument.Load (Settings.rss_blogs);
+			cache.rssres.events = XDocument.Load (Settings.rss_events);
+			cache.rssres.emailblasts = XDocument.Load (Settings.rss_emailblasts);
+			cache.rssres.marketfeeds = XDocument.Load (Settings.rss_marketfeeds);
+
+			callback(true,"");
+		}
+
+
+
 		// return MD5 code by given string
 		public string GetMD5(string text) {
 			

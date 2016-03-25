@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UIKit;
 using System.Drawing;
 using System.IO;
+using System.Xml.Linq;
 
 
 namespace CoreDataService
@@ -12,8 +13,13 @@ namespace CoreDataService
 	public enum RunMode { Normal, Debug };
 	public enum DatabaseType { Sqlite, Json };
 	public enum RequestType { GET, POST };
-	public enum ActionType { LOGIN, LOGOUT, SYNCATSTARTUP, SYNC, CREATEACCOUNT, UPDATEACCOUNT, UPDATESETTINGS, GETPROJINFO, GETCONTINFO, GETACCTINFO, SAVETOKEN };	// should be conform with the backend system
+	public enum ActionType { LOGIN, LOGOUT,
+							SYNCATSTARTUP, SYNC,
+							CREATEACCOUNT, UPDATEACCOUNT, UPDATESETTINGS, SAVETOKEN,
+							GETPROJINFO, GETCONTINFO, GETACCTINFO, GETRSSINFO,
+							LOADRSS };	// should be conform with the backend system
 	public enum UserStatus { VALID, INVALID, CREATED, UPDATED, FAILED, SAVED, NULL };
+
 
 	// parameter class for data service action interface
 	public class ActionParameters {
@@ -59,6 +65,17 @@ namespace CoreDataService
 
 	}
 
+	public class RSSResource
+	{
+		public XDocument blogs { get; set; } = null;
+
+		public XDocument events { get; set; } = null;
+
+		public XDocument marketfeeds { get; set; } = null;
+
+		public XDocument emailblasts { get; set; } = null;
+	}
+
 
 
 	// callback function definition
@@ -81,6 +98,12 @@ namespace CoreDataService
 		public static string ws_reqname = "Request";
 		public static RequestType ws_reqtype = RequestType.POST;
 		public static int ws_timeout = 15000;
+
+		// RSS resources
+		public static string rss_blogs = "http://www.2webdesign.com/blog/feed/";
+		public static string rss_emailblasts = "http://www.2webdesign.com/blog/category/email-blasts/feed/";
+		public static string rss_marketfeeds = "https://www.2webdesign.com/blog/category/marketing-resources/feed/";
+		public static string rss_events = "http://www.2webdesign.com/blog/category/event/feed/";
 
 		// local status
 		public static Boolean local_ismemsynced = false;
