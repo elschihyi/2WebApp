@@ -76,6 +76,9 @@ namespace CoreDataService
 				// WARNING: MAKE SURE SETUP PROPER TABLE'S FLAG BEFORE CALL THIS
 				//
 
+				if (actioninfo.IN.func == null)
+					return false;
+
 				AccountInfo data = actioninfo.IN.data;
 				ActionCallback func = actioninfo.IN.func;
 				Thread syncThread = new Thread (() => SyncThread ( data, func ));
@@ -86,6 +89,9 @@ namespace CoreDataService
 			case ActionType.UPDATEACCOUNT:
 			case ActionType.UPDATESETTINGS:
 			case ActionType.SAVETOKEN:
+
+				if (actioninfo.IN.func == null)
+					return false;
 
 				// check user password if update profile
 				if ( actioninfo.IN.type == ActionType.UPDATEACCOUNT && actioninfo.IN.data.password.Length < 24 ) {
@@ -108,73 +114,10 @@ namespace CoreDataService
 						return false;
 					}
 				}
-					
-				// send the request and obtain the data
-				string json;
-				Dictionary<string, string> request = BuildRequest (actioninfo.IN.data, actioninfo.IN.type);
-				if (!MakeRequest (request, out json)) {
-					return false;
-				}
 
-				// build a data object based on the downloaded JSON
-				object retobj;
-				if (!JSONtoObject (json, out retobj, out actioninfo.OUT.errmsg))
-					return false;
-
-				DBCache info;
-				if (!ParseData (retobj, out info, out actioninfo.OUT.errmsg) || info == null || info.acctinfo == null) {
-					return false;
-				}
-
-				UserStatus status;
-				if (actioninfo.IN.type == ActionType.CREATEACCOUNT)
-					status = UserStatus.CREATED;
-				else
-					status = UserStatus.UPDATED;
-				if (info.acctinfo.status != status) {
-
-					if (actioninfo.IN.type == ActionType.SAVETOKEN) {
-
-//						actioninfo.IN.data.settings.new_password = "";
-						cache.acctinfo.notification_token = actioninfo.IN.data.notification_token;
-
-					} else if (actioninfo.IN.type == ActionType.UPDATEACCOUNT) {
-
-//						actioninfo.IN.data.settings.usersetting_updated = "1";
-						cache.acctinfo.usersetting_updated = "1";
-
-					}
-
-					if ( !SaveCacheData(true, out errmsg) ) {
-						return false;
-					}
-					
-					if (Settings.runmode == RunMode.Normal) {
-
-						actioninfo.OUT.errmsg = ErrorMessage.DataAccess;
-
-					} else if (Settings.runmode == RunMode.Debug) {
-
-						actioninfo.OUT.errmsg = ErrorMessage.Account_Update;	
-					}
-
-					return false;
-				} else {
-					
-					if ( actioninfo.IN.type == ActionType.UPDATEACCOUNT && actioninfo.IN.data.new_password != "") {
-//						actioninfo.IN.data.client_password = GetMD5(actioninfo.IN.data.settings.new_password);
-//						actioninfo.IN.data.settings.new_password = "";
-//						actioninfo.IN.data.settings.old_password = "";
-						info.acctinfo.client_password = GetMD5(actioninfo.IN.data.new_password);
-					}
-					
-					// update and save the cache
-					cache.acctinfo = info.acctinfo;
-					
-					if ( !SaveCacheData(true, out errmsg) ) {
-						return false;
-					}
-				}
+				ActionParameters para = actioninfo;
+				Thread reqThread = new Thread (() => RequestThread ( para ));
+				reqThread.Start ();
 				break;
 
 			case ActionType.GETPROJINFO:
@@ -236,7 +179,7 @@ namespace CoreDataService
 		
 		#region Internal Functions - Common
 
-		// Synchronize table data at background
+		// Synchronize data at background
 		private void SyncThread (AccountInfo userinfo, ActionCallback func)
 		{
 
@@ -496,6 +439,92 @@ namespace CoreDataService
 				}
 			}
 
+			callback(true, errmsg);
+		}
+
+
+
+		// Make network request at background
+		private void RequestThread (ActionParameters actioninfo) {
+
+			string errmsg;
+			ActionCallback callback = new ActionCallback (actioninfo.IN.func);
+
+			// send the request and obtain the data
+			string json;
+			Dictionary<string, string> request = BuildRequest (actioninfo.IN.data, actioninfo.IN.type);
+			if (!MakeRequest (request, out json)) {
+				callback(false, ErrorMessage.DataAccess);
+				return;
+			}
+
+			// build a data object based on the downloaded JSON
+			object retobj;
+			if (!JSONtoObject (json, out retobj, out actioninfo.OUT.errmsg)) {
+				callback(false, ErrorMessage.DataAccess);
+				return;
+			}
+
+			DBCache info;
+			if (!ParseData (retobj, out info, out actioninfo.OUT.errmsg) || info == null || info.acctinfo == null) {
+				callback(false, ErrorMessage.DataAccess);
+				return;
+			}
+
+			UserStatus status;
+			if (actioninfo.IN.type == ActionType.CREATEACCOUNT)
+				status = UserStatus.CREATED;
+			else
+				status = UserStatus.UPDATED;
+			if (info.acctinfo.status != status) {
+
+				if (actioninfo.IN.type == ActionType.SAVETOKEN) {
+
+//						actioninfo.IN.data.settings.new_password = "";
+					cache.acctinfo.notification_token = actioninfo.IN.data.notification_token;
+
+				} else if (actioninfo.IN.type == ActionType.UPDATEACCOUNT) {
+
+//						actioninfo.IN.data.settings.usersetting_updated = "1";
+					cache.acctinfo.usersetting_updated = "1";
+
+				}
+
+				if ( !SaveCacheData(true, out errmsg) ) {
+					callback(false, errmsg);
+					return;
+				}
+
+				if (Settings.runmode == RunMode.Normal) {
+
+					actioninfo.OUT.errmsg = ErrorMessage.DataAccess;
+
+				} else if (Settings.runmode == RunMode.Debug) {
+
+					actioninfo.OUT.errmsg = ErrorMessage.Account_Update;
+				}
+
+				callback(false, actioninfo.OUT.errmsg);
+				return;
+			} else {
+
+			if ( actioninfo.IN.type == ActionType.UPDATEACCOUNT && actioninfo.IN.data.new_password != "") {
+//						actioninfo.IN.data.client_password = GetMD5(actioninfo.IN.data.settings.new_password);
+//						actioninfo.IN.data.settings.new_password = "";
+//						actioninfo.IN.data.settings.old_password = "";
+					info.acctinfo.client_password = GetMD5(actioninfo.IN.data.new_password);
+				}
+
+				// update and save the cache
+				cache.acctinfo = info.acctinfo;
+
+				if ( !SaveCacheData(true, out errmsg) ) {
+					callback(false, ErrorMessage.DataAccess);
+					return;
+				}
+			}
+
+			errmsg = "";
 			callback(true, errmsg);
 		}
 
