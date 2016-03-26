@@ -33,7 +33,7 @@ namespace WebApp_iOS
 
 				cell.UpdateCell (tableEmailBlasts[indexPath.Row].Title
 					, tableEmailBlasts[indexPath.Row].thumbnailUrl);
-			}catch(Exception e){
+			}catch{
 
 			}
 

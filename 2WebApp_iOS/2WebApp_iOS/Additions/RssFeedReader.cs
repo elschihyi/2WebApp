@@ -31,13 +31,19 @@ namespace WebApp_iOS
 			return Rss; 
 		}
 
+		public void loadRssFeeds(XDocument rssBlogs,XDocument rssEvents,XDocument rssMarketFeeds,XDocument rssEmailBlasts){
+			this.rssBlogs=rssBlogs;
+			this.rssEvents=rssEvents; 
+			this.rssMarketFeeds=rssMarketFeeds;
+			this.rssEmailBlasts=rssEmailBlasts;
+		}	
+
 		public void loadRssFeeds(){
 
 			rssBlogs = XDocument.Load ("http://www.2webdesign.com/blog/feed/");
 			rssEmailBlasts = XDocument.Load ("http://www.2webdesign.com/blog/category/email-blasts/feed/"); 
 			rssMarketFeeds = XDocument.Load ("https://www.2webdesign.com/blog/category/marketing-resources/feed/"); 
 			rssEvents = XDocument.Load ("http://www.2webdesign.com/blog/category/event/feed/"); 
-
 		}
 
 		public IEnumerable<Post> ReadBlogs()

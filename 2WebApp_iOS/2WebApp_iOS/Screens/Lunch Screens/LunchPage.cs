@@ -15,11 +15,10 @@ namespace WebApp_iOS
 		private NSTimer timer;
 
 		private bool SyncFinished=false;
-		private bool SyncSuccess=false;
-		private string SyncErrMsg="";
-
 		UILabel SyncLabel;
 
+		//ress
+		//ActionParameters LoadRssap;
 
 		public LunchPage () : base ("LunchPage", null)
 		{
@@ -58,44 +57,15 @@ namespace WebApp_iOS
 						1.0f*(float)UIScreen.MainScreen.Bounds.Width,
 						0.2f*(float)UIScreen.MainScreen.Bounds.Height);
 					View.AddSubview (SyncLabel);
-					//preload rss feed
-					GlobalAPI.Manager ().loadRss ();
 				}	
 
 			} else {// Stop if at end
-				if (SyncLabel == null) {
-					SyncLabel = new UILabel ();
-					SyncLabel.BackgroundColor = UIColor.Clear;
-					SyncLabel.TextColor = UIColor.White;
-					SyncLabel.Text="Loading Data..";
-					SyncLabel.Font=UIFont.SystemFontOfSize (20f);
-					SyncLabel.TextAlignment = UITextAlignment.Center;
-					SyncLabel.Frame=new RectangleF(0f*(float)UIScreen.MainScreen.Bounds.Width,
-						0.6f*(float)UIScreen.MainScreen.Bounds.Height,
-						1.0f*(float)UIScreen.MainScreen.Bounds.Width,
-						0.2f*(float)UIScreen.MainScreen.Bounds.Height);
-					View.AddSubview (SyncLabel);
-					//preload rss feed
-					GlobalAPI.Manager ().loadRss ();
-				}
-
 				//dispose timer
 				timer.Invalidate ();
 				timer.Dispose ();
 				timer = null;
 				animatedImage = null;
 
-				if (!SyncSuccess) {
-					//alert
-					UIAlertController Alert = UIAlertController.Create ("",
-						SyncErrMsg, UIAlertControllerStyle.Alert);
-					Alert.AddAction (UIAlertAction.Create ("OK",
-						UIAlertActionStyle.Cancel, action=>{
-							GlobalAPI.Manager ().PushPage (NavigationController, new WelcomePage ()); 
-						}
-					));
-					PresentViewController (Alert, true, null);  
-				} 
 				GlobalAPI.Manager ().PushPage (NavigationController, new WelcomePage ());
 			}	
 		}
@@ -137,13 +107,26 @@ namespace WebApp_iOS
 			GlobalAPI.GetDataService ().Action (ref ap);
 		}
 
+		public void loadRess(){
+			GlobalAPI.Manager ().loadRss ();
+			SyncFinished = true;
+		}	
+
 		/********************************************************************************
 		*Sync responds
 		********************************************************************************/
 		public void SyncRespond(Boolean succeed, string errmsg){
-			SyncSuccess=succeed;
-			SyncErrMsg=errmsg;
-			SyncFinished=true;
+			if (!succeed) {
+				InvokeOnMainThread (() => {
+					UIAlertController Alert = UIAlertController.Create ("",
+						                         errmsg, UIAlertControllerStyle.Alert);
+					Alert.AddAction (UIAlertAction.Create ("OK",
+						UIAlertActionStyle.Cancel, null
+					));
+					PresentViewController (Alert, true, null); 
+				});
+			}
+			loadRess ();
 		}
 	}
 }

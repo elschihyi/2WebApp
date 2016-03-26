@@ -69,7 +69,7 @@ namespace WebApp_iOS
 			UIView activeview=new UIView();
 
 			// get the keyboard size
-			CGRect r = UIKeyboard.BoundsFromNotification (notification);
+			//CGRect r = UIKeyboard.BoundsFromNotification (notification);
 
 			// Find what opened the keyboard
 			foreach (UIView view in TableView.VisibleCells) {
@@ -100,17 +100,6 @@ namespace WebApp_iOS
 			theaccountinfo.settings = theaccountsummary.settings;
 
 			if (!string.IsNullOrEmpty (oldpassword) || !string.IsNullOrEmpty (newpassword) || !string.IsNullOrEmpty (confirmpassword)) {
-				/*
-				if (!string.Equals (oldpassword, theaccountsummary.client_password)) {
-					UIAlertController Alert = UIAlertController.Create ("Error",
-						"Please re-enter your old password.", UIAlertControllerStyle.Alert);
-					Alert.AddAction (UIAlertAction.Create ("OK",
-						UIAlertActionStyle.Cancel, null
-					));
-					PresentViewController (Alert, true, null);
-					return;
-				}
-				*/
 				if (!string.Equals (newpassword, confirmpassword)) {
 					UIAlertController Alert = UIAlertController.Create ("Error",
 						"New password did not match.", UIAlertControllerStyle.Alert);
@@ -128,8 +117,6 @@ namespace WebApp_iOS
 			string errmsg;
 			ActionParameters ap = new ActionParameters ();
 			ap.IN.type = ActionType.UPDATEACCOUNT;
-//			ap.IN.data = theaccountsummary;
-//			ap.IN.func = (o,e) => {};
 			ap.IN.data = theaccountinfo;
 
 			if (GlobalAPI.GetDataService ().Action (ref ap)) {
@@ -170,6 +157,7 @@ namespace WebApp_iOS
 					theaccountsummary.client_lastname=Text;
 					break;
 				case 2:
+					theaccountsummary.client_email=Text;
 					break;
 				default:
 					break;

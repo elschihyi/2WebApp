@@ -71,7 +71,7 @@ namespace WebApp_iOS
 		public void ContractSupportClick()
 		{
 			contact contactInfo;
-			string errmsg="";
+			//string errmsg="";
 			ActionParameters ap = new ActionParameters ();
 			ap.IN.type = ActionType.GETCONTINFO;
 			ap.IN.data = new AccountInfo ();

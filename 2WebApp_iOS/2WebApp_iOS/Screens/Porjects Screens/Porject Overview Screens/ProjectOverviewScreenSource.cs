@@ -8,11 +8,11 @@ namespace WebApp_iOS
 	public class ProjectOverviewScreenSource: UITableViewSource
 	{
 		projectsummary theProject;
-		PorjectOverviewScreenController PorjectOverviewScreenController;
+		//PorjectOverviewScreenController PorjectOverviewScreenController;
 
 		public ProjectOverviewScreenSource (PorjectOverviewScreenController PorjectOverviewScreenController)
 		{
-			this.PorjectOverviewScreenController = PorjectOverviewScreenController;
+			//this.PorjectOverviewScreenController = PorjectOverviewScreenController;
 			this.theProject = PorjectOverviewScreenController.theProject;
 		}
 

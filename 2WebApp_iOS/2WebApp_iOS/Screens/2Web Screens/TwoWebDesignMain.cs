@@ -119,6 +119,7 @@ namespace WebApp_iOS
 					newContactView.phoneButton.Hidden = false;
 					newContactView.phoneButton.TouchUpInside += (s, e) => {
 						//make phone call here
+						UIApplication.SharedApplication.OpenUrl(new NSUrl("tel:" + contactInfo.phone));
 					};
 				} else {
 					newContactView.phoneLabel.Hidden = true;

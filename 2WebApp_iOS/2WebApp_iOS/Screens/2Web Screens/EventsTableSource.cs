@@ -9,7 +9,7 @@ namespace WebApp_iOS
 		Event[] tableEvents;
 		string cellIdentifier = "EventsTableCell";
 		private UIViewController parent;
-		ArticlePage articlePage; 
+		//ArticlePage articlePage; 
 
 		public EventsTableSource (Event[] items, UIViewController Parent)
 		{
@@ -30,7 +30,7 @@ namespace WebApp_iOS
 			try{
 				String[] split = tableEvents [indexPath.Row].EventTitle.Split ('|'); 
 				cell.UpdateCell (split[0], split[1]);
-			}catch(Exception e){
+			}catch{
 				cell.UpdateCell ("NA",tableEvents [indexPath.Row].EventTitle); 
 			}
 

@@ -83,21 +83,31 @@ namespace WebApp_iOS
 			if (string.IsNullOrEmpty(oldDeviceToken) || !oldDeviceToken.Equals(DeviceToken))
 			{
 				//Notice Server here
+
+				AccountInfo theaccountinfo = new AccountInfo ();
+				theaccountinfo.notification_token = DeviceToken;
+				ActionParameters ap = new ActionParameters ();
+				ap.IN.type = ActionType.SAVETOKEN;
+				ap.IN.data = theaccountinfo;
+				GlobalAPI.GetDataService ().Action (ref ap);
 			}
 
 			// Save new device token 
 			NSUserDefaults.StandardUserDefaults.SetString(DeviceToken, "PushDeviceToken");
 
+			/*
 			UIAlertController Alert = UIAlertController.Create ("Recieve Token",
 				DeviceToken, UIAlertControllerStyle.Alert);
 			Alert.AddAction (UIAlertAction.Create ("OK",
 				UIAlertActionStyle.Cancel,
 				null));
-
+			
 			int l=((UINavigationController)window.RootViewController).ViewControllers.Length;
 			((UINavigationController)window.RootViewController).ViewControllers [l - 1].PresentViewController (Alert, true, null);
+			*/
 
 			Console.WriteLine ("Token is:" + DeviceToken);
+
 		}
 
 		public override void FailedToRegisterForRemoteNotifications (UIApplication application , NSError error)
@@ -109,12 +119,16 @@ namespace WebApp_iOS
 		{
 			NSObject apsValue=userInfo.ValueForKey(new NSString("aps"));
 			NSObject alertValue=apsValue.ValueForKey(new NSString("alert"));
-			try{
-				string msg=((NSString)alertValue).ToString();
-				Console.WriteLine ("Get Message:" + msg);
-			}catch {
-				Console.WriteLine ("Get Message:" +userInfo.ToString ());
-			}
+			string msg=((NSString)alertValue).ToString();
+
+			//present to screen
+			UIAlertController Alert = UIAlertController.Create ("Notification",
+				msg, UIAlertControllerStyle.Alert);
+			Alert.AddAction (UIAlertAction.Create ("OK",
+				UIAlertActionStyle.Cancel,
+				null));
+			int l=((UINavigationController)window.RootViewController).ViewControllers.Length;
+			((UINavigationController)window.RootViewController).ViewControllers [l - 1].PresentViewController (Alert, true, null);
 		}
 	}
 }

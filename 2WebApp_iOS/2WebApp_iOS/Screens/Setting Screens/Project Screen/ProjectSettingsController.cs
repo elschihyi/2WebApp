@@ -64,34 +64,45 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void RequestBtnClick(int Row)
 		{
-			/*
-			if (MFMailComposeViewController.CanSendMail) {;
-				MFMailComposeViewController mailController = new MFMailComposeViewController (); 
-				mailController.SetToRecipients (new string[]{theProjectList[Row].primary_contact}); 
-				mailController.SetSubject (""); 
+			contact contactInfo;
+			//string errmsg="";
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.GETCONTINFO;
+			ap.IN.data = new AccountInfo ();
+			ap.IN.func = (o,e) => {};
+			if (GlobalAPI.GetDataService ().Action (ref ap)&&MFMailComposeViewController.CanSendMail) {
+				contactInfo = (contact)ap.OUT.dataset;
+				MFMailComposeViewController mailController = new MFMailComposeViewController ();
+				mailController.SetToRecipients (new string[]{ contactInfo.support_email });
+				mailController.SetSubject ("Project Request for"+theProjectList[Row].name);
 				mailController.SetMessageBody ("", false);
-				mailController.Finished += (object s1, MFComposeResultEventArgs args) => {
+				mailController.Finished += ( s, args) => {
 					args.Controller.DismissViewController (true, null);
 				};
-				PresentViewController (mailController, true, null);
+				this.PresentViewController (mailController, true, null);
 			}
-			*/
 		}
 
 		public void RequestBtn2Click(int Row)
 		{
-			/*
-			if (MFMailComposeViewController.CanSendMail) {;
+			contact contactInfo;
+			//string errmsg="";
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.GETCONTINFO;
+			ap.IN.data = new AccountInfo ();
+			ap.IN.func = (o,e) => {};
+			if (GlobalAPI.GetDataService ().Action (ref ap)&&MFMailComposeViewController.CanSendMail) {
+				contactInfo = (contact)ap.OUT.dataset;
 				MFMailComposeViewController mailController = new MFMailComposeViewController (); 
-				mailController.SetToRecipients (new string[]{""}); 
-				mailController.SetSubject (""); 
+				mailController.SetToRecipients (new string[]{contactInfo.support_email}); 
+				mailController.SetSubject ("Project Request"); 
 				mailController.SetMessageBody ("", false);
 				mailController.Finished += (object s1, MFComposeResultEventArgs args) => {
 					args.Controller.DismissViewController (true, null);
 				};
 				PresentViewController (mailController, true, null);
 			}
-			*/
+
 		}
 	}
 }

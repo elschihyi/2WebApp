@@ -34,7 +34,7 @@ namespace WebApp_iOS
 
 				cell.UpdateCell (tableNewsletters[indexPath.Row].NewsletterTitle
 					, tableNewsletters[indexPath.Row].ImageUrl);
-			}catch(Exception e){
+			}catch{
 
 			}
 

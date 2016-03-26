@@ -35,7 +35,7 @@ namespace WebApp_iOS
 
 				cell.UpdateCell (tableMarketResources[indexPath.Row].MarketResourceTitle
 					, tableMarketResources[indexPath.Row].ImageUrl);
-			}catch(Exception e){
+			}catch{
 
 			}
 
