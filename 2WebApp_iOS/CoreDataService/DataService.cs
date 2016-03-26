@@ -25,12 +25,18 @@ namespace CoreDataService
 
 		// data cache
 		private static DBCache cache;
+
+		// synced call controller
+		private Boolean blocking_succeed;
+		private string blocking_errmsg;
 		
 
 		public DataService (string dbpath)
 		{
 			Settings.local_dbpath = dbpath;
 			cache = new DBCache();
+			blocking_succeed = false;
+			blocking_errmsg = "";
 
 			SyncTable = new Dictionary<string, Boolean> ();
 			foreach (var item in Settings.local_tables) {
@@ -83,8 +89,16 @@ namespace CoreDataService
 					return false;
 
 				AccountInfo data = actioninfo.IN.data;
-				Thread syncThread = new Thread (() => SyncThread ( data, func ));
-				syncThread.Start ();
+
+				if (actioninfo.IN.func == null) {
+					// synced call case
+					SyncThread ( data, new ActionCallback (CoreDataServiceCallback) );
+					errmsg = blocking_errmsg;
+					return blocking_succeed;
+				} else {
+					Thread syncThread = new Thread (() => SyncThread (data, func));
+					syncThread.Start ();
+				}
 				break;
 
 			case ActionType.CREATEACCOUNT:
@@ -92,40 +106,58 @@ namespace CoreDataService
 			case ActionType.UPDATESETTINGS:
 			case ActionType.SAVETOKEN:
 
-				if (actioninfo.IN.func == null)
-					return false;
-
 				// check user password if update profile
-				if ( actioninfo.IN.type == ActionType.UPDATEACCOUNT && actioninfo.IN.data.password.Length < 24 ) {
+				if (actioninfo.IN.type == ActionType.UPDATEACCOUNT && actioninfo.IN.data.password.Length < 24) {
 
 					string hashedcode = GetMD5 (actioninfo.IN.data.password);
 					if (hashedcode != cache.acctinfo.client_password) {
 
-//						actioninfo.IN.data.settings.old_password = "";
 						errmsg = ErrorMessage.Login;
 						return false;
 					}
 
 					actioninfo.IN.data.password = cache.acctinfo.client_password;
 
-				} else if ( actioninfo.IN.type == ActionType.UPDATESETTINGS && actioninfo.IN.data.remember_password == "1" ) {
+				} else if (actioninfo.IN.type == ActionType.UPDATESETTINGS && actioninfo.IN.data.remember_password == "1") {
 
 					// save setting regardless online/offline if UPDATESETTINGS
 					cache.acctinfo.settings = actioninfo.IN.data.settings;
-					if ( !SaveCacheData(true, out errmsg) ) {
+					if (!SaveCacheData (true, out errmsg)) {
 						return false;
 					}
+				} else if ( actioninfo.IN.type == ActionType.SAVETOKEN && ( cache.acctinfo == null || cache.acctinfo.client_email == "" ) ) {
+				
+					// no account, no saving token
+					errmsg = "";
+					return true;
 				}
 
 				ActionParameters para = actioninfo;
-				Thread reqThread = new Thread (() => RequestThread ( para ));
-				reqThread.Start ();
+				// determine if blocking is needed
+				if (para.IN.func == null) {
+					// synced call case
+					para.IN.func = new ActionCallback (CoreDataServiceCallback);
+					RequestThread (para);
+					errmsg = blocking_errmsg;
+					return blocking_succeed;
+				}
+				else {
+					Thread reqThread = new Thread (() => RequestThread ( para ));
+					reqThread.Start ();
+				}
 				break;
 
 			case ActionType.LOADRSS:
 
-				Thread rssThread = new Thread (() => RssThread ( func ));
-				rssThread.Start ();
+				if (actioninfo.IN.func == null) {
+					// synced call case
+					RssThread (new ActionCallback (CoreDataServiceCallback));
+					errmsg = blocking_errmsg;
+					return blocking_succeed;
+				} else {
+					Thread rssThread = new Thread (() => RssThread ( func ));
+					rssThread.Start ();
+				}
 				break;
 
 			case ActionType.GETPROJINFO:
@@ -196,6 +228,16 @@ namespace CoreDataService
 
 		
 		#region Internal Functions - Common
+
+		// callback function for synced calls
+		private void CoreDataServiceCallback(Boolean succeed, string errmsg) {
+		
+			blocking_succeed = succeed;
+			blocking_errmsg = errmsg;
+			return;
+		}
+
+
 
 		// Synchronize data at background
 		private void SyncThread (AccountInfo userinfo, ActionCallback func)
@@ -498,12 +540,10 @@ namespace CoreDataService
 
 				if (actioninfo.IN.type == ActionType.SAVETOKEN) {
 
-//						actioninfo.IN.data.settings.new_password = "";
 					cache.acctinfo.notification_token = actioninfo.IN.data.notification_token;
 
 				} else if (actioninfo.IN.type == ActionType.UPDATEACCOUNT) {
-
-//						actioninfo.IN.data.settings.usersetting_updated = "1";
+					
 					cache.acctinfo.usersetting_updated = "1";
 
 				}
@@ -524,19 +564,24 @@ namespace CoreDataService
 
 				callback(false, actioninfo.OUT.errmsg);
 				return;
+
 			} else {
 
-			if ( actioninfo.IN.type == ActionType.UPDATEACCOUNT && actioninfo.IN.data.new_password != "") {
-//						actioninfo.IN.data.client_password = GetMD5(actioninfo.IN.data.settings.new_password);
-//						actioninfo.IN.data.settings.new_password = "";
-//						actioninfo.IN.data.settings.old_password = "";
-					info.acctinfo.client_password = GetMD5(actioninfo.IN.data.new_password);
+				// update and save the cache
+				if ( actioninfo.IN.type == ActionType.UPDATEACCOUNT ) {
+					cache.acctinfo.client_firstname = actioninfo.IN.data.firstname;
+					cache.acctinfo.client_lastname = actioninfo.IN.data.lastname;
+					cache.acctinfo.client_email = actioninfo.IN.data.username;
+
+					if ( actioninfo.IN.data.new_password != "" ) {
+						cache.acctinfo.client_password = GetMD5(actioninfo.IN.data.new_password);
+					}
+				} else if ( actioninfo.IN.type == ActionType.UPDATESETTINGS ) {
+
+					cache.acctinfo.settings = actioninfo.IN.data.settings;
 				}
 
-				// update and save the cache
-				cache.acctinfo = info.acctinfo;
-
-				if ( !SaveCacheData(true, out errmsg) ) {
+				if ( cache.acctinfo.remember_password == "1" && !SaveCacheData(true, out errmsg) ) {
 					callback(false, ErrorMessage.DataAccess);
 					return;
 				}

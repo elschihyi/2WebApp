@@ -94,7 +94,7 @@ namespace CoreDataService
 		// remote settings
 		public static string ws_address = "http://www.2web.cc.php53-4.ord1-1.websitetestlink.com";
 		public static string ws_basepath = "/webservice/common/";
-		public static string ws_svcname = "ServiceNew";
+		public static string ws_svcname = "Service";
 		public static string ws_reqname = "Request";
 		public static RequestType ws_reqtype = RequestType.POST;
 		public static int ws_timeout = 15000;
