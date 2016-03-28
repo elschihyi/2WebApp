@@ -10,6 +10,7 @@ namespace WebApp_iOS
 	{
 		//views
 		PushNotificationView pushNotificationView;
+		LoadingOverlay2 loadingScreen;
 
 		//object
 		public accountsummary theaccountsummary;
@@ -46,35 +47,18 @@ namespace WebApp_iOS
 		{
 			base.ViewWillDisappear (animated);
 			if (ValueChanged ()) {
-				string errmsg;
-				ActionParameters ap = new ActionParameters ();
-				ap.IN.type = ActionType.UPDATESETTINGS;
-//				ap.IN.data = theaccountsummary;
-//				ap.IN.func = (o, e) => {};
-//				theaccountsummary.settings.usersetting_updated="1";
-				ap.IN.data = new AccountInfo();
-//				ap.IN.data.usersetting_updated = "1";
-				ap.IN.data.username = theaccountsummary.client_email;
-				ap.IN.data.password = theaccountsummary.client_password;
-				ap.IN.data.remember_password = theaccountsummary.remember_password;
-				ap.IN.data.settings = theaccountsummary.settings;
-				if (GlobalAPI.GetDataService ().Action (ref ap)) {
-					//do nothing if success
-				} else {
-					//alert
-					errmsg = ap.OUT.errmsg;
-					UIAlertController Alert = UIAlertController.Create ("Error",
-						                         errmsg, UIAlertControllerStyle.Alert);
-					Alert.AddAction (UIAlertAction.Create ("OK",
-						UIAlertActionStyle.Cancel, null
-					));
-					PresentViewController (Alert, true, null);
-				}
+				initLoadingScreen("Updating");
+				upsettings ();
 			}
 		}
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
+		public void initLoadingScreen(string Text){
+			loadingScreen = new LoadingOverlay2 (Text);
+			Add (loadingScreen);
+		}	
+
 		public void initView(){
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
@@ -139,6 +123,42 @@ namespace WebApp_iOS
 				break;
 			}
 		}
+		/********************************************************************************
+		*Web calls
+		********************************************************************************/
+		public void upsettings(){
+			ActionParameters ap = new ActionParameters ();
+			ap.IN.type = ActionType.UPDATESETTINGS;
+			ap.IN.data = new AccountInfo();
+			ap.IN.data.username = theaccountsummary.client_email;
+			ap.IN.data.password = theaccountsummary.client_password;
+			ap.IN.data.remember_password = theaccountsummary.remember_password;
+			ap.IN.data.settings = theaccountsummary.settings;
+			ap.IN.func = UpdateSettingResponds;
+			GlobalAPI.GetDataService ().Action (ref ap);
+		}	
+
+		/********************************************************************************
+		*Web calls Response
+		********************************************************************************/
+
+		public void UpdateSettingResponds(Boolean succeed, string errmsg){
+			if (succeed) {
+				//do nothing if success
+			} else {
+				InvokeOnMainThread (() => {
+					//alert
+					UIAlertController Alert = UIAlertController.Create ("Error",
+						errmsg, UIAlertControllerStyle.Alert);
+					Alert.AddAction (UIAlertAction.Create ("OK",
+						UIAlertActionStyle.Cancel, null
+					));
+					loadingScreen.Hide();
+					PresentViewController (Alert, true, null);
+				});
+			}
+		}
+
 		/********************************************************************************
 		*functions
 		********************************************************************************/

@@ -11,6 +11,7 @@ namespace WebApp_iOS
 	{
 		//views
 		ProfileSettingView profileSettingView;
+		LoadingOverlay2 loadingScreen;
 
 		//object
 		public accountsummary theaccountsummary;
@@ -46,6 +47,11 @@ namespace WebApp_iOS
 		/********************************************************************************
 		*Views initializations
 		********************************************************************************/
+		public void initLoadingScreen(string Text){
+			loadingScreen = new LoadingOverlay2 (Text);
+			Add (loadingScreen);
+		}	
+
 		public void initView(){
 			var statusbar=UIApplication.SharedApplication.StatusBarFrame.Size.Height;
 			var navigationbarHeight = NavigationController.NavigationBar.Frame.Size.Height;
@@ -91,14 +97,6 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void UpdateClick()
 		{
-			theaccountinfo = new AccountInfo ();
-			theaccountinfo.username = theaccountsummary.client_email;
-			theaccountinfo.password = theaccountsummary.client_password;
-			theaccountinfo.firstname = theaccountsummary.client_firstname;
-			theaccountinfo.lastname = theaccountsummary.client_lastname;
-			theaccountinfo.remember_password = theaccountsummary.remember_password;
-			theaccountinfo.settings = theaccountsummary.settings;
-
 			if (!string.IsNullOrEmpty (oldpassword) || !string.IsNullOrEmpty (newpassword) || !string.IsNullOrEmpty (confirmpassword)) {
 				if (!string.Equals (newpassword, confirmpassword)) {
 					UIAlertController Alert = UIAlertController.Create ("Error",
@@ -109,37 +107,65 @@ namespace WebApp_iOS
 					PresentViewController (Alert, true, null);
 					return;
 				}
-
-				theaccountinfo.password = oldpassword;
-				theaccountinfo.new_password = newpassword;
 			}
 
+			theaccountinfo = new AccountInfo ();
+			theaccountinfo.username = theaccountsummary.client_email;
+			theaccountinfo.password = theaccountsummary.client_password;
+			theaccountinfo.firstname = theaccountsummary.client_firstname;
+			theaccountinfo.lastname = theaccountsummary.client_lastname;
+			theaccountinfo.remember_password = theaccountsummary.remember_password;
+			theaccountinfo.settings = theaccountsummary.settings;
+			theaccountinfo.password = oldpassword;
+			theaccountinfo.new_password = newpassword;
+			initLoadingScreen("Updating");
+			updateProfile ();
+		}
+
+		/********************************************************************************
+		*Web calls
+		********************************************************************************/
+		public void updateProfile(){
+			
 			string errmsg;
 			ActionParameters ap = new ActionParameters ();
 			ap.IN.type = ActionType.UPDATEACCOUNT;
 			ap.IN.data = theaccountinfo;
+			ap.IN.func = updateProfileRespond;
+			GlobalAPI.GetDataService ().Action (ref ap);
+		}	
 
-			if (GlobalAPI.GetDataService ().Action (ref ap)) {
-				UIAlertController Alert = UIAlertController.Create ("Success",
-					"", UIAlertControllerStyle.Alert);
-				Alert.AddAction (UIAlertAction.Create ("OK",
-					UIAlertActionStyle.Cancel, action=>{
-						NavigationController.PopViewController(true);
-					}		
-				));
-				PresentViewController (Alert, true, null);
-				NavigationController.PopViewController(true);
+
+		/********************************************************************************
+		*Web calls Response
+		********************************************************************************/
+
+		public void updateProfileRespond(Boolean succeed, string errmsg){
+			if (succeed) {
+				InvokeOnMainThread (() => {
+					UIAlertController Alert = UIAlertController.Create ("Success",
+						"", UIAlertControllerStyle.Alert);
+					Alert.AddAction (UIAlertAction.Create ("OK",
+						UIAlertActionStyle.Cancel, action=>{
+							NavigationController.PopViewController(true);
+						}		
+					));
+					loadingScreen.Hide();
+					PresentViewController (Alert, true, null);
+					NavigationController.PopViewController(true);
+				});
 			} else {
-				//alert
-				errmsg = ap.OUT.errmsg;
-				UIAlertController Alert = UIAlertController.Create ("Error",
-					errmsg, UIAlertControllerStyle.Alert);
-				Alert.AddAction (UIAlertAction.Create ("OK",
-					UIAlertActionStyle.Cancel, action=>{
-						NavigationController.PopViewController(true);
-					}		
-				));
-				PresentViewController (Alert, true, null);
+				InvokeOnMainThread (() => {
+					UIAlertController Alert = UIAlertController.Create ("Error",
+						errmsg, UIAlertControllerStyle.Alert);
+					Alert.AddAction (UIAlertAction.Create ("OK",
+						UIAlertActionStyle.Cancel, action=>{
+							NavigationController.PopViewController(true);
+						}		
+					));
+					loadingScreen.Hide();
+					PresentViewController (Alert, true, null);
+				});
 			}
 		}
 
