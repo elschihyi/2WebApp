@@ -125,9 +125,18 @@ namespace CoreDataService
 					if (!SaveCacheData (true, out errmsg)) {
 						return false;
 					}
-				} else if ( actioninfo.IN.type == ActionType.SAVETOKEN && ( cache.acctinfo == null || cache.acctinfo.client_email == "" ) ) {
 				
-					// no account, no saving token
+				// check if there is an account info for new tokens
+				} else if ( actioninfo.IN.type == ActionType.SAVETOKEN && ( cache.acctinfo == null || cache.acctinfo.client_email == "" ) ) {
+
+					// save it to local until an account info is provided
+					if ( cache.acctinfo == null ) {
+						cache.acctinfo = new accountsummary ();
+					}
+					cache.acctinfo.notification_token = actioninfo.IN.data.notification_token;
+					if (!SaveCacheData (true, out errmsg)) {
+						return false;
+					}
 					errmsg = "";
 					return true;
 				}
