@@ -122,6 +122,7 @@ namespace CoreDataService
 
 					// save setting regardless online/offline if UPDATESETTINGS
 					cache.acctinfo.settings = actioninfo.IN.data.settings;
+					cache.acctinfo.usersetting_updated = "1";
 					if (!SaveCacheData (true, out errmsg)) {
 						return false;
 					}
@@ -139,6 +140,19 @@ namespace CoreDataService
 					}
 					errmsg = "";
 					return true;
+				}
+
+				// checkout network connection
+				if (!CheckConnection(out errmsg)) {
+
+					errmsg = ErrorMessage.Connection;
+					if (actioninfo.IN.func == null) {
+						return false;
+					} else {
+						ActionCallback callback = new ActionCallback (actioninfo.IN.func);
+						callback (false, errmsg);
+					}
+
 				}
 
 				ActionParameters para = actioninfo;
@@ -258,10 +272,9 @@ namespace CoreDataService
 			// handle user information
 			if (userinfo.username == "" && userinfo.password == "") {
 				// check if the credential is saved
-				if ( !GetSavedUserInfo (out errmsg) ) {
+				if ( !GetSavedUserInfo (out errmsg) || cache.acctinfo.client_email == "" ) {
 					// no given and no saved
 					// use the default project
-					cache.acctinfo = null;
 					cache.projects = null;
 					callback (true, errmsg);
 					return;
@@ -322,6 +335,10 @@ namespace CoreDataService
 					acctinfo.username = cache.acctinfo.client_email;
 					acctinfo.password = cache.acctinfo.client_password;
 					acctinfo.notification_token = cache.acctinfo.notification_token;
+					if (cache.acctinfo.usersetting_updated == "1") {
+						acctinfo.usersetting_updated = "1";
+						acctinfo.settings = cache.acctinfo.settings;
+					}
 					if (!DownloadData (acctinfo, ActionType.SYNC, out data, out errmsg)) {
 						callback (false, errmsg);
 						return;
@@ -673,7 +690,8 @@ namespace CoreDataService
 				if ( info.continfo != null && cache.continfo == null ) cache.continfo = info.continfo;
 				if ( info.projects != null && cache.projects == null ) cache.projects = info.projects;
 
-				info.acctinfo.status = UserStatus.SAVED;
+				if ( info.acctinfo != null && info.acctinfo.client_email != "" )
+					info.acctinfo.status = UserStatus.SAVED;
 				cache.acctinfo = info.acctinfo;
 				return true;
 			}
@@ -746,7 +764,11 @@ namespace CoreDataService
 			try {
 
 				foreach (var item in data as IEnumerable<object>) {
+
+					if ( item == null ) continue;
 					foreach (var subitem in item as IEnumerable<object>) {
+
+						if ( subitem == null ) break;
 						if (subitem.GetType () == Type.GetType (Settings.local_dbschema + "accountsummary"))
 							cache.acctinfo = (accountsummary)subitem;
 						else if (subitem.GetType () == Type.GetType (Settings.local_dbschema + "contact"))

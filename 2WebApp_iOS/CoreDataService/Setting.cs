@@ -59,6 +59,8 @@ namespace CoreDataService
 
 		public string remember_password { get; set; } = "0";
 
+		public string usersetting_updated { get; set; } = "0";
+
 		public string notification_token { get; set; } = "";
 
 		public usersettings settings = null;
