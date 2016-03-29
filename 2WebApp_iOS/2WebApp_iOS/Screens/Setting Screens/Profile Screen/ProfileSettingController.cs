@@ -97,6 +97,14 @@ namespace WebApp_iOS
 		********************************************************************************/
 		public void UpdateClick()
 		{
+			theaccountinfo = new AccountInfo ();
+			theaccountinfo.username = theaccountsummary.client_email;
+			theaccountinfo.password = theaccountsummary.client_password;
+			theaccountinfo.firstname = theaccountsummary.client_firstname;
+			theaccountinfo.lastname = theaccountsummary.client_lastname;
+			theaccountinfo.remember_password = theaccountsummary.remember_password;
+			theaccountinfo.settings = theaccountsummary.settings;
+
 			if (!string.IsNullOrEmpty (oldpassword) || !string.IsNullOrEmpty (newpassword) || !string.IsNullOrEmpty (confirmpassword)) {
 				if (!string.Equals (newpassword, confirmpassword)) {
 					UIAlertController Alert = UIAlertController.Create ("Error",
@@ -107,17 +115,11 @@ namespace WebApp_iOS
 					PresentViewController (Alert, true, null);
 					return;
 				}
-			}
 
-			theaccountinfo = new AccountInfo ();
-			theaccountinfo.username = theaccountsummary.client_email;
-			theaccountinfo.password = theaccountsummary.client_password;
-			theaccountinfo.firstname = theaccountsummary.client_firstname;
-			theaccountinfo.lastname = theaccountsummary.client_lastname;
-			theaccountinfo.remember_password = theaccountsummary.remember_password;
-			theaccountinfo.settings = theaccountsummary.settings;
-			theaccountinfo.password = oldpassword;
-			theaccountinfo.new_password = newpassword;
+				theaccountinfo.password = oldpassword;
+				theaccountinfo.new_password = newpassword;
+			}
+				
 			initLoadingScreen("Updating");
 			updateProfile ();
 		}
